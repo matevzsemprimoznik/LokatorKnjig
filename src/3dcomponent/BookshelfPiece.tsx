@@ -1,7 +1,7 @@
 import { useGLTF } from '@react-three/drei';
 import React, { FC, useState } from 'react';
 // @ts-ignore
-import bookshelf from '../static/bookshelf.glb';
+import bookshelf from '../assets/bookshelf.glb';
 import '@babylonjs/loaders/glTF';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
