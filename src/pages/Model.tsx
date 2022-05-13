@@ -39,6 +39,7 @@ const Model = () => {
                 y: polica.pozicija.y,
                 z: polica.pozicija.z,
               }}
+              udk={polica.udk}
               rotation={{
                 x: 0,
                 y: polica.rotacija === 0 ? 0 : Math.PI,
@@ -58,6 +59,7 @@ const Model = () => {
                 y: polica.rotacija === 0 ? 0 : Math.PI,
                 z: 0,
               }}
+              udk={polica.udk}
             />
           )
         )}
