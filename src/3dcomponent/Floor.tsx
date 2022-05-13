@@ -1,7 +1,7 @@
 import { useGLTF } from '@react-three/drei';
 import React, { FC } from 'react';
 // @ts-ignore
-import floor from '../static/floor.glb';
+import floor from '../assets/floor.glb';
 
 interface FloorProps {
   position: {

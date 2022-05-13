@@ -6,7 +6,7 @@ import { Canvas } from 'react-three-fiber';
 function App() {
   return (
     <div>
-      <Canvas camera={{ position: [0, 5, 10], fov: 60 }}>
+      <Canvas>
         <Model />
       </Canvas>
     </div>

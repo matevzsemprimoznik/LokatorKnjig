@@ -1,70 +1,61 @@
-import { MeshWobbleMaterial, OrbitControls } from '@react-three/drei';
-import { useLoader, Canvas } from '@react-three/fiber';
+import {
+  FirstPersonControls,
+  MeshWobbleMaterial,
+  OrbitControls,
+  PerspectiveCamera,
+} from '@react-three/drei';
+import { useLoader, Canvas, useFrame } from '@react-three/fiber';
 import data from '../data.json';
 import Floor from '../3dcomponent/Floor';
 import SelectedBookshelfPiece from '../3dcomponent/SelectedBookshelfPiece';
 import BookshelfPiece from '../3dcomponent/BookshelfPiece';
 import { useThree } from '@react-three/fiber';
+import { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 
 const Model = () => {
   const selectedUDK = 20;
-  useThree(({ camera }) => {
-    camera.rotation.set(Math.PI / 3, 0, 0);
+
+  const [position, setPosition] = useState([0, 2, 10]);
+
+  const camera = useRef<any>(null);
+  const firstPerson = useRef<any>(null);
+  useFrame((state) => {
+    if (!!camera.current) {
+      const { x, y } = state.mouse;
+      //setPosition((oldState) => [oldState[0] + 0.01, 2, 10]);
+      //console.log(camera.current.position);
+    }
   });
+
+  useEffect(() => {
+    if (!!camera.current) console.log(camera.current);
+    if (!!firstPerson.current) {
+      console.log(firstPerson.current);
+      firstPerson.current.mouseDragOn = true;
+      firstPerson.current.moveLeft = true;
+      firstPerson.current.update();
+      console.log(firstPerson.current);
+    }
+  }, [camera.current]);
   return (
     <>
-      
-        <ambientLight intensity={0.3} />
-        <directionalLight
-          castShadow
-          position={[5, 10, 0]}
-          intensity={1.5}
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
-          shadow-camera-far={50}
-          shadow-camera-left={-10}
-          shadow-camera-right={10}
-          shadow-camera-top={10}
-          shadow-camera-bottom={-10}
-        />
-        <pointLight position={[-10, 0, -20]} intensity={0.5} />
-        <pointLight position={[0, -10, 0]} intensity={1.5} />
-
-        {data.police.map((polica: any) =>
-          polica.udk.includes(selectedUDK) ? (
-            <SelectedBookshelfPiece
-              key={polica.udk[0]}
-              position={{
-                x: polica.pozicija.x,
-                y: polica.pozicija.y,
-                z: polica.pozicija.z,
-              }}
-              rotation={{
-                x: 0,
-                y: polica.rotacija === 0 ? 0 : Math.PI,
-                z: 0,
-              }}
-            />
-          ) : (
-            <BookshelfPiece
-              key={polica.udk[0]}
-              position={{
-                x: polica.pozicija.x,
-                y: polica.pozicija.y,
-                z: polica.pozicija.z,
-              }}
-              rotation={{
-                x: 0,
-                y: polica.rotacija === 0 ? 0 : Math.PI,
-                z: 0,
-              }}
-            />
-          )
-        )}
-
-        <Floor position={{ x: 0, y: 0.05, z: 0 }} />
-
-        <OrbitControls />
+      <PerspectiveCamera
+        makeDefault
+        position={new THREE.Vector3(position[0], position[1], position[2])}
+        ref={camera}
+      />
+      <FirstPersonControls ref={firstPerson} />
+      <ambientLight intensity={1} />
+      <mesh position={[0, 1, 0]}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshStandardMaterial color={'red'} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[7, 7]} />
+        <meshStandardMaterial color={'blue'} />
+      </mesh>
+      {/* <OrbitControls /> */}
     </>
   );
 };
