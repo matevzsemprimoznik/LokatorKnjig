@@ -25,7 +25,6 @@ const BookshelfPiece: FC<BookshelfPieceProps> = ({ position, rotation = { x: 0, 
     <>
       <mesh
         castShadow
-        receiveShadow
         geometry={nodes.Cube.geometry}
         material={materials["CubeMaterial"]}
         position={[position.x, position.y, position.z]}

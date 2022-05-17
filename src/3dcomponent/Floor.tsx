@@ -1,4 +1,4 @@
-import { useGLTF } from "@react-three/drei";
+import { softShadows, useGLTF } from "@react-three/drei";
 import React, { FC } from "react";
 import floor from "../assets/floor.glb";
 
@@ -14,7 +14,6 @@ const Floor: FC<FloorProps> = ({ position }) => {
   const { nodes, materials }: any = useGLTF(floor);
   return (
     <mesh
-      castShadow
       receiveShadow
       geometry={nodes.Floor.geometry}
       material={materials["FloorMaterial"]}

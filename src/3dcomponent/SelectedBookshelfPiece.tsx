@@ -37,7 +37,6 @@ const SelectedBookshelfPiece: FC<SelectedBookshelfPieceProps> = ({
     <>
       <mesh
         castShadow
-        receiveShadow
         geometry={nodes.SelectedCube.geometry}
         material={materials["CubeMaterial"]}
         position={[position.x, position.y, position.z]}
