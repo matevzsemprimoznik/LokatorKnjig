@@ -43,7 +43,7 @@ const SelectedBookshelfPiece: FC<SelectedBookshelfPieceProps> = ({
         position={[position.x, position.y, position.z]}
         rotation={[rotation.x, rotation.y, rotation.z]}
       />
-      <Text text={`${udk[0]}`} position={position} />
+      <Text text={`${udk[0]}`} position={position} rotation={rotation} />
     </>
   );
 };
