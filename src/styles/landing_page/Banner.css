@@ -1,0 +1,74 @@
+.banner {
+    padding: 100px 0 200px 0;
+    overflow: hidden;
+}
+
+
+.banner-container {
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin: auto;
+}
+
+.banner-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -30px;
+    margin-right: -30px;
+}
+
+.banner .banner-row .banner-desc {
+    flex: 0.8;
+}
+
+.banner .banner-row .banner-image {
+    flex: 0.2;
+}
+
+.banner .banner-row .banner-title {
+    font-size: 34px;
+    font-weight: 800;
+    opacity: 0.9;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+
+.banner .banner-row .banner-text {
+    font-size: 18px;
+    color: #929098;
+    margin-top: 2.4rem;
+    margin-bottom: 2.4rem;
+}
+
+.banner-desc,
+.banner-image {
+    width: 100%;
+    padding-left: 25px;
+    padding-right: 25px;
+    position: relative;
+}
+
+.banner-image img {
+    opacity: 0.6;
+    object-fit: contain;
+    width: 20em;
+}
+
+@media (min-width: 996px) {
+
+    .banner-desc,
+    .banner-image {
+        flex: 0 0 50%;
+        width: 50%;
+        align-items: center;
+    }
+}
+
+@media (min-width: 1200px) {
+    .banner-container {
+        max-width: 1144px;
+    }
+}
+
+
