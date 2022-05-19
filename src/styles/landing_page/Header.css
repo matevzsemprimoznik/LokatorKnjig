@@ -13,9 +13,10 @@ header nav {
 header nav .logo p {
     text-decoration: none;
     color: #353340;
-    font-size: 42px;
+    font-size: 32px;
     font-weight: 800;
     margin: 0.2em;
+    opacity: 0.9;
 }
 
 

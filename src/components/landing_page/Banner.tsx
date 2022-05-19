@@ -7,9 +7,9 @@ const Banner = () => {
             <div className="banner-container">
                 <div className="banner-row">
                     <div className="banner-desc">
-                        <h2 className="banner-title">Lokator knjig je rešitev, s katero lahko oseba v knjižnici lažje najde želeno knjigo</h2>
+                        <h2 className="banner-title">Rešitev, ki osebo v knjižnici popelje do željene knjige.</h2>
                         <p className="banner-text">
-                            Lokator knjig je projekt/rešitev, s katero lahko oseba v knjižnici lažje najde svojo želeno knjigo. Knjigo najdete s pomočjo njenega UDK (Univerzalna Decimalna Klasifikacija). Uporabniku se nato prikaže grafični prikaz izbrane knjižnice, kjer je označena približna lokacija knjige.
+                            <i>Lokator knjig je projekt/rešitev, s katero lahko oseba v knjižnici lažje najde svojo želeno knjigo. Knjigo najdete s pomočjo njenega UDK (Univerzalna Decimalna Klasifikacija). Uporabniku se nato prikaže grafični prikaz izbrane knjižnice, kjer je označena približna lokacija knjige.</i>
                         </p>
                     </div>
                     <div className="banner-image">

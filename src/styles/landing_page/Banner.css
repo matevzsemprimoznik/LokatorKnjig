@@ -27,18 +27,21 @@
 }
 
 .banner .banner-row .banner-title {
-    font-size: 34px;
+    font-size: 38px;
     font-weight: 800;
-    opacity: 0.9;
-    line-height: 1.3;
-    margin-bottom: 1rem;
+    opacity: 1;
+    line-height: 1.5;
+    margin-bottom: 2rem;
 }
 
 .banner .banner-row .banner-text {
-    font-size: 18px;
+    font-size: 20px;
     color: #929098;
     margin-top: 2.4rem;
     margin-bottom: 2.4rem;
+    line-height: 1.4;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
 }
 
 .banner-desc,
@@ -47,6 +50,7 @@
     padding-left: 25px;
     padding-right: 25px;
     position: relative;
+    align-self:center;
 }
 
 .banner-image img {
