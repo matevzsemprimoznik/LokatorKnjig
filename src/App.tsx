@@ -2,15 +2,22 @@ import Grid from './components/Grid';
 import Model from './pages/Model';
 import { Controls, useControl } from 'react-three-gui';
 import { Canvas } from 'react-three-fiber';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Library from './pages/Library';
+
 
 function App() {
-  return (
-    <div>
-      <Canvas camera={{ position: [0, 5, 10], fov: 60 }}>
-        <Model />
-      </Canvas>
-    </div>
-  );
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/:selected" element={
+                    <Library />
+                }>
+                </Route>
+                <Route path="/" element={<Library />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
