@@ -21,7 +21,7 @@ function App() {
 
     // <>
     //     <MenuProvider>
-    //         <Button image="../menu-button.svg" position={{top: 2, left: 2}}/>
+    //         <Button image="../menu-button.svg" position={{top: 2, left: 2}} alt="menu"/>
     //         <Drawer/>
     //     </MenuProvider>
     //     <div className="app_canvas">

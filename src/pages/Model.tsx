@@ -30,10 +30,10 @@ const Model = () => {
         <pointLight position={[-10, 0, -20]} intensity={0.5} />
         <pointLight position={[0, -10, 0]} intensity={1.5} />
 
-        {data.police.map((polica: any) =>
+        {data.police.map((polica: any, index: number) =>
           polica.udk.includes(selectedUDK) ? (
             <SelectedBookshelfPiece
-              key={polica.udk[0]}
+              key={index}
               position={{
                 x: polica.pozicija.x,
                 y: polica.pozicija.y,
@@ -48,7 +48,7 @@ const Model = () => {
             />
           ) : (
             <BookshelfPiece
-              key={polica.udk[0]}
+              key={index}
               position={{
                 x: polica.pozicija.x,
                 y: polica.pozicija.y,

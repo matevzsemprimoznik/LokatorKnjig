@@ -1,0 +1,82 @@
+
+.drawer-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: inherit;
+    cursor: pointer;
+    border: none;
+    padding: 0.5em;
+}
+
+.drawer {
+    background: #fff;
+    width: 20%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    transition: transform 500ms ease;
+    z-index: 100;
+}
+
+.drawer-info-header {
+    margin-top: 3em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.drawer-info-divider {
+    width: 100%;
+}
+
+.drawer.left {
+    top: 0;
+    left: 0;
+    transform: translateX(-100%);
+}
+
+.drawer-container.open .left {
+    transform: translateX(0);
+}
+
+.backdrop {
+    visibility: hidden;
+    opacity: 0;
+    background: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s ease,
+    visibility 0.3s ease;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    pointer-events: none;
+    z-index: 10;
+}
+
+
+.drawer-container.open .drawer {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.drawer-container.open .backdrop {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 999;
+}
+
+@media screen and (max-width: 1200px){
+    .drawer {
+        background: #fff;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: fixed;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        transition: transform 500ms ease;
+        z-index: 100;
+    }
+}
