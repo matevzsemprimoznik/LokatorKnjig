@@ -45,11 +45,19 @@ const Model = (props: any) => {
 
             //sets current udk to be that of the one currently being checked and splits it
             let currentudk = filtered[j].udk[k].toString().split(".");
-
-            //checks if the current udk has that many "specific" parts
+            
+            //checks if the current udk has that many "specific" parts            
             if(currentudk[i]) {
+
+              //if the current udk from filtered array includes the string add it to array (if it's not added yet)
               if (currentudk.includes(specificUDK) && !newestFiltered.includes(specificUDK)) {
-                newestFiltered.push(specificUDK);
+                newestFiltered.push(currentudk[i]);
+              }
+
+              //if the specific Udk starts with a string after a dot and it matches one of the udks on the shelf from
+              //the filtered array it gets added
+              if(specificUDK.startsWith(currentudk[i]) && i != 0 && !newestFiltered.includes(currentudk[i])) {                
+                newestFiltered.push(currentudk[i]);
               }
             }
           }
