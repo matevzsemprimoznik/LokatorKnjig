@@ -5,9 +5,85 @@ import Floor from '../3dcomponent/Floor';
 import SelectedBookshelfPiece from '../3dcomponent/SelectedBookshelfPiece';
 import BookshelfPiece from '../3dcomponent/BookshelfPiece';
 import { useThree } from '@react-three/fiber';
+import { useParams } from 'react-router-dom';
+import React from 'react';
 
-const Model = () => {
-  const selectedUDK = 20;
+const Model = (props: any) => {
+  const { selected } = props;
+  const [selectedUDK, setSelectedUDK] = React.useState("");
+
+  const getClosestUDK = () => {
+    if (selected) {
+      let parsedUDK = selected.split(".");
+      let general = parsedUDK[0];
+
+      let closest = "";
+
+      let filtered: any[] = [];
+      //filters through json to get smaller array of shelfs with the same first part of UDK (before first ".")
+      filtered = data.police.filter((element) => {
+        let udk = element.udk;
+
+        for (let i = 0; i < udk.length; i++) {
+          let currentudk = udk[i].toString();
+
+          let splitted = currentudk.split(".");
+
+          return (general.includes(splitted[0]));
+        }
+      });
+
+      let newestFiltered: string[] = [];
+
+      //goes through entire array of parsed UDKs and through filtered to 
+      //compare more specific [1-n] parts of selected UDK
+      for (let i = 0; i < parsedUDK.length; i++) {
+        let specificUDK = parsedUDK[i];
+
+        for (let j = 0; j < filtered.length; j++) {
+          for (let k = 0; k < filtered[j].udk.length; k++) {
+
+            //sets current udk to be that of the one currently being checked and splits it
+            let currentudk = filtered[j].udk[k].toString().split(".");
+            
+            //checks if the current udk has that many "specific" parts            
+            if(currentudk[i]) {
+
+              //if the current udk from filtered array includes the string add it to array (if it's not added yet)
+              if (currentudk.includes(specificUDK) && !newestFiltered.includes(specificUDK)) {
+                newestFiltered.push(currentudk[i]);
+              }
+
+              //if the specific Udk starts with a string after a dot and it matches one of the udks on the shelf from
+              //the filtered array it gets added
+              if(specificUDK.startsWith(currentudk[i]) && i != 0 && !newestFiltered.includes(currentudk[i])) {                
+                newestFiltered.push(currentudk[i]);
+              }
+            }
+          }
+        }
+      }
+
+      //makes the closest udk back into a specific udk string
+      if (newestFiltered.length != 0) {
+        for (let i = 0; i < newestFiltered.length; i++) {
+          if (i != newestFiltered.length - 1) {
+            closest += newestFiltered[i] + ".";
+          }
+          else {
+            closest += newestFiltered[i];
+          }
+        }
+      }
+
+      setSelectedUDK(closest);
+    }
+  }
+
+  if(selectedUDK == "") {
+    getClosestUDK();
+  }
+
   useThree(({ camera }) => {
     camera.rotation.set(Math.PI / 3, 0, 0);
   });
