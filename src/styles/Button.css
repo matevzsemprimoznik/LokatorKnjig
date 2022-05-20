@@ -1,0 +1,18 @@
+.custom-button {
+    position: fixed;
+    padding: 1.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    border: none;
+    box-shadow: 0 2px 5px 0 #c7bfa9;
+    cursor: pointer;
+    text-align: center;
+    z-index: 1;
+    transition: all 300ms ease-out;
+}
+
+.custom-button:hover {
+    transform: scale(1.07);
+}
