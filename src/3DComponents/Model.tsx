@@ -1,12 +1,10 @@
 import {OrbitControls, OrthographicCamera, PerspectiveCamera} from '@react-three/drei';
 import Floor from './Floor';
-import React, {FC, useRef, useState} from 'react';
-import {OrbitControls as OrbitControlsProps} from 'three-stdlib';
+import React, {FC} from 'react';
 import * as THREE from 'three';
 import {ModelType} from '../context/modelContext';
 import {Model3D as MemoizedModel3D} from "./Model3D";
 import Model2D from "./Model2D";
-import {PerspectiveCameraProps} from "react-three-fiber";
 
 interface ModelProps {
     selected: any;
@@ -14,11 +12,8 @@ interface ModelProps {
 }
 
 const Model: FC<ModelProps> = ({selected, modelType}) => {
-    const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
-    const orbitControlsRef = useRef<OrbitControlsProps>(null);
-    const triggerSwitchFrom3dTo2d = useRef(false);
-    const isFirstRender = useRef(true);
-    const [defaultCamera, setDefaultCamera] = useState<'perspective' | 'ortographic'>('perspective');
+   // const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
+    //const orbitControlsRef = useRef<OrbitControlsProps>(null);
 
     // useFrame(() => {
     //     if (triggerSwitchFrom3dTo2d.current) {
@@ -81,7 +76,6 @@ const Model: FC<ModelProps> = ({selected, modelType}) => {
     return (
         <>
             <PerspectiveCamera
-                ref={perspectiveCameraRef}
                 makeDefault={modelType === ModelType._3D}
                 position={[0, 5, 10]}
                 far={60}
@@ -113,7 +107,7 @@ const Model: FC<ModelProps> = ({selected, modelType}) => {
 
             <Floor position={{x: 0, y: 0.05, z: 0}}/>
             <OrbitControls
-                ref={orbitControlsRef}
+                enableRotate={modelType === ModelType._3D}
                 mouseButtons={
                     modelType === ModelType._2D
                         ? {
