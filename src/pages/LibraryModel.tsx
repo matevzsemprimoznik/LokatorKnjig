@@ -1,4 +1,4 @@
-import {useContext, useState} from 'react';
+import {useContext} from 'react';
 import {useParams} from 'react-router-dom';
 import {Canvas} from 'react-three-fiber';
 import Button from '../components/Button';
@@ -16,10 +16,10 @@ const LibraryModel = () => {
 
   return (
     <>
-      <Canvas camera={{ position: [0, 5, 10], fov: 60 }}>
+      <Canvas>
         <Model selected={selected} modelType={modelType} />
       </Canvas>
-      <Button position={{ top: 2, right: 2 }} onClick={onClick} text={modelType}/>
+      <Button position={{ top: 2, right: 2 }} onClick={onClick} text={modelType === ModelType._2D ? ModelType._3D : ModelType._2D}/>
     </>
   );
 };
