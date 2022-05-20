@@ -3,14 +3,13 @@ import '../styles/Button.css';
 
 type ButtonProps = {
     image?: string,
-    visible?: boolean,
     onClick: () => void,
-    stateValue?: object,
     alt?: string,
+    text?: string,
     position?: { top?: number; left?: number; bottom?: number; right?: number }
 }
 
-const Button: FC<ButtonProps> = ({image, position, visible, onClick, stateValue, alt}) => {
+const Button: FC<ButtonProps> = ({image, position, onClick, alt, text}) => {
 
     const style: Record<string, string> = {
         top: `${position?.top}em` ?? "",
@@ -21,9 +20,11 @@ const Button: FC<ButtonProps> = ({image, position, visible, onClick, stateValue,
 
     return (
         <button className="custom-button" style={style} onClick={onClick}>
+            {image ? (
             <img src={image}
-                 alt={alt} aria-hidden="true" />
-
+                 alt={alt} aria-hidden="true"/>
+            ) : ( <p style={{margin: 0, padding: 0}}>{text}</p>
+            )}
         </button>
     );
 };
