@@ -82,6 +82,9 @@ const Model = (props: any) => {
       setSelectedUDK(closest);
     }
   };
+  if (selectedUDK == '') {
+    getClosestUDK();
+  }
   const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
   const triggerSwitchFrom3dTo2d = useRef(false);
   const orbitControlsRef = useRef<OrbitControlsProps>(null);
@@ -141,7 +144,7 @@ const Model = (props: any) => {
   };
   useEffect(() => {
     setInterval(() => {
-      triggerSwitchFrom3dTo2d.current = true;
+      //triggerSwitchFrom3dTo2d.current = true;
     }, 5000);
   }, []);
   return (
@@ -152,7 +155,7 @@ const Model = (props: any) => {
         makeDefault={defualtCamera === 'perspective'}
         position={[0, 5, 10]}
       />
-      <OrthographicCamera makeDefault={defualtCamera === 'ortographic'} position={[0, 10, 0]} zoom={32} />
+      <OrthographicCamera makeDefault={defualtCamera === 'ortographic'} position={[0, 10, 0]} zoom={26} />
       <ambientLight intensity={defualtCamera === 'ortographic' ? 1.3 : 0.3} />
       <directionalLight
         castShadow

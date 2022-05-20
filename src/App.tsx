@@ -8,14 +8,16 @@ import Library from './pages/Library';
 import { useState } from 'react';
 import Model2D from './3DComponents/Model2D';
 import { ModelShape } from '@babylonjs/core/Particles/solidParticle';
+import Home from './pages/Home';
+import './index.css';
 
 function App() {
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/:selected' element={<Library />}></Route>
-        <Route path='/' element={<Library />} />
+        <Route path='/library-model/:selected' element={<Library />} />
+        <Route path='/library-model' element={<Library />} />
+        <Route path='/' element={<Home />} />
       </Routes>
     </BrowserRouter>
   );
