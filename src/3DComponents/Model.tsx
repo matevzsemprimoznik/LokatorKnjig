@@ -1,18 +1,22 @@
-import {OrbitControls, OrthographicCamera, PerspectiveCamera} from '@react-three/drei';
+import {FirstPersonControls, OrbitControls, OrthographicCamera, PerspectiveCamera} from '@react-three/drei';
 import Floor from './Floor';
-import React, {FC} from 'react';
+import React, {FC, useRef, useState} from 'react';
 import * as THREE from 'three';
 import {ModelType} from '../context/modelContext';
 import {Model3D as MemoizedModel3D} from "./Model3D";
 import Model2D from "./Model2D";
+import {Raycaster} from "three";
+import {PerspectiveCameraProps, ThreeEvent} from "react-three-fiber";
 
 interface ModelProps {
     selected: any;
     modelType: ModelType;
+    setModelType: (modelType: ModelType) => void
 }
 
-const Model: FC<ModelProps> = ({selected, modelType}) => {
-   // const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
+const Model: FC<ModelProps> = ({selected, modelType, setModelType}) => {
+    const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
+    const perspectiveCameraPositionRef =  useRef({x: 0, y: 5, z: 10})
     //const orbitControlsRef = useRef<OrbitControlsProps>(null);
 
     // useFrame(() => {
@@ -73,12 +77,35 @@ const Model: FC<ModelProps> = ({selected, modelType}) => {
     //     if (position.y < 30) perspectiveCameraRef.current.position.y += speed;
     // };
 
+    // const canvas = document.getElementsByClassName('canvas')[0]
+    // const raycaster = new THREE.Raycaster()
+    // const mousePosition = new THREE.Vector2();
+    //
+    // canvas.addEventListener('click', function getClicked3DPoint(evt:any) {
+    //     evt.preventDefault();
+    //
+    //     mousePosition.x = ((evt.clientX - canvasPosition.left) / 1920) * 2 - 1;
+    //     mousePosition.y = -((evt.clientY - canvasPosition.top) / 500) * 2 + 1;
+    //
+    //     raycaster.setFromCamera(mousePosition, perspectiveCameraRef.current);
+    //     var intersects = raycaster.intersectObjects(scene.getObjectByName('MyObj_s').children, true);
+    //
+    //     if (intersects.length > 0)
+    //         return intersects[0].point;
+    // };)
+
+    const moveCameraToDoubleClickedPoint = (event: ThreeEvent<MouseEvent>) => {
+        perspectiveCameraPositionRef.current = {...event.point, y: 2}
+        setModelType(ModelType._3D)
+    }
+
     return (
         <>
             <PerspectiveCamera
                 makeDefault={modelType === ModelType._3D}
-                position={[0, 5, 10]}
+                position={[perspectiveCameraPositionRef.current.x, perspectiveCameraPositionRef.current.y, perspectiveCameraPositionRef.current.z]}
                 far={60}
+                ref={perspectiveCameraRef}
             />
             <OrthographicCamera makeDefault={modelType === ModelType._2D} position={[0, 10, 0]} zoom={26}/>
             <ambientLight intensity={modelType === ModelType._2D ? 1.3 : 0.3}/>
@@ -105,7 +132,7 @@ const Model: FC<ModelProps> = ({selected, modelType}) => {
                 <MemoizedModel3D selectedUDK={selected}/>
                 : <Model2D selected={selected}/>}
 
-            <Floor position={{x: 0, y: 0.05, z: 0}}/>
+            <Floor position={{x: 0, y: 0.05, z: 0}} onDoubleClick={moveCameraToDoubleClickedPoint}/>
             <OrbitControls
                 enableRotate={modelType === ModelType._3D}
                 mouseButtons={

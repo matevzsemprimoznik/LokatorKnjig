@@ -17,7 +17,7 @@ const LibraryModel = () => {
   return (
     <>
       <Canvas>
-        <Model selected={selected} modelType={modelType} />
+        <Model selected={selected} modelType={modelType} setModelType={setModelType} />
       </Canvas>
       <Button position={{ top: 2, right: 2 }} onClick={onClick} text={modelType === ModelType._2D ? ModelType._3D : ModelType._2D}/>
     </>
