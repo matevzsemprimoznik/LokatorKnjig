@@ -1,0 +1,13 @@
+SESTANEK STRANKA IZUM - 11.05.2022
+
+knjižnica sama naredi tloris skozi našo stran
+tloris knjižnice se potem prikaže ko gre uporabnik skozi cobiss link ali našo spletno stran
+
+oddelek predstavlja posamezno knjižnico npr Knjižnica Pobrežje je en oddelek
+
+UDK:
+1.št na grobo. naslednja št bolj podrobno,...
+1 št predstavlja področje (npr znanost in znanje, matematika, medicina, ...)
+naslednja številka za piko je bolj podrobna (pod)kategorija
+
+različni znaki za povezovanje (npr -, /, :, itd)
