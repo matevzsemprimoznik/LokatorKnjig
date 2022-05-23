@@ -33,10 +33,10 @@ type ElementType = {
 const Canvas = () => {
 
 
-    const [wallElements, setWallElements] = useState<any>([]);
-    const [bookshelves, setBookshelves] = useState<any>([]);
+    const [wallElements, setWallElements] = useState<Array<ElementType>>([]);
+    const [bookshelves, setBookshelves] = useState<Array<ElementType>>([]);
 
-    const [currentDrawingBookshelf, setCurrentDrawingBookshelf] = useState<any>([]);
+    const [currentDrawingBookshelf, setCurrentDrawingBookshelf] = useState<Array<ElementType>>([]);
     const [selectedElement, setSelectedElement] = useState<ElementType | null>(null);
 
     const [action, setAction] = useState<ActionTypes>(ActionTypes.NONE);
@@ -54,7 +54,7 @@ const Canvas = () => {
 
         const roughCanvas: RoughCanvas = rough.canvas(canvas);
 
-        [...bookshelves, ...currentDrawingBookshelf, ...wallElements].forEach(({element}: { element: any }) => roughCanvas.draw(element))
+        [...bookshelves, ...currentDrawingBookshelf, ...wallElements].forEach(({element}: { element: Drawable }) => roughCanvas.draw(element))
 
         window.addEventListener('keyup', handleKeyPress, false);
 
@@ -63,10 +63,10 @@ const Canvas = () => {
     }, [wallElements, bookshelves, currentDrawingBookshelf]);
 
 
-    const createElement = (id: number, x: number, y: number, x1: number, y1: number, type: DrawingElement): any => {
+    const createElement = (id: number, x: number, y: number, x1: number, y1: number, type: DrawingElement) => {
 
         if (drawingElement === DrawingElement.BOOKSHELF) {
-            const element: any = generator.rectangle(x, y, 50, 30, {
+            const element: Drawable = generator.rectangle(x, y, 50, 30, {
                 strokeWidth: 1,
                 fillStyle: 'solid',
                 fill: 'rgb(49,38,15)',
@@ -76,7 +76,7 @@ const Canvas = () => {
             y1 = y + 30;
             return {id, x, y, x1, y1, element}
         } else if (drawingElement === DrawingElement.WALL) {
-            const element: any = generator.line(x, y, x1, y1, {strokeWidth: 5});
+            const element: Drawable = generator.line(x, y, x1, y1, {strokeWidth: 5});
             return {id, x, y, x1, y1, element}
         }
     }
@@ -85,16 +85,16 @@ const Canvas = () => {
         const element = createElement(id, x, y, clientX, clientY, type);
 
         const bookshelfCopy = [...bookshelves];
-        bookshelfCopy[id] = element;
+        bookshelfCopy[id] = element as ElementType;
 
         setBookshelves(bookshelfCopy);
     }
 
-    const getElementAtPosition = (x: number, y: number, bookshelves: Array<ElementType>): any => {
+    const getElementAtPosition = (x: number, y: number, bookshelves: Array<ElementType>) => {
         return bookshelves.find((bookshelf: ElementType) => isCursorOnElement(x, y, bookshelf));
     }
 
-    const isCursorOnElement = (clientX: number, clientY: number, element: any): boolean => {
+    const isCursorOnElement = (clientX: number, clientY: number, element: ElementType): boolean => {
         const {x, y, x1, y1}: { x: number, y: number, x1: number, y1: number } = element;
 
         const minX = Math.min(x, x1);
@@ -157,7 +157,7 @@ const Canvas = () => {
                                      x1,
                                      y,
                                      y1
-                                 }: { element: any, id: number, x: number, y: number, x1: number, y1: number }) => (id === selectedElement.id) && updateElement(id, x, y, x1, y1, DrawingElement.BOOKSHELF))
+                                 }: { element: Drawable, id: number, x: number, y: number, x1: number, y1: number }) => (id === selectedElement.id) && updateElement(id, x, y, x1, y1, DrawingElement.BOOKSHELF))
             } else {
                 setSelectedElement(null);
             }
@@ -178,14 +178,14 @@ const Canvas = () => {
             const element = createElement(index, x, y, clientX, clientY, DrawingElement.WALL);
 
             const wallElementsCopy = [...wallElements];
-            wallElementsCopy[index] = element;
+            wallElementsCopy[index] = element as ElementType;
             setWallElements(wallElementsCopy);
         }
 
         if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.DRAWING && currentDrawingBookshelf !== null) {
             const element = createElement(0, Math.round(clientX), Math.round(clientY), Math.round(clientX), Math.round(clientY), DrawingElement.BOOKSHELF);
             const copy = [...currentDrawingBookshelf];
-            copy[0] = element;
+            copy[0] = element as ElementType;
             setCurrentDrawingBookshelf(copy);
         } else if (selectedElement && action === ActionTypes.SELECTING) {
             setAction(ActionTypes.MOVING);
@@ -212,7 +212,7 @@ const Canvas = () => {
                 const wallPiece = wallElements[index];
                 const element = createElement(index, wallPiece.x1, wallPiece.y1, clientX, clientY, DrawingElement.WALL);
 
-                const wallElementsCopy = [...wallElements, element];
+                const wallElementsCopy = [...wallElements, element] as ElementType[];
                 setWallElements(wallElementsCopy);
                 setWallEdgePressed(false);
             }
@@ -238,7 +238,7 @@ const Canvas = () => {
                 } else {
                     setIsFirstCornerSelected(false);
                 }
-                setWallElements(wallElementsCopy.filter((element: any) => element.id !== newState.id));
+                setWallElements(wallElementsCopy.filter((element: ElementType) => element.id !== newState?.id));
                 // wallElements.length < 1 ? setIsFirstCornerSelected(true) : setIsFirstCornerSelected(false);
             }
             setAction(ActionTypes.NONE);
@@ -279,7 +279,7 @@ const Canvas = () => {
                                  x1,
                                  y,
                                  y1
-                             }: { element: any, id: number, x: number, y: number, x1: number, y1: number }) => (id === selectedElement.id) && updateElement(id, x, y, x1, y1, DrawingElement.BOOKSHELF))
+                             }: { element: Drawable, id: number, x: number, y: number, x1: number, y1: number }) => (id === selectedElement.id) && updateElement(id, x, y, x1, y1, DrawingElement.BOOKSHELF))
         }
     }
 
@@ -287,7 +287,7 @@ const Canvas = () => {
     // deleting bookshelves
     const handleElementDelete = () => {
         if (selectedElement) {
-            const newState = bookshelves.filter((element: any) => element.id !== selectedElement.id);
+            const newState = bookshelves.filter((element: ElementType) => element.id !== selectedElement.id);
             setBookshelves(newState);
             setSelectedElement(null);
         }
