@@ -26,7 +26,9 @@ type ElementType = {
     y: number,
     x1: number,
     y1: number,
-    element: Drawable
+    element: Drawable,
+    offsetX?: number,
+    offsetY?: number,
 };
 
 
@@ -147,6 +149,9 @@ const Canvas = () => {
         if (action === ActionTypes.SELECTING) {
             const selectedElement = getElementAtPosition(clientX, clientY, bookshelves);
             if (selectedElement) {
+                // const offsetX = clientX - selectedElement.x1;
+                // const offsetY = clientY - selectedElement.y1;
+                // setSelectedElement({...selectedElement, offsetX, offsetY});
                 setSelectedElement(selectedElement);
                 // TODO change element color to blue -> update element
                 // !! DOES NOT WORK YET
@@ -182,6 +187,12 @@ const Canvas = () => {
             setWallElements(wallElementsCopy);
         }
 
+        if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.SELECTING) {
+            event.target.style.cursor = getElementAtPosition(clientX, clientY, bookshelves) && "move";
+        } else {
+            event.target.style.cursor = "default";
+        }
+
         if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.DRAWING && currentDrawingBookshelf !== null) {
             const element = createElement(0, Math.round(clientX), Math.round(clientY), Math.round(clientX), Math.round(clientY), DrawingElement.BOOKSHELF);
             const copy = [...currentDrawingBookshelf];
@@ -191,10 +202,15 @@ const Canvas = () => {
             setAction(ActionTypes.MOVING);
         } else if (selectedElement && action === ActionTypes.MOVING) {
 
-            const {id, x, y, x1, y1}: { id: number, x: number, y: number, x1: number, y1: number } = selectedElement;
+            const {id, offsetY, offsetX} = selectedElement;
 
-            updateElement(id, clientX, clientY, 0, 0, DrawingElement.BOOKSHELF)
-
+            if (offsetX && offsetY) {
+                const newX1 = clientX - offsetX;
+                const newY1 = clientY - offsetY;
+                updateElement(id, newX1, newY1, 0, 0, DrawingElement.BOOKSHELF)
+            } else {
+                updateElement(id, clientX, clientY, 0, 0, DrawingElement.BOOKSHELF)
+            }
         }
     }
 
