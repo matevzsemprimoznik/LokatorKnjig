@@ -1,9 +1,9 @@
 import { MeshWobbleMaterial, OrbitControls } from '@react-three/drei';
 import { useLoader, Canvas } from '@react-three/fiber';
 import data from '../data.json';
-import Floor from '../3DComponents/Floor';
-import SelectedBookshelfPiece from '../3DComponents/SelectedBookshelfPiece';
-import BookshelfPiece from '../3DComponents/BookshelfPiece';
+import Floor from './Floor';
+import SelectedBookshelfPiece from './SelectedBookshelfPiece';
+import BookshelfPiece from './BookshelfPiece';
 import { useThree, extend } from '@react-three/fiber';
 import { BoxGeometry } from 'three';
 import * as THREE from 'three';
