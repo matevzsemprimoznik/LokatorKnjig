@@ -1,9 +1,10 @@
 import { createContext, useEffect, useState } from 'react';
 
 export enum ModelType {
-  _2D ='2D' ,
-  _3D = '3D'
-};
+  _2D = '2D',
+  _3D = '3D',
+  FIRST_PERSON = 'FIRST_PERSON',
+}
 
 export type ModelContextType = {
   modelType: ModelType;
@@ -14,7 +15,7 @@ export const ModelContext = createContext<ModelContextType>({ modelType: ModelTy
 
 const ModelProvider = ({ children }: any) => {
   const [modelType, setModelType] = useState<ModelType>(ModelType._3D);
-  console.log(modelType)
+  console.log(modelType);
 
   return <ModelContext.Provider value={{ modelType, setModelType }}>{children}</ModelContext.Provider>;
 };

@@ -1,64 +1,105 @@
-import {OrbitControls, PerspectiveCamera} from "@react-three/drei";
-import {ModelType} from "../context/modelContext";
-import React, {useEffect, useRef, useState} from "react";
-import {PerspectiveCameraProps} from "react-three-fiber";
-import * as THREE  from 'three'
-
+import { OrbitControls, OrbitControlsProps, PerspectiveCamera } from '@react-three/drei';
+import { ModelType } from '../context/modelContext';
+import React, { Ref, useEffect, useRef, useState } from 'react';
+import { PerspectiveCameraProps, useFrame } from 'react-three-fiber';
+import * as THREE from 'three';
+import { MathUtils, Quaternion, Vector3 } from 'three';
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
 const FirstPersonCamera = () => {
-    const cameraRef = useRef<PerspectiveCameraProps>(null)
-    const prevMouseRotationRef = useRef<{
-        x: number,
-        y: number
-    }>()
-    const [cameraRotation, setCameraRotation] = useState({x: 0, y: 0, z: 0})
-    const _euler = new THREE.Euler( 0, 0, 0, 'YXZ' );
-    const onMouseMove = (event: MouseEvent) => {
-        if(prevMouseRotationRef.current == null) {
-            return prevMouseRotationRef.current = {x: event.clientX, y: event.clientY}
-        }
-        const delta = {
-            x: event.clientX - prevMouseRotationRef.current.x,
-            y: event.clientY - prevMouseRotationRef.current.y
-        }
+  const cameraRef = useRef<PerspectiveCameraProps>(null);
+  const _euler = new THREE.Euler(0, 0, 0, 'YXZ');
+  const targetCameraPosition = useRef(new Vector3(0, 2, 10));
+  const cameraRotationOnYAxis = useRef(0);
+  const isDragEventOn = useRef(false);
 
-        if(cameraRef.current != null)
-            {
-                const minPolarAngle = 0;
-                const _PI_2 = Math.PI / 2;
-                const maxPolarAngle = Math.PI; // radians
+  const onMouseMove = (event: MouseEvent) => {
+    console.log('dela');
 
-                const pointerSpeed = 1.0;
-                const movementX = -(event.movementX || event.mozMovementX || event.webkitMovementX || 0);
-                const movementY = -(event.movementY || event.mozMovementY || event.webkitMovementY || 0);
+    isDragEventOn.current = true;
+    if (cameraRef.current != null) {
+      const minPolarAngle = 0;
+      const _PI_2 = Math.PI / 2;
+      const maxPolarAngle = Math.PI;
 
+      const pointerSpeed = 1.0;
+      const movementX = -(event.movementX || event.mozMovementX || event.webkitMovementX || 0);
+      const movementY = -(event.movementY || event.mozMovementY || event.webkitMovementY || 0);
 
-                _euler.y -= movementX * 0.002 * pointerSpeed;
-                _euler.x -= movementY * 0.002 * pointerSpeed;
-                _euler.x = Math.max( _PI_2 -maxPolarAngle, Math.min( _PI_2 - minPolarAngle, _euler.x ) );
-                // @ts-ignore
-                cameraRef.current.quaternion.setFromEuler( _euler );
+      cameraRotationOnYAxis.current -= movementX * 0.002 * pointerSpeed;
 
-            }
-        prevMouseRotationRef.current = {x: event.clientX, y: event.clientY}
-
+      _euler.y -= movementX * 0.002 * pointerSpeed;
+      _euler.x -= movementY * 0.002 * pointerSpeed;
+      _euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x));
+      if (cameraRef.current.quaternion != null && cameraRef.current.quaternion instanceof Quaternion)
+        cameraRef.current.quaternion.setFromEuler(_euler);
     }
-    useEffect(() => {
-        document.addEventListener('mousedown',() => {
-            document.addEventListener('mousemove', onMouseMove)
-        })
-        document.addEventListener('mouseup', () => {
-            prevMouseRotationRef.current = undefined
-            document.removeEventListener('mousemove', onMouseMove)
-        })
-    }, [])
-    return <><PerspectiveCamera
-        makeDefault={true}
-        ref={cameraRef}
-        position={[0,2,10]}
-        far={60}
-    />
+  };
 
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+  const ease = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+
+  let t = 0;
+  let dt = 0.02;
+  const moveCameraForward = (distance: number) => {
+    console.log(isDragEventOn);
+
+    if (isDragEventOn.current) return (isDragEventOn.current = false);
+
+    if (cameraRef.current && cameraRef.current.position instanceof Vector3) {
+      const cameraCurrentPosition = cameraRef.current.position;
+
+      const delta = {
+        x: Math.sin(cameraRotationOnYAxis.current % (2 * Math.PI)),
+        z: Math.cos(cameraRotationOnYAxis.current % (2 * Math.PI)),
+      };
+      delta.x = (-Math.ceil(delta.x * 1000) / 1000) * distance;
+      delta.z = (-Math.floor(delta.z * 1000) / 1000) * distance;
+
+      targetCameraPosition.current = new THREE.Vector3(
+        cameraCurrentPosition.x + delta.x,
+        cameraCurrentPosition.y,
+        cameraCurrentPosition.z + delta.z
+      );
+    }
+  };
+
+  const loop = () => {
+    if (cameraRef.current && cameraRef.current.position instanceof Vector3) {
+      const cameraPosition = cameraRef.current.position;
+      const newX = lerp(cameraPosition.x, targetCameraPosition.current.x, ease(t));
+      const newY = lerp(cameraPosition.y, targetCameraPosition.current.y, ease(t));
+      const newZ = lerp(cameraPosition.z, targetCameraPosition.current.z, ease(t));
+      cameraRef.current.position.set(newX, newY, newZ);
+      t += dt;
+    }
+  };
+
+  useFrame(() => {
+    if (cameraRef.current?.position && cameraRef.current.position instanceof Vector3) {
+      if (!cameraRef.current.position.equals(targetCameraPosition.current)) {
+        loop();
+      } else {
+        t = 0;
+        dt = 0.02;
+      }
+    }
+  });
+
+  useEffect(() => {
+    document.addEventListener('mousedown', () => {
+      document.addEventListener('mousemove', onMouseMove);
+    });
+    document.addEventListener('mouseup', () => {
+      document.removeEventListener('mousemove', onMouseMove);
+    });
+    document.addEventListener('click', () => moveCameraForward(2));
+    document.addEventListener('dblclick', () => moveCameraForward(4));
+  }, []);
+  return (
+    <>
+      <PerspectiveCamera makeDefault={true} ref={cameraRef} position={[0, 2, 10]} far={60} />
     </>
-}
-export default FirstPersonCamera
+  );
+};
+export default FirstPersonCamera;
