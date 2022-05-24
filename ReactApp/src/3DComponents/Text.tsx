@@ -16,8 +16,10 @@ interface TextProps {
     y: number;
     z: number;
   };
+  size?: number,
+  color?: string
 }
-const Text: FC<TextProps> = ({ text, position, rotation = { x: 0, y: 0, z: 0 } }) => {
+const Text: FC<TextProps> = ({ text, color='white', size = 0.1, position, rotation = { x: 0, y: 0, z: 0 } }) => {
   const textRef = useRef<any>();
   const [offset, setOffset] = useState(0);
 
@@ -32,11 +34,11 @@ const Text: FC<TextProps> = ({ text, position, rotation = { x: 0, y: 0, z: 0 } }
   const font = new FontLoader().parse(Roboto);
   const geometry: any = new TextGeometry(text, {
     font: font,
-    size: 0.1,
+    size: size,
     height: 0.1,
   });
 
-  const material = [new THREE.MeshPhongMaterial({ color: 0xffffff })];
+  const material = [new THREE.MeshPhongMaterial({ color })];
   return (
     <mesh
       ref={textRef}
