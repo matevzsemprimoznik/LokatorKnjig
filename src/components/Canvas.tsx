@@ -188,10 +188,13 @@ const Canvas = () => {
         }
 
         if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.SELECTING) {
-            event.target.style.cursor = getElementAtPosition(clientX, clientY, bookshelves) && "move";
-        } else {
-            event.target.style.cursor = "default";
+            if (getElementAtPosition(clientX, clientY, bookshelves)) {
+                event.target.style.cursor ="move";
+            } else {
+                event.target.style.cursor = "default";
+            }
         }
+
 
         if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.DRAWING && currentDrawingBookshelf !== null) {
             const element = createElement(0, Math.round(clientX), Math.round(clientY), Math.round(clientX), Math.round(clientY), DrawingElement.BOOKSHELF);
@@ -238,6 +241,7 @@ const Canvas = () => {
         if (selectedElement && action === ActionTypes.MOVING) {
             setAction(ActionTypes.NONE);
             setSelectedElement(null);
+            event.target.style.cursor = "default";
         }
 
     }
@@ -310,6 +314,7 @@ const Canvas = () => {
     }
 
 
+
     return (
         <div>
             <div style={{position: "fixed", maxHeight: "30px", display: "flex", alignItems: "center"}}>
@@ -325,6 +330,7 @@ const Canvas = () => {
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     onDoubleClick={handleDoubleClick}
+
                     style={{backgroundColor: "lightgray"}}
             ></canvas>
         </div>
