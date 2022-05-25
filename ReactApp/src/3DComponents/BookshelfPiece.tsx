@@ -1,8 +1,8 @@
-import { useGLTF } from "@react-three/drei";
-import React, { FC, useState } from "react";
-import bookshelf from "../assets/bookshelf.glb";
-import "@babylonjs/loaders/glTF";
-import Text from "./Text";
+import { useGLTF } from '@react-three/drei';
+import React, { FC, useState } from 'react';
+import bookshelf from '../assets/bookshelf2.glb';
+import '@babylonjs/loaders/glTF';
+import Text from './Text';
 
 interface BookshelfPieceProps {
   position: {
@@ -16,10 +16,11 @@ interface BookshelfPieceProps {
     z: number;
   };
   udk: Array<number>;
+  type: any;
 }
 
-const BookshelfPiece: FC<BookshelfPieceProps> = ({ position, rotation = { x: 0, y: 0, z: 0 }, udk }) => {
-  const { nodes, materials }: any = useGLTF(bookshelf);
+const BookshelfPiece: FC<BookshelfPieceProps> = ({ position, type, rotation = { x: 0, y: 0, z: 0 }, udk }) => {
+  const { nodes, materials }: any = useGLTF(type);
 
   return (
     <>
@@ -27,7 +28,7 @@ const BookshelfPiece: FC<BookshelfPieceProps> = ({ position, rotation = { x: 0, 
         castShadow
         receiveShadow
         geometry={nodes.Cube.geometry}
-        material={materials["CubeMaterial"]}
+        material={materials['CubeMaterial']}
         position={[position.x, position.y, position.z]}
         rotation={[rotation.x, rotation.y, rotation.z]}
       />
