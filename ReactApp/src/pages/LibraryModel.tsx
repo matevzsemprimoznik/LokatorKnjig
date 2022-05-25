@@ -10,11 +10,11 @@ const FirstPersonViewIconUrl = '../../images/360-view.png';
 
 const LibraryModel = () => {
   const { selected } = useParams();
-  const { modelType, setModelType } = useContext(ModelContext);
+  const { modelType, setModelType, previousModelType } = useContext(ModelContext);
 
   const onClick = () => {
-    if (modelType === ModelType._3D) setModelType(ModelType._2D);
-    else setModelType(ModelType._3D);
+    if (modelType !== ModelType._2D) setModelType(ModelType._2D);
+    else setModelType(previousModelType);
   };
 
   const switchFromFirstPersonTo360View = () => {

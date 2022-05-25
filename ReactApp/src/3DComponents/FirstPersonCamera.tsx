@@ -1,21 +1,26 @@
 import { OrbitControls, OrbitControlsProps, PerspectiveCamera } from '@react-three/drei';
 import { ModelType } from '../context/modelContext';
-import React, { Ref, useEffect, useRef, useState } from 'react';
+import React, { FC, Ref, useEffect, useRef, useState } from 'react';
 import { PerspectiveCameraProps, useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 import { MathUtils, Quaternion, Vector3 } from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
-const FirstPersonCamera = () => {
+interface FirstPersonCameraProps {
+  position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+}
+const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2, z: 10 } }) => {
   const cameraRef = useRef<PerspectiveCameraProps>(null);
   const _euler = new THREE.Euler(0, 0, 0, 'YXZ');
-  const targetCameraPosition = useRef(new Vector3(0, 2, 10));
+  const targetCameraPosition = useRef(new Vector3(position.x, position.y, position.z));
   const cameraRotationOnYAxis = useRef(0);
   const isDragEventOn = useRef(false);
 
   const onMouseMove = (event: MouseEvent) => {
-    console.log('dela');
-
     isDragEventOn.current = true;
     if (cameraRef.current != null) {
       const minPolarAngle = 0;
@@ -42,8 +47,6 @@ const FirstPersonCamera = () => {
   let t = 0;
   let dt = 0.02;
   const moveCameraForward = (distance: number) => {
-    console.log(isDragEventOn);
-
     if (isDragEventOn.current) return (isDragEventOn.current = false);
 
     if (cameraRef.current && cameraRef.current.position instanceof Vector3) {
@@ -98,7 +101,7 @@ const FirstPersonCamera = () => {
   }, []);
   return (
     <>
-      <PerspectiveCamera makeDefault={true} ref={cameraRef} position={[0, 2, 10]} far={60} />
+      <PerspectiveCamera makeDefault={true} ref={cameraRef} position={[position.x, position.y, position.z]} far={60} />
     </>
   );
 };

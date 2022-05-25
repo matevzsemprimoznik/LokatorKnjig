@@ -17,7 +17,7 @@ interface ModelProps {
 
 const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
   const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
-  const perspectiveCameraPositionRef = useRef({ x: 0, y: 5, z: 10 });
+  const targetCameraPosition = useRef({ x: 0, y: 5, z: 10 });
   //const orbitControlsRef = useRef<OrbitControlsProps>(null);
 
   // useFrame(() => {
@@ -96,14 +96,14 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
   // };)
 
   const moveCameraToDoubleClickedPoint = (event: ThreeEvent<MouseEvent>) => {
-    perspectiveCameraPositionRef.current = { ...event.point, y: 2 };
+    targetCameraPosition.current = { ...event.point, y: 2 };
     setModelType(ModelType.FIRST_PERSON);
   };
 
   return (
     <>
       {modelType === ModelType.FIRST_PERSON ? (
-        <FirstPersonCamera />
+        <FirstPersonCamera position={targetCameraPosition.current} />
       ) : (
         <>
           <OrbitControls
@@ -124,11 +124,7 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
           />
           <PerspectiveCamera
             makeDefault={modelType === ModelType._3D}
-            position={[
-              perspectiveCameraPositionRef.current.x,
-              perspectiveCameraPositionRef.current.y,
-              perspectiveCameraPositionRef.current.z,
-            ]}
+            position={[targetCameraPosition.current.x, targetCameraPosition.current.y, targetCameraPosition.current.z]}
             far={60}
             ref={perspectiveCameraRef}
           />
