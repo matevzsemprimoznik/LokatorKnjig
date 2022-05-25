@@ -8,7 +8,7 @@ import selectedBookshelf from '../assets/selectedBookshelf.glb';
 interface BookShelfsProps {
   selectedUDK: string;
 }
-export const Model3D: FC<BookShelfsProps> = ({ selectedUDK }) => {
+const Model3D: FC<BookShelfsProps> = ({ selectedUDK }) => {
   const getSelectedUDKPositions = () => {
     const bookshelves = data.police.filter((polica: any, index: number) =>
       polica.udk.some((udk: any) => udk.toString() === selectedUDK.toString())
@@ -84,3 +84,5 @@ export const Model3D: FC<BookShelfsProps> = ({ selectedUDK }) => {
     </>
   );
 };
+
+export const MemoizedModel3D = memo(Model3D);

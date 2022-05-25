@@ -1,9 +1,9 @@
 import { FirstPersonControls, OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
 import Floor from './Floor';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { ModelType } from '../context/modelContext';
-import { Model3D as MemoizedModel3D } from './Model3D';
+import { MemoizedModel3D } from './Model3D';
 import Model2D from './Model2D';
 import { Raycaster } from 'three';
 import { PerspectiveCameraProps, ThreeEvent } from 'react-three-fiber';
@@ -136,7 +136,7 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
         </>
       )}
 
-      <ambientLight intensity={modelType === ModelType._2D ? 1.3 : 0.3} />
+      <ambientLight intensity={0.3} />
       <directionalLight
         castShadow
         position={[5, 10, 0]}
@@ -149,14 +149,13 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
         shadow-camera-top={10}
         shadow-camera-bottom={-10}
       />
-      {modelType !== ModelType._2D && (
-        <>
-          <pointLight position={[-10, 0, -20]} intensity={0.5} />
-          <pointLight position={[0, -10, 0]} intensity={1.5} />
-        </>
-      )}
 
-      {modelType === ModelType._2D ? <Model2D selected={selected} /> : <MemoizedModel3D selectedUDK={selected} />}
+      <>
+        <pointLight position={[-10, 0, -20]} intensity={0.5} />
+        <pointLight position={[0, -10, 0]} intensity={1.5} />
+      </>
+
+      <MemoizedModel3D selectedUDK={selected} />
 
       <Floor position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
     </>
