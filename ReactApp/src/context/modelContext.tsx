@@ -1,22 +1,37 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 
 export enum ModelType {
-  _2D ='2D' ,
-  _3D = '3D'
-};
+  _2D = '2D',
+  _3D = '3D',
+  FIRST_PERSON = 'FIRST_PERSON',
+}
 
 export type ModelContextType = {
   modelType: ModelType;
+  previousModelType: ModelType;
   setModelType: (modelType: ModelType) => void;
 };
 
-export const ModelContext = createContext<ModelContextType>({ modelType: ModelType._3D, setModelType: () => {} });
+export const ModelContext = createContext<ModelContextType>({
+  modelType: ModelType._3D,
+  previousModelType: ModelType._3D,
+  setModelType: () => {},
+});
 
 const ModelProvider = ({ children }: any) => {
-  const [modelType, setModelType] = useState<ModelType>(ModelType._3D);
-  console.log(modelType)
+  const previousModelType = useRef<ModelType>(ModelType._3D);
+  const [modelType, setModelTypeState] = useState<ModelType>(ModelType._3D);
 
-  return <ModelContext.Provider value={{ modelType, setModelType }}>{children}</ModelContext.Provider>;
+  const setModelType = (tempModelType: ModelType) => {
+    previousModelType.current = modelType;
+    setModelTypeState(tempModelType);
+  };
+
+  return (
+    <ModelContext.Provider value={{ modelType, setModelType, previousModelType: previousModelType.current }}>
+      {children}
+    </ModelContext.Provider>
+  );
 };
 
 export default ModelProvider;

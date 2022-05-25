@@ -1,15 +1,12 @@
 import { FirstPersonControls, OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
 import Floor from './Floor';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { ModelType } from '../context/modelContext';
-import { Model3D as MemoizedModel3D } from './Model3D';
-import Model2D from './Model2D';
+import { MemoizedModel3D } from './Model3D';
 import { Raycaster } from 'three';
 import { PerspectiveCameraProps, ThreeEvent } from 'react-three-fiber';
-import Text from './Text';
-import EntranceText from './EntranceText';
-import data from "../data.json";
+import FirstPersonCamera from './FirstPersonCamera';
 
 interface ModelProps {
   selected: any;
@@ -19,7 +16,7 @@ interface ModelProps {
 
 const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
   const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
-  const perspectiveCameraPositionRef = useRef({ x: 0, y: 5, z: 10 });
+  const targetCameraPosition = useRef({ x: 0, y: 2, z: 10 });
   //const orbitControlsRef = useRef<OrbitControlsProps>(null);
 
   // useFrame(() => {
@@ -98,26 +95,43 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
   // };)
 
   const moveCameraToDoubleClickedPoint = (event: ThreeEvent<MouseEvent>) => {
-    perspectiveCameraPositionRef.current = { ...event.point, y: 2 };
-    setModelType(ModelType._3D);
+    targetCameraPosition.current = { ...event.point, y: 2 };
+    setModelType(ModelType.FIRST_PERSON);
   };
 
   return (
     <>
-        {data.vhodi.map((vhod:any, index: number) => <EntranceText key={index} position={{ ...vhod.pozicija }}/>)}
+      {modelType === ModelType.FIRST_PERSON ? (
+        <FirstPersonCamera position={targetCameraPosition.current} />
+      ) : (
+        <>
+          <OrbitControls
+            enableRotate={modelType === ModelType._3D}
+            mouseButtons={
+              modelType === ModelType._2D
+                ? {
+                    LEFT: THREE.MOUSE.RIGHT,
+                    MIDDLE: THREE.MOUSE.MIDDLE,
+                    RIGHT: THREE.MOUSE.LEFT,
+                  }
+                : {
+                    LEFT: THREE.MOUSE.LEFT,
+                    MIDDLE: THREE.MOUSE.MIDDLE,
+                    RIGHT: THREE.MOUSE.RIGHT,
+                  }
+            }
+          />
+          <PerspectiveCamera
+            makeDefault={modelType === ModelType._3D}
+            position={[targetCameraPosition.current.x, targetCameraPosition.current.y, targetCameraPosition.current.z]}
+            far={60}
+            ref={perspectiveCameraRef}
+          />
+          <OrthographicCamera makeDefault={modelType === ModelType._2D} position={[0, 10, 0]} zoom={26} />
+        </>
+      )}
 
-      <PerspectiveCamera
-        makeDefault={modelType === ModelType._3D}
-        position={[
-          perspectiveCameraPositionRef.current.x,
-          perspectiveCameraPositionRef.current.y,
-          perspectiveCameraPositionRef.current.z,
-        ]}
-        far={60}
-        ref={perspectiveCameraRef}
-      />
-      <OrthographicCamera makeDefault={modelType === ModelType._2D} position={[0, 10, 0]} zoom={26} />
-      <ambientLight intensity={modelType === ModelType._2D ? 1.3 : 0.3} />
+      <ambientLight intensity={0.3} />
       <directionalLight
         castShadow
         position={[5, 10, 0]}
@@ -130,32 +144,15 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
         shadow-camera-top={10}
         shadow-camera-bottom={-10}
       />
-      {modelType === ModelType._3D && (
-        <>
-          <pointLight position={[-10, 0, -20]} intensity={0.5} />
-          <pointLight position={[0, -10, 0]} intensity={1.5} />
-        </>
-      )}
 
-      {modelType === ModelType._3D ? <MemoizedModel3D selectedUDK={selected} /> : <Model2D selected={selected} />}
+      <>
+        <pointLight position={[-10, 0, -20]} intensity={0.5} />
+        <pointLight position={[0, -10, 0]} intensity={1.5} />
+      </>
+
+      <MemoizedModel3D selectedUDK={selected} />
 
       <Floor position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
-      <OrbitControls
-        enableRotate={modelType === ModelType._3D}
-        mouseButtons={
-          modelType === ModelType._2D
-            ? {
-                LEFT: THREE.MOUSE.RIGHT,
-                MIDDLE: THREE.MOUSE.MIDDLE,
-                RIGHT: THREE.MOUSE.LEFT,
-              }
-            : {
-                LEFT: THREE.MOUSE.LEFT,
-                MIDDLE: THREE.MOUSE.MIDDLE,
-                RIGHT: THREE.MOUSE.RIGHT,
-              }
-        }
-      />
     </>
   );
 };
