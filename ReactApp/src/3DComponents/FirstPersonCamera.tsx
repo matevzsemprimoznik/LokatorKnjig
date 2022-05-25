@@ -19,6 +19,7 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
   const targetCameraPosition = useRef(new Vector3(position.x, position.y, position.z));
   const cameraRotationOnYAxis = useRef(0);
   const isDragEventOn = useRef(false);
+  const isCameraMoving = useRef(false);
 
   const onMouseMove = (event: MouseEvent) => {
     isDragEventOn.current = true;
@@ -47,9 +48,10 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
   let t = 0;
   let dt = 0.02;
   const moveCameraForward = (distance: number) => {
-    if (isDragEventOn.current) return (isDragEventOn.current = false);
+    if (isDragEventOn.current || isCameraMoving.current) return (isDragEventOn.current = false);
 
     if (cameraRef.current && cameraRef.current.position instanceof Vector3) {
+      isCameraMoving.current = true;
       const cameraCurrentPosition = cameraRef.current.position;
 
       const delta = {
@@ -83,6 +85,7 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
       if (!cameraRef.current.position.equals(targetCameraPosition.current)) {
         loop();
       } else {
+        isCameraMoving.current = false;
         t = 0;
         dt = 0.02;
       }

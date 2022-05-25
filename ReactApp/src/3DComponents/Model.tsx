@@ -16,7 +16,7 @@ interface ModelProps {
 
 const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
   const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
-  const targetCameraPosition = useRef({ x: 0, y: 5, z: 10 });
+  const targetCameraPosition = useRef({ x: 0, y: 2, z: 10 });
   //const orbitControlsRef = useRef<OrbitControlsProps>(null);
 
   // useFrame(() => {
