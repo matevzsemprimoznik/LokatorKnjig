@@ -6,7 +6,6 @@ import { Canvas } from 'react-three-fiber';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LibraryModel from './pages/LibraryModel';
 import { useState } from 'react';
-import Model2D from './3DComponents/Model2D';
 import { ModelShape } from '@babylonjs/core/Particles/solidParticle';
 import Home from './pages/Home';
 import './index.css';

@@ -4,7 +4,6 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { ModelType } from '../context/modelContext';
 import { MemoizedModel3D } from './Model3D';
-import Model2D from './Model2D';
 import { Raycaster } from 'three';
 import { PerspectiveCameraProps, ThreeEvent } from 'react-three-fiber';
 import FirstPersonCamera from './FirstPersonCamera';
