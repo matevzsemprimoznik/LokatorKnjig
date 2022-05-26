@@ -30,6 +30,7 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
       ) : (
         <>
           <OrbitControls
+              maxPolarAngle={Math.PI / 2 - 0.1}
             enableRotate={modelType === ModelType._3D}
             mouseButtons={
               modelType === ModelType._2D
