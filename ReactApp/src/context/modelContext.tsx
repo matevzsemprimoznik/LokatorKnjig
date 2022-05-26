@@ -13,14 +13,14 @@ export type ModelContextType = {
 };
 
 export const ModelContext = createContext<ModelContextType>({
-  modelType: ModelType._3D,
-  previousModelType: ModelType._3D,
+  modelType: ModelType._2D,
+  previousModelType: ModelType._2D,
   setModelType: () => {},
 });
 
 const ModelProvider = ({ children }: any) => {
-  const previousModelType = useRef<ModelType>(ModelType._3D);
-  const [modelType, setModelTypeState] = useState<ModelType>(ModelType._3D);
+  const previousModelType = useRef<ModelType>(ModelType._2D);
+  const [modelType, setModelTypeState] = useState<ModelType>(ModelType._2D);
 
   const setModelType = (tempModelType: ModelType) => {
     previousModelType.current = modelType;

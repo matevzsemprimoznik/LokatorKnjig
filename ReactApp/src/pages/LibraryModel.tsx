@@ -1,8 +1,8 @@
-import { useContext } from 'react';
-import { useParams } from 'react-router-dom';
-import { Canvas } from 'react-three-fiber';
+import {useContext} from 'react';
+import {useParams} from 'react-router-dom';
+import {Canvas} from 'react-three-fiber';
 import Button from '../components/Button';
-import { ModelContext, ModelType } from '../context/modelContext';
+import {ModelContext, ModelType} from '../context/modelContext';
 import Model from '../3DComponents/Model';
 
 const RotateIconUrl = '../../images/rotate.png';
@@ -14,7 +14,7 @@ const LibraryModel = () => {
 
   const onClick = () => {
     if (modelType !== ModelType._2D) setModelType(ModelType._2D);
-    else setModelType(previousModelType);
+    else setModelType(ModelType._3D);
   };
 
   const switchFromFirstPersonTo360View = () => {
