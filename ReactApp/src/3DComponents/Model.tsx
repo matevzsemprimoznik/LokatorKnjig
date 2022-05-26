@@ -16,83 +16,7 @@ interface ModelProps {
 
 const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
   const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
-  const targetCameraPosition = useRef({ x: 0, y: 2, z: 10 });
-  //const orbitControlsRef = useRef<OrbitControlsProps>(null);
-
-  // useFrame(() => {
-  //     if (triggerSwitchFrom3dTo2d.current) {
-  //         triggerSwitchFrom3dTo2d.current = false;
-  //         // @ts-ignore
-  //         orbitControlsRef.current.enableZoom = true;
-  //         setDefaultCamera('ortographic');
-  //     };
-  // });
-
-  // useEffect(() => {
-  //     if (!isFirstRender.current) triggerSwitchFrom3dTo2d.current = true;
-  //     isFirstRender.current = false;
-  // }, [modelType]);
-  //
-  // const moveCameraTo2dView = (speed: number) => {
-  //     if (
-  //         orbitControlsRef.current == null ||
-  //         perspectiveCameraRef.current == null ||
-  //         perspectiveCameraRef.current.position == null ||
-  //         !(perspectiveCameraRef.current.position instanceof THREE.Vector3)
-  //     )
-  //         return;
-  //
-  //     orbitControlsRef.current.enableZoom = false;
-  //     orbitControlsRef.current.enableRotate = false;
-  //
-  //     const position = perspectiveCameraRef.current.position;
-  //
-  //     const azimuthalAngle = orbitControlsRef.current.getAzimuthalAngle();
-  //     const polarAngle = orbitControlsRef.current.getPolarAngle();
-  //
-  //     if (Math.abs(azimuthalAngle) < 0.1 && Math.abs(polarAngle) < 0.1 && position?.y > 30) {
-  //         triggerSwitchFrom3dTo2d.current = false;
-  //         orbitControlsRef.current.enableZoom = true;
-  //         setDefaultCamera('ortographic');
-  //         return;
-  //     }
-  //     if (azimuthalAngle < -speed) orbitControlsRef.current.setAzimuthalAngle(azimuthalAngle + speed);
-  //     else if (azimuthalAngle > speed) orbitControlsRef.current.setAzimuthalAngle(azimuthalAngle - speed);
-  //     if (polarAngle < -speed) orbitControlsRef.current.setPolarAngle(polarAngle + speed);
-  //     else if (polarAngle > speed) orbitControlsRef.current.setPolarAngle(polarAngle - speed);
-  //     console.log(Math.abs(azimuthalAngle), polarAngle);
-  //
-  //     if (Math.abs(azimuthalAngle) <= speed) {
-  //         const direction = azimuthalAngle / Math.abs(azimuthalAngle);
-  //         orbitControlsRef.current.setAzimuthalAngle(
-  //             Number.isNaN(direction) ? 0 : direction * (Math.abs(azimuthalAngle) - 0.1)
-  //         );
-  //     }
-  //
-  //     if (Math.abs(polarAngle) <= speed) {
-  //         const direction = polarAngle / Math.abs(polarAngle);
-  //         orbitControlsRef.current.setPolarAngle(Number.isNaN(direction) ? 0 : direction * (Math.abs(polarAngle) - 0.1));
-  //     }
-  //
-  //     if (position.y < 30) perspectiveCameraRef.current.position.y += speed;
-  // };
-
-  // const canvas = document.getElementsByClassName('canvas')[0]
-  // const raycaster = new THREE.Raycaster()
-  // const mousePosition = new THREE.Vector2();
-  //
-  // canvas.addEventListener('click', function getClicked3DPoint(evt:any) {
-  //     evt.preventDefault();
-  //
-  //     mousePosition.x = ((evt.clientX - canvasPosition.left) / 1920) * 2 - 1;
-  //     mousePosition.y = -((evt.clientY - canvasPosition.top) / 500) * 2 + 1;
-  //
-  //     raycaster.setFromCamera(mousePosition, perspectiveCameraRef.current);
-  //     var intersects = raycaster.intersectObjects(scene.getObjectByName('MyObj_s').children, true);
-  //
-  //     if (intersects.length > 0)
-  //         return intersects[0].point;
-  // };)
+  const targetCameraPosition = useRef({ x: -10, y: 7, z: 15 });
 
   const moveCameraToDoubleClickedPoint = (event: ThreeEvent<MouseEvent>) => {
     targetCameraPosition.current = { ...event.point, y: 2 };
@@ -228,3 +152,80 @@ export default Model;
   if (selectedUDK == '') {
     getClosestUDK();
   } */
+
+  //const orbitControlsRef = useRef<OrbitControlsProps>(null);
+
+  // useFrame(() => {
+  //     if (triggerSwitchFrom3dTo2d.current) {
+  //         triggerSwitchFrom3dTo2d.current = false;
+  //         // @ts-ignore
+  //         orbitControlsRef.current.enableZoom = true;
+  //         setDefaultCamera('ortographic');
+  //     };
+  // });
+
+  // useEffect(() => {
+  //     if (!isFirstRender.current) triggerSwitchFrom3dTo2d.current = true;
+  //     isFirstRender.current = false;
+  // }, [modelType]);
+  //
+  // const moveCameraTo2dView = (speed: number) => {
+  //     if (
+  //         orbitControlsRef.current == null ||
+  //         perspectiveCameraRef.current == null ||
+  //         perspectiveCameraRef.current.position == null ||
+  //         !(perspectiveCameraRef.current.position instanceof THREE.Vector3)
+  //     )
+  //         return;
+  //
+  //     orbitControlsRef.current.enableZoom = false;
+  //     orbitControlsRef.current.enableRotate = false;
+  //
+  //     const position = perspectiveCameraRef.current.position;
+  //
+  //     const azimuthalAngle = orbitControlsRef.current.getAzimuthalAngle();
+  //     const polarAngle = orbitControlsRef.current.getPolarAngle();
+  //
+  //     if (Math.abs(azimuthalAngle) < 0.1 && Math.abs(polarAngle) < 0.1 && position?.y > 30) {
+  //         triggerSwitchFrom3dTo2d.current = false;
+  //         orbitControlsRef.current.enableZoom = true;
+  //         setDefaultCamera('ortographic');
+  //         return;
+  //     }
+  //     if (azimuthalAngle < -speed) orbitControlsRef.current.setAzimuthalAngle(azimuthalAngle + speed);
+  //     else if (azimuthalAngle > speed) orbitControlsRef.current.setAzimuthalAngle(azimuthalAngle - speed);
+  //     if (polarAngle < -speed) orbitControlsRef.current.setPolarAngle(polarAngle + speed);
+  //     else if (polarAngle > speed) orbitControlsRef.current.setPolarAngle(polarAngle - speed);
+  //     console.log(Math.abs(azimuthalAngle), polarAngle);
+  //
+  //     if (Math.abs(azimuthalAngle) <= speed) {
+  //         const direction = azimuthalAngle / Math.abs(azimuthalAngle);
+  //         orbitControlsRef.current.setAzimuthalAngle(
+  //             Number.isNaN(direction) ? 0 : direction * (Math.abs(azimuthalAngle) - 0.1)
+  //         );
+  //     }
+  //
+  //     if (Math.abs(polarAngle) <= speed) {
+  //         const direction = polarAngle / Math.abs(polarAngle);
+  //         orbitControlsRef.current.setPolarAngle(Number.isNaN(direction) ? 0 : direction * (Math.abs(polarAngle) - 0.1));
+  //     }
+  //
+  //     if (position.y < 30) perspectiveCameraRef.current.position.y += speed;
+  // };
+
+  // const canvas = document.getElementsByClassName('canvas')[0]
+  // const raycaster = new THREE.Raycaster()
+  // const mousePosition = new THREE.Vector2();
+  //
+  // canvas.addEventListener('click', function getClicked3DPoint(evt:any) {
+  //     evt.preventDefault();
+  //
+  //     mousePosition.x = ((evt.clientX - canvasPosition.left) / 1920) * 2 - 1;
+  //     mousePosition.y = -((evt.clientY - canvasPosition.top) / 500) * 2 + 1;
+  //
+  //     raycaster.setFromCamera(mousePosition, perspectiveCameraRef.current);
+  //     var intersects = raycaster.intersectObjects(scene.getObjectByName('MyObj_s').children, true);
+  //
+  //     if (intersects.length > 0)
+  //         return intersects[0].point;
+  // };)

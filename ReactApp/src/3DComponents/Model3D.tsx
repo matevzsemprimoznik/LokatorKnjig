@@ -11,7 +11,7 @@ interface BookShelfsProps {
 const Model3D: FC<BookShelfsProps> = ({ selectedUDK }) => {
   const getSelectedUDKPositions = () => {
     const bookshelves = data.police.filter((polica: any, index: number) =>
-      polica.udk.some((udk: any) => udk.toString() === selectedUDK.toString())
+      polica.udk.some((udk: any) => udk.toString() === selectedUDK)
     );
     const positions: any = [];
     bookshelves.forEach((bookshelf: any, index: number) => {
@@ -29,7 +29,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK }) => {
   return (
     <>
       {data.police.map((polica: any, index: number) =>
-        polica.udk.some((udk: any) => udk.toString() === selectedUDK.toString()) ? (
+        polica.udk.some((udk: any) => udk.toString() === selectedUDK) ? (
           <BookshelfPiece
             type={selectedBookshelf}
             key={index}
