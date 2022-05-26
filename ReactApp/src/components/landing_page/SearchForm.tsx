@@ -4,7 +4,7 @@ import '../../styles/landing_page/SearchForm.css';
 
 const SearchForm = () => {
     const [searchedUDK, setSearchedUDK] = React.useState("");
-    let history = useNavigate();
+    let navigate = useNavigate();
 
     const handleUDKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchedUDK(e.currentTarget.value);
@@ -12,7 +12,7 @@ const SearchForm = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         let link = "/library-model/" + searchedUDK;
-        history(link);
+        navigate(link);
     }
 
     return (
