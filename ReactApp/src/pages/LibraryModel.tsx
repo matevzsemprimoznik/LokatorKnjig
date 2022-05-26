@@ -24,16 +24,18 @@ const LibraryModel = () => {
 
   return (
     <>
-      <Canvas>
-        <Model selected={selected} modelType={modelType} setModelType={setModelType} />
-      </Canvas>
+      <div style={{height: "90vh"}}>
+        <Canvas>
+          <Model selected={selected} modelType={modelType} setModelType={setModelType} />
+        </Canvas>
+      </div>
       <Button
-        position={{ top: 2, right: 2 }}
+        position={{ top: 8, right: 2 }}
         onClick={onClick}
         text={modelType === ModelType._2D ? ModelType._3D : ModelType._2D}
       />
       <Button
-        position={{ top: 8, right: 2 }}
+        position={{ top: 14, right: 2 }}
         onClick={switchFromFirstPersonTo360View}
         image={modelType === ModelType.FIRST_PERSON ? RotateIconUrl : FirstPersonViewIconUrl}
       />

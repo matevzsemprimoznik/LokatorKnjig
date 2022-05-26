@@ -11,10 +11,10 @@ const Home = () => {
   return (
     <>
       <div className='app-container'>
-        <Header />
+        {/*<Header /> */}
         <Banner />
         <SearchForm />
-        <EditSection />
+        {/*<EditSection />*/}
         <LibrariesInfoSection />
         <Footer />
       </div>

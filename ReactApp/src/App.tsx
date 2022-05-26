@@ -10,11 +10,13 @@ import { ModelShape } from '@babylonjs/core/Particles/solidParticle';
 import Home from './pages/Home';
 import './index.css';
 import ModelProvider from './context/modelContext';
+import Header from './components/landing_page/Header';
 
 function App() {
   return (
     <ModelProvider>
       <BrowserRouter>
+        <Header />
         <Routes>
           <Route path='/library-model'>
             <Route path=':selected' element={<LibraryModel />}></Route>
