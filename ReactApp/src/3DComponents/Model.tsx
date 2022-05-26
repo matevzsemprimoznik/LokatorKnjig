@@ -7,6 +7,8 @@ import { MemoizedModel3D } from './Model3D';
 import { Raycaster } from 'three';
 import { PerspectiveCameraProps, ThreeEvent } from 'react-three-fiber';
 import FirstPersonCamera from './FirstPersonCamera';
+import EntranceText from "./EntranceText";
+import data from '../data.json'
 
 interface ModelProps {
   selected: any;
@@ -25,6 +27,7 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
 
   return (
     <>
+      {data.vhodi.map((vhod:any, index: number) => <EntranceText key={index} position={{ ...vhod.pozicija }}/>)}
       {modelType === ModelType.FIRST_PERSON ? (
         <FirstPersonCamera position={targetCameraPosition.current} />
       ) : (
