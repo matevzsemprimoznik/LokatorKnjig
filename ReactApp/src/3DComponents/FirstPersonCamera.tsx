@@ -5,6 +5,7 @@ import { PerspectiveCameraProps, useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 import { MathUtils, Quaternion, Vector3 } from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import data from '../data.json';
 
 interface FirstPersonCameraProps {
   position: {
@@ -20,6 +21,22 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
   const cameraRotationOnYAxis = useRef(0);
   const isDragEventOn = useRef(false);
   const isCameraMoving = useRef(false);
+
+  const vector1 = {
+    x: 0,
+    z: -1,
+  };
+  const vector2 = {
+    x: 0 - data.vhodi[0].pozicija.x,
+    z: 0 - data.vhodi[0].pozicija.z,
+  };
+
+  const angle = Math.acos(
+    (vector1.x * vector2.x + vector1.z * vector2.z) /
+      (Math.sqrt(vector1.x * vector1.x + vector1.z * vector1.z) *
+        Math.sqrt(vector2.x * vector2.x + vector2.z * vector2.z))
+  );
+  _euler.y = angle * (data.vhodi[0].pozicija.x < 0 ? -1 : 1);
 
   const onMouseMove = (event: MouseEvent) => {
     isDragEventOn.current = true;
@@ -104,7 +121,13 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
   }, []);
   return (
     <>
-      <PerspectiveCamera makeDefault={true} ref={cameraRef} position={[position.x, position.y, position.z]} far={60} />
+      <PerspectiveCamera
+        rotation={[_euler.x, _euler.y, _euler.z]}
+        makeDefault={true}
+        ref={cameraRef}
+        position={[position.x, position.y, position.z]}
+        far={60}
+      />
     </>
   );
 };
