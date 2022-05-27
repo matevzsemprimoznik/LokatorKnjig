@@ -334,6 +334,7 @@ const Canvas = () => {
             } else if (drawingElement === DrawingElement.BOOKSHELF) {
                 setAction(ActionTypes.DRAWING);
                 setDrawingElement(drawingElement);
+                setLeftDivOpen(!leftDivOpen);
             }
 
         }
@@ -433,6 +434,9 @@ const Canvas = () => {
         const handleSubmit = (e: any) => {
             e.preventDefault();
             setDrawingBlock(true);
+            if (action !== ActionTypes.DRAWING) {
+                setAction(ActionTypes.DRAWING);
+            }
         }
 
         const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -452,34 +456,39 @@ const Canvas = () => {
         return (
             <>
                 <div className="topDiv">
-                    <div className={`topDiv-element${(radio===0) ? '--checked' : ''}`} onClick={handleElementSelection}>
+                    <div className={`topDiv-element${(radio === 0) ? '--checked' : ''}`} onClick={handleElementSelection}>
                         <input id="radio-select" type="radio" name="action-selection" className="topDiv-elementRadio"
                                onChange={handleRadioChange} value="0"/>
                         <label htmlFor="radio-select">
-                        <svg viewBox="0 0 320 512" className={`${(radio===0) ? 'topDiv-element-svgWhite' : 'topDiv-element-svgBlack'}`}>
-                            <path
-                                d="M302.189 329.126H196.105l55.831 135.993c3.889 9.428-.555 19.999-9.444 23.999l-49.165 21.427c-9.165 4-19.443-.571-23.332-9.714l-53.053-129.136-86.664 89.138C18.729 472.71 0 463.554 0 447.977V18.299C0 1.899 19.921-6.096 30.277 5.443l284.412 292.542c11.472 11.179 3.007 31.141-12.5 31.141z"></path>
-                        </svg>
-                    </label>
+                            <svg viewBox="0 0 320 512"
+                                 className={`${(radio === 0) ? 'topDiv-element-svgWhite' : 'topDiv-element-svgBlack'}`}>
+                                <path
+                                    d="M302.189 329.126H196.105l55.831 135.993c3.889 9.428-.555 19.999-9.444 23.999l-49.165 21.427c-9.165 4-19.443-.571-23.332-9.714l-53.053-129.136-86.664 89.138C18.729 472.71 0 463.554 0 447.977V18.299C0 1.899 19.921-6.096 30.277 5.443l284.412 292.542c11.472 11.179 3.007 31.141-12.5 31.141z"></path>
+                            </svg>
+                        </label>
                     </div>
-                    <div className={`topDiv-element${(radio===1) ? '--checked' : ''}`} onClick={() => handleDrawingSelection(DrawingElement.WALL)}>
+                    <div className={`topDiv-element${(radio === 1) ? '--checked' : ''}`}
+                         onClick={() => handleDrawingSelection(DrawingElement.WALL)}>
                         <input id="radio-drawLine" type="radio" name="action-selection" className="topDiv-elementRadio"
                                onChange={handleRadioChange} value="1"/>
                         <label htmlFor="radio-drawLine">
-                        <svg viewBox="0 0 6 6" className={`${(radio===1) ? 'topDiv-element-svgWhite' : 'topDiv-element-svgBlack'}`}>
-                            <line x1="0" y1="3" x2="6" y2="3" stroke="currentColor" strokeLinecap="round"></line>
-                        </svg>
-                    </label>
+                            <svg viewBox="0 0 6 6"
+                                 className={`${(radio === 1) ? 'topDiv-element-svgWhite' : 'topDiv-element-svgBlack'}`}>
+                                <line x1="0" y1="3" x2="6" y2="3" stroke="currentColor" strokeLinecap="round"></line>
+                            </svg>
+                        </label>
                     </div>
-                    <div className={`topDiv-element${(radio===2) ? '--checked' : ''}`} onClick={() => setLeftDivOpen(!leftDivOpen)}>
+                    <div className={`topDiv-element${(radio === 2) ? '--checked' : ''}`}
+                         onClick={() => handleDrawingSelection(DrawingElement.BOOKSHELF)}>
                         <input id="radio-drawRect" type="radio" name="action-selection" className="topDiv-elementRadio"
                                onChange={handleRadioChange} value="2"/>
                         <label htmlFor="radio-drawRect">
-                        <svg viewBox="0 0 448 512" className={`${(radio===2) ? 'topDiv-element-svgWhite' : 'topDiv-element-svgBlack'}`}>
-                            <path
-                                d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48z"></path>
-                        </svg>
-                    </label>
+                            <svg viewBox="0 0 448 512"
+                                 className={`${(radio === 2) ? 'topDiv-element-svgWhite' : 'topDiv-element-svgBlack'}`}>
+                                <path
+                                    d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48z"></path>
+                            </svg>
+                        </label>
                     </div>
                     <div className={`topDiv-element`} onClick={handleElementDelete}>
                         <input id="radio-delete" type="radio" name="action-selection" className="topDiv-elementRadio"
@@ -496,23 +505,26 @@ const Canvas = () => {
                 {leftDivOpen && (
                     <div className="leftDiv">
                         <form onSubmit={handleSubmit} className="form">
-                            <div className="inputContainer">
-                                <label htmlFor='ime'>Police v dolžino : </label>
-                                <input name="sh_length" id="sh_rotation" type="number" min="1" value={bs_details.sh_length}
-                                       onChange={handleChange}/>
-                            </div>
-                            <div className="inputContainer">
-                                <label htmlFor='ime'>Število polic v višino : </label>
-                                <input name="sh_height" id="sh_height" type="number" min="1" value={bs_details.sh_height}
-                                       onChange={handleChange}/>
-                            </div>
-                            <div className="inputContainer">
-                                <label htmlFor='ime'>Rotacija : </label>
-                                <input name="sh_rotation" id="sh_rotation" type="range" min="0" max="3"
-                                       value={bs_details.sh_rotation} step="1" onChange={handleChange}/>
-                            </div>
-                            <img className="image" src={sh_image} alt="Usmerjenost police"/>
-                            <button onClick={() => handleDrawingSelection(DrawingElement.BOOKSHELF)}> Vstavi omaro</button>
+
+                                    <div className="inputContainer">
+                                        <label htmlFor='sh_rotation'>Police v dolžino : </label>
+                                        <input name="sh_length" id="sh_rotation" type="number" min="1"
+                                               value={bs_details.sh_length}
+                                               onChange={handleChange}/>
+                                    </div>
+                                    <div className="inputContainer">
+                                        <label htmlFor='sh_height'>Število polic v višino : </label>
+                                        <input name="sh_height" id="sh_height" type="number" min="1"
+                                               value={bs_details.sh_height}
+                                               onChange={handleChange}/>
+                                    </div>
+                                    <div className="inputContainer">
+                                        <label htmlFor='sh_rotation'>Rotacija : </label>
+                                        <input name="sh_rotation" id="sh_rotation" type="range" min="0" max="3"
+                                               value={bs_details.sh_rotation} step="1" onChange={handleChange}/>
+                                    </div>
+                                    <img className="image" src={sh_image} alt="Usmerjenost police"/>
+                                    <button type="submit"> Vstavi omaro</button>
                         </form>
                     </div>
                 )}
