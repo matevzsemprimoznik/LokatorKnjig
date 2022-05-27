@@ -1,14 +1,14 @@
-import { FirstPersonControls, OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
 import Floor from './Floor';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { ModelType } from '../context/modelContext';
 import { MemoizedModel3D } from './Model3D';
-import { Raycaster } from 'three';
-import { PerspectiveCameraProps, ThreeEvent } from 'react-three-fiber';
+import { OrthographicCameraProps, PerspectiveCameraProps, ThreeEvent } from 'react-three-fiber';
 import FirstPersonCamera from './FirstPersonCamera';
-import EntranceText from "./EntranceText";
-import data from '../data.json'
+import EntranceText from './EntranceText';
+import data from '../data.json';
+import { Vector3 } from 'three';
 
 interface ModelProps {
   selected: any;
@@ -18,7 +18,10 @@ interface ModelProps {
 
 const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
   const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
-  const targetCameraPosition = useRef({ x: -10, y: 7, z: 15 });
+  const targetCameraPosition = useRef({ ...data.vhodi[0].pozicija, y: 2 });
+  const ortographicCameraRef = useRef<OrthographicCameraProps>(null);
+  const orbitControlsRef = useRef<any>(null);
+  const selectedCamera = useRef<any>(null);
 
   const moveCameraToDoubleClickedPoint = (event: ThreeEvent<MouseEvent>) => {
     targetCameraPosition.current = { ...event.point, y: 2 };
@@ -27,13 +30,34 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
 
   return (
     <>
-      {data.vhodi.map((vhod:any, index: number) => <EntranceText key={index} position={{ ...vhod.pozicija }}/>)}
+      {console.log(modelType)}
+      {data.vhodi.map((vhod: any, index: number) => (
+        <EntranceText key={index} position={{ ...vhod.pozicija }} />
+      ))}
       {modelType === ModelType.FIRST_PERSON ? (
         <FirstPersonCamera position={targetCameraPosition.current} />
       ) : (
         <>
+          <OrthographicCamera
+            ref={ortographicCameraRef}
+            rotation={[0, 0, 0]}
+            makeDefault={modelType === ModelType._2D}
+            position={[0, 10, 0]}
+            zoom={26}
+            quaternion={[0, 0, 0, 0]}
+          />
+          <PerspectiveCamera
+            makeDefault={modelType === ModelType._3D}
+            position={[-10, 9, 15]}
+            far={90}
+            ref={perspectiveCameraRef}
+          />
           <OrbitControls
-              maxPolarAngle={Math.PI / 2 - 0.1}
+            ref={orbitControlsRef}
+            maxAzimuthAngle={modelType === ModelType._3D ? Infinity : Math.PI}
+            minAzimuthAngle={modelType === ModelType._3D ? -Infinity : Math.PI}
+            maxPolarAngle={modelType === ModelType._3D ? Math.PI / 2 - 0.1 : 0}
+            minPolarAngle={modelType === ModelType._3D ? -Infinity : 0}
             enableRotate={modelType === ModelType._3D}
             mouseButtons={
               modelType === ModelType._2D
@@ -49,13 +73,6 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
                   }
             }
           />
-          <PerspectiveCamera
-            makeDefault={modelType === ModelType._3D}
-            position={[targetCameraPosition.current.x, targetCameraPosition.current.y, targetCameraPosition.current.z]}
-            far={60}
-            ref={perspectiveCameraRef}
-          />
-          <OrthographicCamera makeDefault={modelType === ModelType._2D} position={[0, 10, 0]} zoom={26} />
         </>
       )}
 
@@ -157,79 +174,79 @@ export default Model;
     getClosestUDK();
   } */
 
-  //const orbitControlsRef = useRef<OrbitControlsProps>(null);
+//const orbitControlsRef = useRef<OrbitControlsProps>(null);
 
-  // useFrame(() => {
-  //     if (triggerSwitchFrom3dTo2d.current) {
-  //         triggerSwitchFrom3dTo2d.current = false;
-  //         // @ts-ignore
-  //         orbitControlsRef.current.enableZoom = true;
-  //         setDefaultCamera('ortographic');
-  //     };
-  // });
+// useFrame(() => {
+//     if (triggerSwitchFrom3dTo2d.current) {
+//         triggerSwitchFrom3dTo2d.current = false;
+//         // @ts-ignore
+//         orbitControlsRef.current.enableZoom = true;
+//         setDefaultCamera('ortographic');
+//     };
+// });
 
-  // useEffect(() => {
-  //     if (!isFirstRender.current) triggerSwitchFrom3dTo2d.current = true;
-  //     isFirstRender.current = false;
-  // }, [modelType]);
-  //
-  // const moveCameraTo2dView = (speed: number) => {
-  //     if (
-  //         orbitControlsRef.current == null ||
-  //         perspectiveCameraRef.current == null ||
-  //         perspectiveCameraRef.current.position == null ||
-  //         !(perspectiveCameraRef.current.position instanceof THREE.Vector3)
-  //     )
-  //         return;
-  //
-  //     orbitControlsRef.current.enableZoom = false;
-  //     orbitControlsRef.current.enableRotate = false;
-  //
-  //     const position = perspectiveCameraRef.current.position;
-  //
-  //     const azimuthalAngle = orbitControlsRef.current.getAzimuthalAngle();
-  //     const polarAngle = orbitControlsRef.current.getPolarAngle();
-  //
-  //     if (Math.abs(azimuthalAngle) < 0.1 && Math.abs(polarAngle) < 0.1 && position?.y > 30) {
-  //         triggerSwitchFrom3dTo2d.current = false;
-  //         orbitControlsRef.current.enableZoom = true;
-  //         setDefaultCamera('ortographic');
-  //         return;
-  //     }
-  //     if (azimuthalAngle < -speed) orbitControlsRef.current.setAzimuthalAngle(azimuthalAngle + speed);
-  //     else if (azimuthalAngle > speed) orbitControlsRef.current.setAzimuthalAngle(azimuthalAngle - speed);
-  //     if (polarAngle < -speed) orbitControlsRef.current.setPolarAngle(polarAngle + speed);
-  //     else if (polarAngle > speed) orbitControlsRef.current.setPolarAngle(polarAngle - speed);
-  //     console.log(Math.abs(azimuthalAngle), polarAngle);
-  //
-  //     if (Math.abs(azimuthalAngle) <= speed) {
-  //         const direction = azimuthalAngle / Math.abs(azimuthalAngle);
-  //         orbitControlsRef.current.setAzimuthalAngle(
-  //             Number.isNaN(direction) ? 0 : direction * (Math.abs(azimuthalAngle) - 0.1)
-  //         );
-  //     }
-  //
-  //     if (Math.abs(polarAngle) <= speed) {
-  //         const direction = polarAngle / Math.abs(polarAngle);
-  //         orbitControlsRef.current.setPolarAngle(Number.isNaN(direction) ? 0 : direction * (Math.abs(polarAngle) - 0.1));
-  //     }
-  //
-  //     if (position.y < 30) perspectiveCameraRef.current.position.y += speed;
-  // };
+// useEffect(() => {
+//     if (!isFirstRender.current) triggerSwitchFrom3dTo2d.current = true;
+//     isFirstRender.current = false;
+// }, [modelType]);
+//
+// const moveCameraTo2dView = (speed: number) => {
+//     if (
+//         orbitControlsRef.current == null ||
+//         perspectiveCameraRef.current == null ||
+//         perspectiveCameraRef.current.position == null ||
+//         !(perspectiveCameraRef.current.position instanceof THREE.Vector3)
+//     )
+//         return;
+//
+//     orbitControlsRef.current.enableZoom = false;
+//     orbitControlsRef.current.enableRotate = false;
+//
+//     const position = perspectiveCameraRef.current.position;
+//
+//     const azimuthalAngle = orbitControlsRef.current.getAzimuthalAngle();
+//     const polarAngle = orbitControlsRef.current.getPolarAngle();
+//
+//     if (Math.abs(azimuthalAngle) < 0.1 && Math.abs(polarAngle) < 0.1 && position?.y > 30) {
+//         triggerSwitchFrom3dTo2d.current = false;
+//         orbitControlsRef.current.enableZoom = true;
+//         setDefaultCamera('ortographic');
+//         return;
+//     }
+//     if (azimuthalAngle < -speed) orbitControlsRef.current.setAzimuthalAngle(azimuthalAngle + speed);
+//     else if (azimuthalAngle > speed) orbitControlsRef.current.setAzimuthalAngle(azimuthalAngle - speed);
+//     if (polarAngle < -speed) orbitControlsRef.current.setPolarAngle(polarAngle + speed);
+//     else if (polarAngle > speed) orbitControlsRef.current.setPolarAngle(polarAngle - speed);
+//     console.log(Math.abs(azimuthalAngle), polarAngle);
+//
+//     if (Math.abs(azimuthalAngle) <= speed) {
+//         const direction = azimuthalAngle / Math.abs(azimuthalAngle);
+//         orbitControlsRef.current.setAzimuthalAngle(
+//             Number.isNaN(direction) ? 0 : direction * (Math.abs(azimuthalAngle) - 0.1)
+//         );
+//     }
+//
+//     if (Math.abs(polarAngle) <= speed) {
+//         const direction = polarAngle / Math.abs(polarAngle);
+//         orbitControlsRef.current.setPolarAngle(Number.isNaN(direction) ? 0 : direction * (Math.abs(polarAngle) - 0.1));
+//     }
+//
+//     if (position.y < 30) perspectiveCameraRef.current.position.y += speed;
+// };
 
-  // const canvas = document.getElementsByClassName('canvas')[0]
-  // const raycaster = new THREE.Raycaster()
-  // const mousePosition = new THREE.Vector2();
-  //
-  // canvas.addEventListener('click', function getClicked3DPoint(evt:any) {
-  //     evt.preventDefault();
-  //
-  //     mousePosition.x = ((evt.clientX - canvasPosition.left) / 1920) * 2 - 1;
-  //     mousePosition.y = -((evt.clientY - canvasPosition.top) / 500) * 2 + 1;
-  //
-  //     raycaster.setFromCamera(mousePosition, perspectiveCameraRef.current);
-  //     var intersects = raycaster.intersectObjects(scene.getObjectByName('MyObj_s').children, true);
-  //
-  //     if (intersects.length > 0)
-  //         return intersects[0].point;
-  // };)
+// const canvas = document.getElementsByClassName('canvas')[0]
+// const raycaster = new THREE.Raycaster()
+// const mousePosition = new THREE.Vector2();
+//
+// canvas.addEventListener('click', function getClicked3DPoint(evt:any) {
+//     evt.preventDefault();
+//
+//     mousePosition.x = ((evt.clientX - canvasPosition.left) / 1920) * 2 - 1;
+//     mousePosition.y = -((evt.clientY - canvasPosition.top) / 500) * 2 + 1;
+//
+//     raycaster.setFromCamera(mousePosition, perspectiveCameraRef.current);
+//     var intersects = raycaster.intersectObjects(scene.getObjectByName('MyObj_s').children, true);
+//
+//     if (intersects.length > 0)
+//         return intersects[0].point;
+// };)
