@@ -3,7 +3,7 @@ import { auth } from '../firebase-config';
 
 export type AuthContextType = {
   isAuth: boolean;
-  loginUser?: any;
+  loginUser?: (username: string, password: string) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
