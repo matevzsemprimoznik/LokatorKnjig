@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const librarySchema = new Schema({
   section: String,
   abbreviation:   String,
-  desc: Text,
+  desc: String,
   file: Object
 }, {timestamp: true});
 
