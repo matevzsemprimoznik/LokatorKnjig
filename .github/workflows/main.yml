@@ -19,13 +19,13 @@ jobs:
           docker_compose_file: './docker-compose.yml' # set the path to the folder where the docker-compose file is located
           heroku_apps: '[{"imagename":"lokatorknjig","appname":"lokator-knjig","apptype":"web"}]' # List of Docker Image name, Heroku app and Heroku app type
       - name: Build, Push and Deploy Backend to Heroku
-      - uses: akhileshns/heroku-deploy@v3.12.12
+      - uses: akhileshns/heroku-deploy@v3.12.12  # This is the action
           with:
             heroku_api_key: ${{secrets.HEROKU_API_KEY}}
             heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
             heroku_email: ${{secrets.HEROKU_EMAIL}}
             usedocker: true
             docker_build_args: |
-              TEST_ARG
+              MONGO_URI
           env:
-            TEST_ARG: ${{secrets.MONGO_URI}}
+            MONGO_URI: ${{secrets.MONGO_URI}}
