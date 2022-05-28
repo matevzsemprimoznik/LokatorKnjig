@@ -1,6 +1,5 @@
 import express from 'express';
 import Library from '../models/librarySchema.js';
-import { authenticateJWT } from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
@@ -9,7 +8,7 @@ router.get('/', async (req, res) => {
   return res.json(libraries);
 });
 
-router.post('/', authenticateJWT, async (req, res) => {
+router.post('/',  async (req, res) => {
   const reqLibrary = req.body.library;
   const library = new Library({ ...reqLibrary });
   const result = await library.save();
