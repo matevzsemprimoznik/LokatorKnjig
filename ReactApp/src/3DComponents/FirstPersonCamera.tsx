@@ -16,11 +16,11 @@ interface FirstPersonCameraProps {
 }
 const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2, z: 10 } }) => {
   const cameraRef = useRef<PerspectiveCameraProps>(null);
-  const _euler = new THREE.Euler(0, 0, 0, 'YXZ');
+  const cameraRotation = new THREE.Euler(0, 0, 0, 'YXZ');
   const targetCameraPosition = useRef(new Vector3(position.x, position.y, position.z));
-  const cameraRotationOnYAxis = useRef(0);
   const isDragEventOn = useRef(false);
   const isCameraMoving = useRef(false);
+  const previousTouch = useRef<{ x: number; y: number } | null>(null);
 
   const vector1 = {
     x: 0,
@@ -36,9 +36,9 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
       (Math.sqrt(vector1.x * vector1.x + vector1.z * vector1.z) *
         Math.sqrt(vector2.x * vector2.x + vector2.z * vector2.z))
   );
-  _euler.y = angle * (data.vhodi[0].pozicija.x < 0 ? -1 : 1);
+  cameraRotation.y = angle * (data.vhodi[0].pozicija.x < 0 ? -1 : 1);
 
-  const onMouseMove = (event: MouseEvent) => {
+  const onDrag = (event: MouseEvent | TouchEvent) => {
     isDragEventOn.current = true;
     if (cameraRef.current != null) {
       const minPolarAngle = 0;
@@ -46,16 +46,27 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
       const maxPolarAngle = Math.PI;
 
       const pointerSpeed = 1.0;
-      const movementX = -(event.movementX || event.mozMovementX || event.webkitMovementX || 0);
-      const movementY = -(event.movementY || event.mozMovementY || event.webkitMovementY || 0);
+      let movementX = 0;
+      let movementY = 0;
+      if (event instanceof MouseEvent) {
+        movementX = -(event.movementX || event.mozMovementX || event.webkitMovementX || 0);
+        movementY = -(event.movementY || event.mozMovementY || event.webkitMovementY || 0);
+      } else if (event instanceof TouchEvent) {
+        const touch = event.touches[0];
+        if (previousTouch.current) {
+          movementX = -(touch.pageX - previousTouch.current.x) || 0;
+          movementY = -(touch.pageY - previousTouch.current.y) || 0;
+        }
+        previousTouch.current = { x: touch.pageX, y: touch.pageY };
+      }
 
-      cameraRotationOnYAxis.current -= movementX * 0.002 * pointerSpeed;
+      cameraRotation.y -= movementX * 0.002 * pointerSpeed;
 
-      _euler.y -= movementX * 0.002 * pointerSpeed;
-      _euler.x -= movementY * 0.002 * pointerSpeed;
-      _euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x));
+      cameraRotation.y -= movementX * 0.002 * pointerSpeed;
+      cameraRotation.x -= movementY * 0.002 * pointerSpeed;
+      cameraRotation.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, cameraRotation.x));
       if (cameraRef.current.quaternion != null && cameraRef.current.quaternion instanceof Quaternion)
-        cameraRef.current.quaternion.setFromEuler(_euler);
+        cameraRef.current.quaternion.setFromEuler(cameraRotation);
     }
   };
 
@@ -65,15 +76,15 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
   let t = 0;
   let dt = 0.02;
   const moveCameraForward = (distance: number) => {
-    if (isDragEventOn.current || isCameraMoving.current) return (isDragEventOn.current = false);
+    if (isDragEventOn.current || isCameraMoving.current) return;
 
     if (cameraRef.current && cameraRef.current.position instanceof Vector3) {
       isCameraMoving.current = true;
       const cameraCurrentPosition = cameraRef.current.position;
 
       const delta = {
-        x: Math.sin(cameraRotationOnYAxis.current % (2 * Math.PI)),
-        z: Math.cos(cameraRotationOnYAxis.current % (2 * Math.PI)),
+        x: Math.sin(cameraRotation.y % (2 * Math.PI)),
+        z: Math.cos(cameraRotation.y % (2 * Math.PI)),
       };
       delta.x = (-Math.ceil(delta.x * 1000) / 1000) * distance;
       delta.z = (-Math.floor(delta.z * 1000) / 1000) * distance;
@@ -86,7 +97,7 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
     }
   };
 
-  const loop = () => {
+  const moveCamera = () => {
     if (cameraRef.current && cameraRef.current.position instanceof Vector3) {
       const cameraPosition = cameraRef.current.position;
       const newX = lerp(cameraPosition.x, targetCameraPosition.current.x, ease(t));
@@ -100,7 +111,7 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
   useFrame(() => {
     if (cameraRef.current?.position && cameraRef.current.position instanceof Vector3) {
       if (!cameraRef.current.position.equals(targetCameraPosition.current)) {
-        loop();
+        moveCamera();
       } else {
         isCameraMoving.current = false;
         t = 0;
@@ -111,18 +122,27 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
 
   useEffect(() => {
     document.addEventListener('mousedown', () => {
-      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mousemove', onDrag);
     });
     document.addEventListener('mouseup', () => {
-      document.removeEventListener('mousemove', onMouseMove);
+      if (!isDragEventOn.current) moveCameraForward(2);
+      isDragEventOn.current = false;
+      document.removeEventListener('mousemove', onDrag);
     });
-    document.addEventListener('click', () => moveCameraForward(2));
-    document.addEventListener('dblclick', () => moveCameraForward(4));
+    document.addEventListener('touchstart', () => {
+      document.addEventListener('touchmove', onDrag);
+    });
+    document.addEventListener('touchend', () => {
+      if (!isDragEventOn.current) moveCameraForward(2);
+      isDragEventOn.current = false;
+      previousTouch.current = null;
+      document.removeEventListener('touchmove', onDrag);
+    });
   }, []);
   return (
     <>
       <PerspectiveCamera
-        rotation={[_euler.x, _euler.y, _euler.z]}
+        rotation={[cameraRotation.x, cameraRotation.y, cameraRotation.z]}
         makeDefault={true}
         ref={cameraRef}
         position={[position.x, position.y, position.z]}
