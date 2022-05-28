@@ -6,8 +6,8 @@ COPY package*.json ./
 
 RUN npm install
 
-ARG MONGO_URI
-ENV MONGO_URI $MONGO_URI
+ARG MONGO_URI_ARG
+ENV MONGO_URI $MONGO_URI_ARG
 
 COPY . .
 

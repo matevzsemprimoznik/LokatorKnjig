@@ -1,4 +1,4 @@
-name: Build Docker image and deploy to Heroku
+name: Deploy
 
 on:
   push:
@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12  # This is the action
-          with:
-            heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-            heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
-            heroku_email: ${{secrets.HEROKU_EMAIL}}
-            usedocker: true
-            docker_build_args: |
-              MONGO_URI
-          env:
-            MONGO_URI: ${{secrets.MONGO_URI}}
+      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          usedocker: true
+          docker_build_args: |
+            MONGO_URI_ARG
+        env:
+          MONGO_URI_ARG: ${{secrets.MONGO_URI}}
