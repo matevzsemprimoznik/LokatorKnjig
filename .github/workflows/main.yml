@@ -20,8 +20,10 @@ jobs:
           appdir: "/Backend"
           docker_build_args: |
             MONGO_URI_ARG
+            SERVICE_KEY_ARG
         env:
           MONGO_URI_ARG: ${{secrets.MONGO_URI}}
+          SERVICE_KEY_ARG: ${{secrets.SERVICE_KEY}}
       - uses: akhileshns/heroku-deploy@v3.12.12
         name: Build and Deploy React App
         with:
