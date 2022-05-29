@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        name: Checkout code from GitHub
       - uses: akhileshns/heroku-deploy@v3.12.12
+        name: Build and Deploy Backend
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.HEROKU_APP_NAME_BACKEND}}
@@ -21,6 +23,7 @@ jobs:
         env:
           MONGO_URI_ARG: ${{secrets.MONGO_URI}}
       - uses: akhileshns/heroku-deploy@v3.12.12
+        name: Build and Deploy React App
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.HEROKU_APP_NAME_FRONTEND}}
