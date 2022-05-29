@@ -21,9 +21,9 @@ jobs:
         env:
           MONGO_URI_ARG: ${{secrets.MONGO_URI}}
       - uses: akhileshns/heroku-deploy@v3.12.12
-          with:
-            heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-            heroku_app_name: ${{secrets.HEROKU_APP_NAME_FRONTEND}}
-            heroku_email: ${{secrets.HEROKU_EMAIL}}
-            usedocker: true
-            appdir: "/ReactApp"
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME_FRONTEND}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          usedocker: true
+          appdir: "/ReactApp"
