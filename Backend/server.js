@@ -10,6 +10,7 @@ const MONGO_URI = process.env.MONGO_URI || null;
 const app = express();
 
 app.use(cors());
+app.use(express.json());
 
 app.use('/libraries', librariesRoute);
 

@@ -23,29 +23,43 @@ router.get('/all', async (req, res) => {
 
 //get floor(spaces) of library with the given abbreviation
 router.get('/:abbreviation/:floor', async (req, res) => {
-  const queryResult = await Library.find({abbreviation: req.params.abbreviation}, 'file -_id');
+  const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+  const file = queryResult.file;
   //TODO: fix json format, change return response
-  //let floor = queryResult[0].file.prostori.filter(prostor => (prostor.nadstropje == req.params.floor));
+  let floor = file.filter(prostor => (prostor.nadstropje == req.params.floor));
 
-  return res.json(queryResult[0].file);
+  return res.json(floor);
 });
 
 //adds new space to file of existing library
 router.post('/:abbreviation', async (req, res) => {
-  const library = await Library.find({abbreviation: req.params.abbreviation}, 'file -_id');
-  let file = library[0].file;
+  const library = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
 
-  const newSpace = req.body.space;
+  if(library == null) {
+    const reqLibrary = req.body;
+    const library = new Library({ ...reqLibrary });
+    const result = await library.save();
 
-  /* TODO: fix json format
-  let prostori = file.prostori;
-  prostori.push(newSpace);
+    return res.json(result);
+  } else {
+    let spaces = library.file;
 
-  let result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
-    "file": prostori
-  });
+    //[0] cause it's only one space being added per request
+    const newSpace = req.body.file.prostori[0];
+    let index = spaces.findIndex(prostor => (prostor.oznaka == newSpace.oznaka));
 
-  return res.json(result);*/
+    if (index == -1) {
+      spaces.push(newSpace);
+    } else {
+      spaces[index] = newSpace;
+    }
+
+    let result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
+      $set: {"desc": req.body.desc, "file": spaces}
+    });
+
+    return res.json(result);
+  }
 });
 
 export default router;
