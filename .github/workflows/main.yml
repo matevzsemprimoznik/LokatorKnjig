@@ -15,6 +15,7 @@ jobs:
           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
           heroku_email: ${{secrets.HEROKU_EMAIL}}
           usedocker: true
+          appdir: "/Backend"
           docker_build_args: |
             MONGO_URI_ARG
         env:
