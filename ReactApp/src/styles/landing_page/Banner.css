@@ -1,14 +1,15 @@
 .banner {
-    padding: 100px 0 200px 0;
+    padding: 40px 0 120px 0;
     overflow: hidden;
 }
 
 
 .banner-container {
     width: 100%;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 35px;
+    padding-right: 35px;
     margin: auto;
+    position: relative;
 }
 
 .banner-row {
@@ -49,23 +50,57 @@
     width: 100%;
     padding-left: 25px;
     padding-right: 25px;
-    position: relative;
     align-self:center;
+}
+.banner-image{
+    position: absolute;
+    right: 5%;
+    top:50%;
+    transform: translateY(-50%);
 }
 
 .banner-image img {
-    opacity: 0.6;
-    object-fit: contain;
-    width: 20em;
+    width: 75%;
+    opacity: 0.1;
+    position: absolute;
+    right: 0;
+    top:0;
+    transform: translateY(-50%);
+}
+
+@media (min-width: 768px) {
+    .banner-container {
+        max-width: 1144px;
+    }
+    .banner-image img {
+        width:50%;
+    }
+    .banner {
+        padding: 100px 0 200px 0;
+        overflow: hidden;
+    }
+
 }
 
 @media (min-width: 996px) {
 
     .banner-desc,
     .banner-image {
-        flex: 0 0 50%;
-        width: 50%;
-        align-items: center;
+        width: 100%;
+        padding-left: 25px;
+        padding-right: 25px;
+        position: relative;
+        align-self:center;
+        right: 0;
+        transform: translateY(0);
+    }
+
+    .banner-image img {
+        opacity: 0.6;
+        object-fit: contain;
+        width: 20em;
+        position: relative;
+        transform: translateY(0);
     }
 }
 
@@ -73,6 +108,12 @@
     .banner-container {
         max-width: 1144px;
     }
+
+    .banner {
+        padding: 100px 0 200px 0;
+        overflow: hidden;
+    }
+
 }
 
 
