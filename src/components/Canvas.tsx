@@ -32,7 +32,7 @@ type ElementType = {
     offsetY?: number,
     rotation?: number,
     nb_of_shelves?: number
-    udk?: Array<string>
+    udk?: Array<Array<string>>
 };
 
 type DataType = {
@@ -45,7 +45,7 @@ type DataType = {
 const bs_initial_details = {
     sh_length: 0,
     sh_height: 0,
-    sh_rotation: 0
+    sh_rotation: 1
 }
 
 
@@ -98,21 +98,27 @@ const Canvas = () => {
         const getImagePath = (rotation: number) => {
             switch (Number(rotation)) {
                 case 0:
-                    setSh_image("../../Shelf_rot_to.png")
-                    break;
-                case 1:
                     setSh_image("../../Shelf_rot_left.png")
                     break;
+                case 1:
+                    setSh_image("../../Shelf_rot_to.png")
+                    break;
                 case 2:
-                    setSh_image("../../Shelf_rot_against.png")
+                    setSh_image("../../Shelf_rot_right.png")
                     break;
                 case 3:
-                    setSh_image("../../Shelf_rot_right.png")
+                    setSh_image("../../Shelf_rot_against.png")
                     break;
             }
         }
 
-        const createElement = (id: number, x: number, y: number, x1: number, y1: number, type: DrawingElement, rotation?: number) => {
+        enum ElementStyleType {
+            SelectedBookshelf = "SELECTED_BOOKSHELF",
+            UdkSettled = "UDK_SETTLED",
+            Normal = "NORMAL"
+        }
+
+        const createElement = (id: number, x: number, y: number, x1: number, y1: number, type: DrawingElement, nb_of_shelves?: number, udk?: Array<Array<string>> | [], style?: ElementStyleType, rotation?: number) => {
 
             if (drawingElement === DrawingElement.BOOKSHELF) {
                 if (drawingBlock) {
@@ -125,37 +131,35 @@ const Canvas = () => {
                     const element: Drawable = generator.rectangle(x, y, 50, 30, {
                         strokeWidth: 1,
                         fillStyle: 'solid',
-                        fill: 'rgb(49,38,15)',
+                        // fill: 'rgb(49,38,15)',
+                        fill: `${style === ElementStyleType.SelectedBookshelf ? 'rgb(78,102,166)' : 'rgb(49,38,15)'}`,
                         roughness: 0
                     });
 
                     x1 = x + 50;
                     y1 = y + 30;
-                    return {id, x, y, x1, y1, element, rotation}
+                    return {id, x, y, x1, y1, element, nb_of_shelves, udk, rotation}
                 } else {
                     const element: Drawable = generator.rectangle(x, y, 30, 50, {
                         strokeWidth: 1,
                         fillStyle: 'solid',
-                        fill: 'rgb(49,38,15)',
+                        fill: `${style === ElementStyleType.SelectedBookshelf ? 'rgb(78,102,166)' : 'rgb(49,38,15)'}`,
                         roughness: 0
                     });
 
                     x1 = x + 30;
                     y1 = y + 50;
-                    return {id, x, y, x1, y1, element, rotation}
+                    return {id, x, y, x1, y1, element, nb_of_shelves, udk, rotation}
                 }
-
-
             } else if (drawingElement === DrawingElement.WALL) {
                 const element: Drawable = generator.line(x, y, x1, y1, {strokeWidth: 5});
                 return {id, x, y, x1, y1, element}
             }
         }
 
-        const updateElement = (id: number, x: number, y: number, clientX: number, clientY: number, type: DrawingElement, rotation?: number) => {
+        const updateElement = (id: number, x: number, y: number, clientX: number, clientY: number, type: DrawingElement, nb_of_shelves: number | undefined, udk: Array<Array<string>> | undefined, style: ElementStyleType, rotation?: number | undefined) => {
             if (rotation !== undefined && rotation >= 0) {
-                const element = createElement(id, x, y, clientX, clientY, type, rotation);
-
+                const element = createElement(id, x, y, clientX, clientY, type, nb_of_shelves, udk, style, rotation);
                 const bookshelfCopy = [...bookshelves];
                 bookshelfCopy[id] = element as ElementType;
 
@@ -246,7 +250,7 @@ const Canvas = () => {
 
             if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.DRAWING) {
                 if (drawingBlock) {
-                    createElement(0, Math.round(clientX), Math.round(clientY), Math.round(clientX), Math.round(clientY), DrawingElement.BOOKSHELF, 0);
+                    createElement(0, Math.round(clientX), Math.round(clientY), Math.round(clientX), Math.round(clientY), DrawingElement.BOOKSHELF, 0, [], ElementStyleType.Normal, 1);
                 }
             }
             if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.SELECTING) {
@@ -260,9 +264,9 @@ const Canvas = () => {
             if (selectedElement && action === ActionTypes.SELECTING) {
                 setAction(ActionTypes.MOVING);
             } else if (selectedElement && action === ActionTypes.MOVING) {
-                const {id, offsetY, offsetX, rotation} = selectedElement;
+                const {id, offsetY, offsetX, rotation, nb_of_shelves, udk} = selectedElement;
 
-                updateElement(id, clientX, clientY, 0, 0, DrawingElement.BOOKSHELF, rotation)
+                updateElement(id, clientX, clientY, 0, 0, DrawingElement.BOOKSHELF, nb_of_shelves, udk, ElementStyleType.SelectedBookshelf, rotation)
             }
 
         }
@@ -270,7 +274,10 @@ const Canvas = () => {
 
         const handleMouseUp = (event: any) => {
 
-            const {clientX, clientY}: { clientX: number, clientY: number } = event;
+            const {
+                clientX,
+                clientY
+            } = drawingElement === DrawingElement.BOOKSHELF ? calculateCoordinates(event.clientX, event.clientY) : event;
 
             if (action === ActionTypes.DRAWING && drawingElement === DrawingElement.WALL) {
                 if (!isFirstCornerSelected) {
@@ -288,7 +295,9 @@ const Canvas = () => {
 
             if (selectedElement && action === ActionTypes.MOVING) {
                 setAction(ActionTypes.NONE);
+                const {nb_of_shelves, rotation, udk} = selectedElement;
                 setSelectedElement(null);
+                updateElement(selectedElement.id, clientX, clientY, 0, 0, DrawingElement.BOOKSHELF, nb_of_shelves, udk, ElementStyleType.Normal, rotation)
                 event.target.style.cursor = "default";
             }
 
@@ -334,7 +343,8 @@ const Canvas = () => {
             } else if (drawingElement === DrawingElement.BOOKSHELF) {
                 setAction(ActionTypes.DRAWING);
                 setDrawingElement(drawingElement);
-                setLeftDivOpen(!leftDivOpen);
+                setLeftDivOpen(true);
+                setEdit(false);
             }
 
         }
@@ -343,33 +353,20 @@ const Canvas = () => {
             const {clientX, clientY}: { clientX: number, clientY: number } = event;
 
             const selectedElement = getElementAtPosition(clientX, clientY, bookshelves);
-            if (selectedElement) {
+            if (selectedElement && edit) {
                 setSelectedElement(selectedElement);
+                setLeftDivOpen(true);
+            } else {
+                setLeftDivOpen(false);
             }
         }
-
 
         // deleting bookshelves
         const handleElementDelete = () => {
-            if (selectedElement) {
+            if (selectedElement && !edit) {
                 const newState = bookshelves.filter((element: ElementType) => element.id !== selectedElement.id);
                 setBookshelves(newState);
                 setSelectedElement(null);
-            }
-        }
-
-        const calculateCenterPoint = (item: ElementType | null) => {
-            if (item) {
-                let {x, y, x1, y1, element} = item;
-
-                let width = Math.abs(x - x1);
-                let height = Math.abs(y - y1);
-
-                x = x + width / 2;
-                y = y + height / 2;
-                return {x, y};
-            } else {
-                return {x: 20, y: 20}
             }
         }
 
@@ -378,7 +375,7 @@ const Canvas = () => {
             let bs_arr: ElementType[] = [];
 
             let bs_rotation = Number(bs_details.sh_rotation)
-            if (bs_rotation === 0 || bs_rotation === 2) {
+            if (bs_rotation === 1 || bs_rotation === 3) {
                 for (let i = 0; i < bs_details.sh_length; i++) {
                     let x = (clientX + (i * 50));
                     let y = (clientY);
@@ -390,7 +387,17 @@ const Canvas = () => {
                     })
                     let x1 = x + 50;
                     let y1 = y + 30;
-                    bs_arr.push({id: i, x, y, x1, y1, element, rotation: 0, nb_of_shelves: bs_details.sh_height, udk: []})
+                    bs_arr.push({
+                        id: i,
+                        x,
+                        y,
+                        x1,
+                        y1,
+                        element,
+                        rotation: (bs_rotation === 1) ? 0 : 180,
+                        nb_of_shelves: bs_details.sh_height,
+                        udk: []
+                    })
                 }
             } else {
                 for (let i = 0; i < bs_details.sh_length; i++) {
@@ -404,7 +411,17 @@ const Canvas = () => {
                     })
                     let x1 = x + 30;
                     let y1 = y + 50;
-                    bs_arr.push({id: i, x, y, x1, y1, element, rotation: 90, nb_of_shelves: bs_details.sh_height, udk: []})
+                    bs_arr.push({
+                        id: i,
+                        x,
+                        y,
+                        x1,
+                        y1,
+                        element,
+                        rotation: (bs_rotation === 0) ? 90 : 270,
+                        nb_of_shelves: bs_details.sh_height,
+                        udk: []
+                    })
                 }
             }
 
@@ -443,15 +460,127 @@ const Canvas = () => {
             const name = e.target.name;
             const value = e.target.value;
             setBs_details({...bs_details, [name]: value});
-
         }
 
+        const [edit, setEdit] = useState<boolean>(false);
+        const [shelfUdk, setShelfUdk] = useState<udkEdit>({});
         const [radio, setRadio] = useState<number | null>(null);
+
+        type udkEdit = {
+            [shelfPosition: number]: string
+        }
 
         const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
 
             setRadio(Number(e.target.value));
+
         }
+
+        const handleEditMode = () => {
+            setEdit(true);
+            setDrawingElement(DrawingElement.NONE);
+
+        }
+
+        const handleEditSubmit = (e: any) => {
+            e.preventDefault()
+
+            let udkArray: any = [];
+            Object.values(shelfUdk).forEach((item: string) => {
+                if (/,/g.test(item)) {
+                    udkArray.push([item.split(', ')])
+                } else {
+                    udkArray?.push([item]);
+                }
+            });
+            selectedElement!.udk = udkArray;
+            setShelfUdk({});
+        }
+
+        const handleChangeEdit = (e: ChangeEvent<HTMLInputElement>) => {
+            const name = e.target.name;
+            const value = e.target.value;
+            setShelfUdk({...shelfUdk, [name]: value});
+        }
+
+        const getExistingShelfUdk = (selectedShelf: Array<string> | undefined) => {
+            return (selectedShelf !== undefined) ? selectedShelf.join(", ") : ''
+        }
+
+        useEffect(() => {
+            let obj: any = {};
+            if (selectedElement && edit) {
+                Array(Number(selectedElement.nb_of_shelves)).fill(null).forEach((item: null, index: number) => {
+                    let udkArr: any = selectedElement?.udk;
+                    let udkOnShelf = udkArr[index]?.join(' ')
+                    Object.assign(obj, {[index]: udkOnShelf || ''});
+                });
+                setShelfUdk(obj);
+                // setDrawingElement(DrawingElement.BOOKSHELF)
+                // const {id, x, y, rotation, nb_of_shelves, udk } = selectedElement;
+                // updateElement(id, x, y, 0,0, DrawingElement.BOOKSHELF, nb_of_shelves, udk, ElementStyleType.SelectedBookshelf, rotation);
+            }
+        }, [selectedElement]);
+
+        /*SHRANJEVANJE KOORDINAT V JSON*/
+
+        const getRoomCenter = (walls: any) => {
+
+            let sumX = walls.reduce((acc: number, el: any) => acc + el.x1, 0);
+            let sumY = walls.reduce((acc: number, el: any) => acc + el.y1, 0);
+
+            return [sumX / walls.length - 1, sumY / walls.length - 1];
+        }
+
+        const calculateBookshelfCenterPoint = (item: ElementType | null) => {
+            if (item) {
+                let {id, x, y, x1, y1, rotation, udk, nb_of_shelves} = item;
+                return {id, x: (x + x1) / 2, y: (y + y1) / 2, rotation, nb_of_shelves, udk};
+            } else {
+                return null;
+            }
+        }
+
+        const initialPosition = {
+            z: -7.39,
+            y: 0.4,
+            x: -6
+        }
+        const premik = 2.39;
+        // x se vsakič poveča za 0.2
+        // y se vsakič poveča za 0.64 (vertikalno)
+        // če je z lihi je premik 0.5 (vztran od centra)
+
+
+        const recalculateBookshelfCoordinates = (elements: ElementType[], startingPointX: number, startingPointY: number) => {
+            let bookShelfCoords: ElementType[] = [];
+            elements.forEach((item: ElementType) => {
+                let {x, y, ...rest}: any = calculateBookshelfCenterPoint(item);
+                bookShelfCoords.push({
+                    x: Number(((x - startingPointX) / 10).toFixed(2)) / 2.5,
+                    z: Number(((y - startingPointY) / 10).toFixed(2)) / 6, ...rest
+                });
+            });
+            return bookShelfCoords;
+        }
+
+        const saveToJson = () => {
+            const [startingPointX, startingPointY] = getRoomCenter(wallElements);
+            let recalcArrOfBookShelves = recalculateBookshelfCoordinates(bookshelves, startingPointX, startingPointY);
+            let police: any = []
+            recalcArrOfBookShelves.forEach((item: any) => Array(Number(item.nb_of_shelves)).fill(null).forEach((el: null, index: number, arr: any) => {
+                police.push({
+                    udk: item?.udk[arr.length -1 -index] || [],
+                    pozicija: {x: item.x, z: item.z, y: (index * 0.64) + 0.4},
+                    rotacija: item.rotation
+                })
+            }));
+            console.log(JSON.stringify({police}));
+            return JSON.stringify({police});
+        }
+
+        /*SHRANJEVANJE KOORDINAT V JSON*/
+
 
         return (
             <>
@@ -490,6 +619,17 @@ const Canvas = () => {
                             </svg>
                         </label>
                     </div>
+                    <div className={`topDiv-element${(radio === 4) ? '--checked' : ''}`} onClick={handleEditMode}>
+                        <input id="radio-edit" type="radio" name="action-selection" className="topDiv-elementRadio"
+                               onChange={handleRadioChange} value="4"/>
+                        <label htmlFor="radio-edit">
+                            <svg viewBox="0 0 512 512"
+                                 className={`${(radio === 4) ? 'topDiv-element-svgWhite' : 'topDiv-element-svgBlack'}`}>
+                                <path fill="currentColor"
+                                      d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"></path>
+                            </svg>
+                        </label>
+                    </div>
                     <div className={`topDiv-element`} onClick={handleElementDelete}>
                         <input id="radio-delete" type="radio" name="action-selection" className="topDiv-elementRadio"
                                onChange={handleRadioChange} value="3"/>
@@ -501,31 +641,53 @@ const Canvas = () => {
                             </svg>
                         </label>
                     </div>
+                    <div className={`topDiv-element`} onClick={handleElementDelete}>
+                        <button onClick={saveToJson}>Shrani v json</button>
+                    </div>
                 </div>
+                {/*EDITING AND DRAWING SHELVES*/}
                 {leftDivOpen && (
                     <div className="leftDiv">
-                        <form onSubmit={handleSubmit} className="form">
-
-                                    <div className="inputContainer">
-                                        <label htmlFor='sh_rotation'>Police v dolžino : </label>
-                                        <input name="sh_length" id="sh_rotation" type="number" min="1"
-                                               value={bs_details.sh_length}
-                                               onChange={handleChange}/>
-                                    </div>
-                                    <div className="inputContainer">
-                                        <label htmlFor='sh_height'>Število polic v višino : </label>
-                                        <input name="sh_height" id="sh_height" type="number" min="1"
-                                               value={bs_details.sh_height}
-                                               onChange={handleChange}/>
-                                    </div>
-                                    <div className="inputContainer">
-                                        <label htmlFor='sh_rotation'>Rotacija : </label>
-                                        <input name="sh_rotation" id="sh_rotation" type="range" min="0" max="3"
-                                               value={bs_details.sh_rotation} step="1" onChange={handleChange}/>
-                                    </div>
-                                    <img className="image" src={sh_image} alt="Usmerjenost police"/>
-                                    <button type="submit"> Vstavi omaro</button>
-                        </form>
+                        {edit && selectedElement !== null ? (
+                            <form onSubmit={handleEditSubmit} className="form">
+                                <h2>Določanje udk</h2>
+                                {Array(Number(selectedElement.nb_of_shelves)).fill(null).map((item: null, index: number) => {
+                                    return (
+                                        <React.Fragment key={index} >
+                                            <div className="inputContainer">
+                                                <label htmlFor='udk'>Udk {index}: </label>
+                                                <input name={index.toString()} id="udk" type="text"
+                                                       value={shelfUdk[index]}
+                                                       onChange={handleChangeEdit}/>
+                                            </div>
+                                        </React.Fragment>
+                                    )
+                                })}
+                                <button type="submit">Shrani udk</button>
+                            </form>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="form">
+                                <div className="inputContainer">
+                                    <label htmlFor='sh_rotation'>Police v dolžino : </label>
+                                    <input name="sh_length" id="sh_rotation" type="number" min="1"
+                                           value={bs_details.sh_length}
+                                           onChange={handleChange}/>
+                                </div>
+                                <div className="inputContainer">
+                                    <label htmlFor='sh_height'>Število polic v višino : </label>
+                                    <input name="sh_height" id="sh_height" type="number" min="1"
+                                           value={bs_details.sh_height}
+                                           onChange={handleChange}/>
+                                </div>
+                                <div className="inputContainer">
+                                    <label htmlFor='sh_rotation'>Rotacija : </label>
+                                    <input name="sh_rotation" id="sh_rotation" type="range" min="0" max="3"
+                                           value={bs_details.sh_rotation} step="1" onChange={handleChange}/>
+                                </div>
+                                <img className="image" src={sh_image} alt="Usmerjenost police"/>
+                                <button type="submit"> Vstavi omaro</button>
+                            </form>
+                        )}
                     </div>
                 )}
 
