@@ -10,17 +10,17 @@ router.get('/:abbreviation/:udk', async (req, res) => {
     const file = await queryResult.file;
 
     //filters through spaces and then through bookshelves to find the bookshelf that matches the selected udk
-    let space = file.filter(prostor => {
-        const inner = prostor.police.filter(polica => (polica.udk.includes((req.params.udk))));
+    let space = file.filter(room => {
+        const inner = room.bookshelves.filter(bookshelf => (bookshelf.udks.includes((req.params.udk))));
         if (inner.length === 0) return false;
         return true;
     });
 
     if(space.length != 0){
-        let result = file.filter(prostor => (prostor.nadstropje === space[0].nadstropje));
+        let result = file.filter(room => (room.floor === space[0].floor));
         return res.json(result);
     } else {
-        let result = file.filter(prostor => (prostor.nadstropje === 0));
+        let result = file.filter(room => (room.floor === 0));
         return res.json(result);
     }
 });
