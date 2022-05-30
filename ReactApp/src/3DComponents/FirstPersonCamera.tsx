@@ -1,11 +1,12 @@
 import { OrbitControls, OrbitControlsProps, PerspectiveCamera } from '@react-three/drei';
 import { ModelType } from '../context/modelContext';
-import React, { FC, Ref, useEffect, useRef, useState } from 'react';
+import React, {FC, Ref, useContext, useEffect, useRef, useState} from 'react';
 import { PerspectiveCameraProps, useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 import { MathUtils, Quaternion, Vector3 } from 'three';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import data from '../data.json';
+import {LibraryContext} from "../context/libraryContext";
 
 interface FirstPersonCameraProps {
   position: {
@@ -15,6 +16,7 @@ interface FirstPersonCameraProps {
   };
 }
 const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2, z: 10 } }) => {
+  const {floorData} = useContext(LibraryContext);
   const cameraRef = useRef<PerspectiveCameraProps>(null);
   const cameraRotation = new THREE.Euler(0, 0, 0, 'YXZ');
   const targetCameraPosition = useRef(new Vector3(position.x, position.y, position.z));
@@ -27,8 +29,8 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
     z: -1,
   };
   const vector2 = {
-    x: 0 - data.vhodi[0].pozicija.x,
-    z: 0 - data.vhodi[0].pozicija.z,
+    x: 0 - floorData[0].entrances[0].position.x,
+    z: 0 - floorData[0].entrances[0].position.z,
   };
 
   const angle = Math.acos(
@@ -36,7 +38,7 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
       (Math.sqrt(vector1.x * vector1.x + vector1.z * vector1.z) *
         Math.sqrt(vector2.x * vector2.x + vector2.z * vector2.z))
   );
-  cameraRotation.y = angle * (data.vhodi[0].pozicija.x < 0 ? -1 : 1);
+  cameraRotation.y = angle * (floorData[0].entrances[0].position.x < 0 ? -1 : 1);
 
   const onDrag = (event: MouseEvent | TouchEvent) => {
     isDragEventOn.current = true;

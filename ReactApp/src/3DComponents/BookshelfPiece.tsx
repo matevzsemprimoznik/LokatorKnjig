@@ -15,7 +15,7 @@ interface BookshelfPieceProps {
     y: number;
     z: number;
   };
-  udk: Array<number>;
+  udk: Array<string>;
   type: any;
 }
 

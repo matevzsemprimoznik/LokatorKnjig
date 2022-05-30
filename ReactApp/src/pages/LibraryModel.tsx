@@ -1,16 +1,23 @@
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import {Canvas} from 'react-three-fiber';
 import Button from '../components/Button';
 import {ModelContext, ModelType} from '../context/modelContext';
 import Model from '../3DComponents/Model';
+import {LibraryContext} from "../context/libraryContext";
 
 const RotateIconUrl = '../../images/rotate.png';
 const FirstPersonViewIconUrl = '../../images/360-view.png';
 
 const LibraryModel = () => {
   const { selected } = useParams();
-  const { modelType, setModelType, previousModelType } = useContext(ModelContext);
+  const { modelType, setModelType } = useContext(ModelContext);
+  const {floorData, getFloorData} = useContext(LibraryContext)
+
+    useEffect(() => {
+        if(selected)
+            getFloorData('KTF', selected)
+    }, [selected])
 
   const onClick = () => {
     if (modelType !== ModelType._2D) setModelType(ModelType._2D);
@@ -22,11 +29,14 @@ const LibraryModel = () => {
     else setModelType(ModelType._3D);
   };
 
+  if(!floorData)
+      return <div>Loading</div>
+
   return (
     <>
       <div style={{height: "90vh"}}>
         <Canvas>
-          <Model selected={selected} modelType={modelType} setModelType={setModelType} />
+          <Model selected={selected} modelType={modelType} setModelType={setModelType} floorData={floorData} />
         </Canvas>
       </div>
       <Button

@@ -11,21 +11,25 @@ import Home from './pages/Home';
 import './index.css';
 import ModelProvider from './context/modelContext';
 import Header from './components/landing_page/Header';
+import LibraryProvider from "./context/libraryContext";
 
 function App() {
   return (
-    <ModelProvider>
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path='/library-model'>
-            <Route path=':selected' element={<LibraryModel />}></Route>
-            <Route path='' element={<LibraryModel />} />
-          </Route>
-          <Route path='/' element={<Home />} />
-        </Routes>
-      </BrowserRouter>
-    </ModelProvider>
+      <LibraryProvider>
+        <ModelProvider>
+          <BrowserRouter>
+            <Header />
+            <Routes>
+              <Route path='/library-model'>
+                <Route path=':selected' element={<LibraryModel />}></Route>
+                <Route path='' element={<LibraryModel />} />
+              </Route>
+              <Route path='/' element={<Home />} />
+            </Routes>
+          </BrowserRouter>
+        </ModelProvider>
+      </LibraryProvider>
+
   );
 }
 

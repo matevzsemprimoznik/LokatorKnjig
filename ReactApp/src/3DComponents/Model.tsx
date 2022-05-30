@@ -1,39 +1,39 @@
 import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
 import Floor from './Floor';
-import React, { FC, useEffect, useRef } from 'react';
+import React, {FC, useContext, useEffect, useRef} from 'react';
 import * as THREE from 'three';
 import { ModelType } from '../context/modelContext';
-import { MemoizedModel3D } from './Model3D';
+import { MemoizedRoomModel } from './Model3D';
 import { OrthographicCameraProps, PerspectiveCameraProps, ThreeEvent } from 'react-three-fiber';
 import FirstPersonCamera from './FirstPersonCamera';
 import EntranceText from './EntranceText';
 import data from '../data.json';
 import { Vector3 } from 'three';
+import {LibraryContext} from "../context/libraryContext";
+import {Room} from "../models/library";
 
 interface ModelProps {
   selected: any;
   modelType: ModelType;
   setModelType: (modelType: ModelType) => void;
+  floorData: Array<Room>
 }
 
-const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
+const Model: FC<ModelProps> = ({ selected, modelType, setModelType, floorData }) => {
   const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
-  const targetCameraPosition = useRef({ ...data.vhodi[0].pozicija, y: 2 });
+  const targetCameraPosition = useRef({ x: 0, y: 2, z: 0 });
   const ortographicCameraRef = useRef<OrthographicCameraProps>(null);
   const orbitControlsRef = useRef<any>(null);
-  const selectedCamera = useRef<any>(null);
 
   const moveCameraToDoubleClickedPoint = (event: ThreeEvent<MouseEvent>) => {
     targetCameraPosition.current = { ...event.point, y: 2 };
     setModelType(ModelType.FIRST_PERSON);
   };
 
+
   return (
     <>
-      {console.log(modelType)}
-      {data.vhodi.map((vhod: any, index: number) => (
-        <EntranceText key={index} position={{ ...vhod.pozicija }} />
-      ))}
+      {floorData.map(room => room.entrances.map((entrance,index) => <EntranceText key={index} position={{ ...entrance.position }} />))}
       {modelType === ModelType.FIRST_PERSON ? (
         <FirstPersonCamera position={targetCameraPosition.current} />
       ) : (
@@ -95,9 +95,7 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType }) => {
         <pointLight position={[0, -10, 0]} intensity={1.5} />
       </>
 
-      <MemoizedModel3D selectedUDK={selected} />
-
-      <Floor position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        {floorData.map((room, index) => <MemoizedRoomModel key={index} roomData={room} selectedUDK={selected} moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>)}
     </>
   );
 };

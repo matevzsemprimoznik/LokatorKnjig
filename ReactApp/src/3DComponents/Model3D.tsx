@@ -1,88 +1,93 @@
 import React, { FC, memo, useEffect, useRef } from 'react';
-import data from '../data.json';
 import BookshelfPiece from './BookshelfPiece';
-import bookshelf from '../assets/bookshelf.glb';
+import bookshelfGLB from '../assets/bookshelf.glb';
 import closeBookshelf from '../assets/closeBookshelf.glb';
 import selectedBookshelf from '../assets/selectedBookshelf.glb';
+import Floor from "./Floor";
+import {ThreeEvent} from "react-three-fiber";
+import {Bookshelf, Room} from "../models/library";
 
 interface BookShelfsProps {
   selectedUDK: string;
+  moveCameraToDoubleClickedPoint: (event: ThreeEvent<MouseEvent>) => void
+  roomData: Room
 }
-const Model3D: FC<BookShelfsProps> = ({ selectedUDK }) => {
+const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleClickedPoint }) => {
   const getSelectedUDKPositions = () => {
-    const bookshelves = data.police.filter((polica: any, index: number) =>
-      polica.udk.some((udk: any) => udk.toString() === selectedUDK)
+    const bookshelves = roomData.bookshelves.filter((bookshelf: Bookshelf, index: number) =>
+        bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK)
     );
     const positions: any = [];
-    bookshelves.forEach((bookshelf: any, index: number) => {
+    bookshelves.forEach((bookshelf: Bookshelf, index: number) => {
       if (
         index === 0 ||
         (index !== 0 &&
-          (bookshelf.pozicija.x !== bookshelves[index - 1].pozicija.x ||
-            bookshelf.pozicija.z !== bookshelves[index - 1].pozicija.z))
+          (bookshelf.position.x !== bookshelves[index - 1].position.x ||
+            bookshelf.position.z !== bookshelves[index - 1].position.z))
       )
-        positions.push({ x: bookshelf.pozicija.x, z: bookshelf.pozicija.z });
+        positions.push({ x: bookshelf.position.x, z: bookshelf.position.z });
     });
     return positions;
   };
   const selectedUDKPositions = getSelectedUDKPositions();
   return (
     <>
-      {data.police.map((polica: any, index: number) =>
-        polica.udk.some((udk: any) => udk.toString() === selectedUDK) ? (
+      {roomData.bookshelves.map((bookshelf: Bookshelf, index: number) =>
+          bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK) ? (
           <BookshelfPiece
             type={selectedBookshelf}
             key={index}
             position={{
-              x: polica.pozicija.x,
-              y: polica.pozicija.y,
-              z: polica.pozicija.z,
+              x: bookshelf.position.x,
+              y: bookshelf.position.y,
+              z: bookshelf.position.z,
             }}
-            udk={polica.udk}
+            udk={bookshelf.udks}
             rotation={{
               x: 0,
-              y: polica.rotacija === 0 ? 0 : Math.PI,
+              y: bookshelf.rotation === 0 ? 0 : Math.PI,
               z: 0,
             }}
           />
         ) : selectedUDKPositions.some(
-            (position: any) => position.x === polica.pozicija.x && position.z === polica.pozicija.z
+            (position: any) => position.x === bookshelf.position.x && position.z === bookshelf.position.z
           ) ? (
           <BookshelfPiece
             type={closeBookshelf}
             key={index}
             position={{
-              x: polica.pozicija.x,
-              y: polica.pozicija.y,
-              z: polica.pozicija.z,
+              x: bookshelf.position.x,
+              y: bookshelf.position.y,
+              z: bookshelf.position.z,
             }}
             rotation={{
               x: 0,
-              y: polica.rotacija === 0 ? 0 : Math.PI,
+              y: bookshelf.rotation === 0 ? 0 : Math.PI,
               z: 0,
             }}
-            udk={polica.udk}
+            udk={bookshelf.udks}
           />
         ) : (
           <BookshelfPiece
-            type={bookshelf}
+            type={bookshelfGLB}
             key={index}
             position={{
-              x: polica.pozicija.x,
-              y: polica.pozicija.y,
-              z: polica.pozicija.z,
+              x: bookshelf.position.x,
+              y: bookshelf.position.y,
+              z: bookshelf.position.z,
             }}
             rotation={{
               x: 0,
-              y: polica.rotacija === 0 ? 0 : Math.PI,
+              y: bookshelf.rotation === 0 ? 0 : Math.PI,
               z: 0,
             }}
-            udk={polica.udk}
+            udk={bookshelf.udks}
           />
         )
       )}
+      <Floor position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
     </>
   );
 };
 
-export const MemoizedModel3D = memo(Model3D);
+export const MemoizedRoomModel = memo(Model3D);
