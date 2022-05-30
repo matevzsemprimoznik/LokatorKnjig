@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  webapp:
+    build: ./ReactApp
+    container_name: reactapp
+    image: lokatorknjig
+    ports:
+      - "8081:80"
