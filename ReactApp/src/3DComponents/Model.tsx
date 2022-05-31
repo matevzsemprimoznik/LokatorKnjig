@@ -1,6 +1,6 @@
 import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
 import Floor from './Floor';
-import React, {FC, useContext, useEffect, useRef} from 'react';
+import React, {FC, memo, useContext, useEffect, useRef} from 'react';
 import * as THREE from 'three';
 import { ModelType } from '../context/modelContext';
 import { MemoizedRoomModel } from './Model3D';
@@ -11,6 +11,7 @@ import data from '../data.json';
 import { Vector3 } from 'three';
 import {LibraryContext} from "../context/libraryContext";
 import {Room} from "../models/library";
+import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
 
 interface ModelProps {
   selected: any;
@@ -30,6 +31,14 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType, floorData })
     setModelType(ModelType.FIRST_PERSON);
   };
 
+  const points = [
+      new Vector3(0,0,0),
+      new Vector3(0,10,0),
+      new Vector3(0,16,10),
+      new Vector3(0,0,10),
+  ]
+    const geometry = new ConvexGeometry( points );
+    const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 
   return (
     <>
@@ -94,13 +103,51 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType, floorData })
         <pointLight position={[-10, 0, -20]} intensity={0.5} />
         <pointLight position={[0, -10, 0]} intensity={1.5} />
       </>
+<MTest selected={selected} floorData={floorData}/>
+        <Floor position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 0.8, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 1.6, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -0.8, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -1.6, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -2.4, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 0, y: 0.05, z: 1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 0.8, y: 0.05, z: 1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 1.6, y: 0.05, z: 1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -0.8, y: 0.05, z: 1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -1.6, y: 0.05, z: 1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -2.4, y: 0.05, z: 1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 0, y: 0.05, z: -1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 0.8, y: 0.05, z: -1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 1.6, y: 0.05, z: -1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -0.8, y: 0.05, z: -1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -1.6, y: 0.05, z: -1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -2.4, y: 0.05, z: -1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -3.2, y: 0.05, z: -1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -3.2, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -3.2, y: 0.05, z: 1 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
 
-        {floorData.map((room, index) => <MemoizedRoomModel key={index} roomData={room} selectedUDK={selected} moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>)}
+        <Floor position={{ x: 0, y: 0.05, z: -2 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 0.8, y: 0.05, z: -2 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: 1.6, y: 0.05, z: -2 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -0.8, y: 0.05, z: -2 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -1.6, y: 0.05, z: -2 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -2.4, y: 0.05, z: -2 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+        <Floor position={{ x: -3.2, y: 0.05, z: -2 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
     </>
   );
 };
 
 export default Model;
+
+interface testProps{
+    selected: any;
+    floorData: Array<Room>
+}
+const Test:FC<testProps> = ({selected, floorData }) => {
+    return <>{floorData.map((room, index) => <MemoizedRoomModel key={index} roomData={room} selectedUDK={selected} moveCameraToDoubleClickedPoint={() => {}}/>)}</>
+
+}
+const MTest = memo(Test)
 
 /* const [selectedUDK, setSelectedUDK] = React.useState('');
 

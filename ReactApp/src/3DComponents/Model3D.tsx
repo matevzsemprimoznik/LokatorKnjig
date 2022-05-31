@@ -1,6 +1,6 @@
 import React, { FC, memo, useEffect, useRef } from 'react';
 import BookshelfPiece from './BookshelfPiece';
-import bookshelfGLB from '../assets/bookshelf.glb';
+import bookshelfGLB from '../assets/test.glb';
 import closeBookshelf from '../assets/closeBookshelf.glb';
 import selectedBookshelf from '../assets/selectedBookshelf.glb';
 import Floor from "./Floor";
@@ -85,7 +85,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
           />
         )
       )}
-      <Floor position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+
     </>
   );
 };
