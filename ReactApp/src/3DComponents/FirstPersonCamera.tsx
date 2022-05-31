@@ -15,8 +15,7 @@ interface FirstPersonCameraProps {
     z: number;
   };
 }
-const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2, z: 10 } }) => {
-  const {floorData} = useContext(LibraryContext);
+const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position }) => {
   const cameraRef = useRef<PerspectiveCameraProps>(null);
   const cameraRotation = new THREE.Euler(0, 0, 0, 'YXZ');
   const targetCameraPosition = useRef(new Vector3(position.x, position.y, position.z));
@@ -24,13 +23,15 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
   const isCameraMoving = useRef(false);
   const previousTouch = useRef<{ x: number; y: number } | null>(null);
 
+  console.log(targetCameraPosition.current)
+
   const vector1 = {
     x: 0,
     z: -1,
   };
   const vector2 = {
-    x: 0 - floorData[0].entrances[0].position.x,
-    z: 0 - floorData[0].entrances[0].position.z,
+    x: 0 - targetCameraPosition.current.x,
+    z: 0 - targetCameraPosition.current.z,
   };
 
   const angle = Math.acos(
@@ -38,7 +39,7 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position = { x: 0, y: 2
       (Math.sqrt(vector1.x * vector1.x + vector1.z * vector1.z) *
         Math.sqrt(vector2.x * vector2.x + vector2.z * vector2.z))
   );
-  cameraRotation.y = angle * (floorData[0].entrances[0].position.x < 0 ? -1 : 1);
+  cameraRotation.y = angle * (targetCameraPosition.current.x < 0 ? -1 : 1);
 
   const onDrag = (event: MouseEvent | TouchEvent) => {
     isDragEventOn.current = true;

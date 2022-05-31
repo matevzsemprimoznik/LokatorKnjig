@@ -11,6 +11,7 @@ import data from '../data.json';
 import { Vector3 } from 'three';
 import {LibraryContext} from "../context/libraryContext";
 import {Room} from "../models/library";
+import bookshelfPiece from "./BookshelfPiece";
 
 interface ModelProps {
   selected: any;
@@ -25,15 +26,27 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType, floorData })
   const ortographicCameraRef = useRef<OrthographicCameraProps>(null);
   const orbitControlsRef = useRef<any>(null);
 
+  useEffect(() => {
+      setInitialPositionOfFirstPersonCamera()
+  }, [])
+
   const moveCameraToDoubleClickedPoint = (event: ThreeEvent<MouseEvent>) => {
     targetCameraPosition.current = { ...event.point, y: 2 };
     setModelType(ModelType.FIRST_PERSON);
   };
 
+  const setInitialPositionOfFirstPersonCamera = () => {
+      const roomWithSelectedUdk = floorData.filter(room => {
+          const bookshelfWithSelectedUdk = room.bookshelves.filter(bookshelf => bookshelf.udks.includes(`${selected}`))
+          return bookshelfWithSelectedUdk.length !== 0
+      })
+      if(roomWithSelectedUdk.length !== 0)
+          targetCameraPosition.current = {...roomWithSelectedUdk[0].entrances[0].position, y: 2}
+  }
+
 
   return (
     <>
-      {floorData.map(room => room.entrances.map((entrance,index) => <EntranceText key={index} position={{ ...entrance.position }} />))}
       {modelType === ModelType.FIRST_PERSON ? (
         <FirstPersonCamera position={targetCameraPosition.current} />
       ) : (

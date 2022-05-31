@@ -6,6 +6,7 @@ import selectedBookshelf from '../assets/selectedBookshelf.glb';
 import Floor from "./Floor";
 import {ThreeEvent} from "react-three-fiber";
 import {Bookshelf, Room} from "../models/library";
+import EntranceText from "./EntranceText";
 
 interface BookShelfsProps {
   selectedUDK: string;
@@ -32,6 +33,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
   const selectedUDKPositions = getSelectedUDKPositions();
   return (
     <>
+      {roomData.entrances.map((entrance,index) => <EntranceText key={index} position={{ ...entrance.position }} />)}
       {roomData.bookshelves.map((bookshelf: Bookshelf, index: number) =>
           bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK) ? (
           <BookshelfPiece
