@@ -17,4 +17,5 @@ export interface Room{
     floor: number,
     bookshelves: Array<Bookshelf>
     entrances: Array<Entrance>
+    ground: Array<Position>
 }
