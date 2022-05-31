@@ -3,7 +3,7 @@ import BookshelfPiece from './BookshelfPiece';
 import bookshelfGLB from '../assets/bookshelf.glb';
 import closeBookshelf from '../assets/closeBookshelf.glb';
 import selectedBookshelf from '../assets/selectedBookshelf.glb';
-import Floor from "./Floor";
+import Ground from "./Ground";
 import {ThreeEvent} from "react-three-fiber";
 import {Bookshelf, Room} from "../models/library";
 import EntranceText from "./EntranceText";
@@ -87,7 +87,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
           />
         )
       )}
-      <Floor position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} />
+      <Ground position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} edges={roomData.ground} />
     </>
   );
 };

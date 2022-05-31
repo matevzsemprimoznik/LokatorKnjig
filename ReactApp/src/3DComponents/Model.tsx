@@ -1,5 +1,5 @@
 import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
-import Floor from './Floor';
+import Ground from './Ground';
 import React, {FC, useCallback, useContext, useEffect, useRef} from 'react';
 import * as THREE from 'three';
 import { ModelType } from '../context/modelContext';
