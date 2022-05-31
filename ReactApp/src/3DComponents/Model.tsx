@@ -1,6 +1,6 @@
 import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
 import Floor from './Floor';
-import React, {FC, useContext, useEffect, useRef} from 'react';
+import React, {FC, useCallback, useContext, useEffect, useRef} from 'react';
 import * as THREE from 'three';
 import { ModelType } from '../context/modelContext';
 import { MemoizedRoomModel } from './Model3D';
@@ -12,6 +12,7 @@ import { Vector3 } from 'three';
 import {LibraryContext} from "../context/libraryContext";
 import {Room} from "../models/library";
 import bookshelfPiece from "./BookshelfPiece";
+import FloorModel from "./FloorModel";
 
 interface ModelProps {
   selected: any;
@@ -30,10 +31,10 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType, floorData })
       setInitialPositionOfFirstPersonCamera()
   }, [])
 
-  const moveCameraToDoubleClickedPoint = (event: ThreeEvent<MouseEvent>) => {
-    targetCameraPosition.current = { ...event.point, y: 2 };
-    setModelType(ModelType.FIRST_PERSON);
-  };
+  const moveCameraToDoubleClickedPoint = useCallback((event: ThreeEvent<MouseEvent>) => {
+          targetCameraPosition.current = { ...event.point, y: 2 };
+          setModelType(ModelType.FIRST_PERSON);
+      }, []);
 
   const setInitialPositionOfFirstPersonCamera = () => {
       const roomWithSelectedUdk = floorData.filter(room => {
@@ -107,8 +108,7 @@ const Model: FC<ModelProps> = ({ selected, modelType, setModelType, floorData })
         <pointLight position={[-10, 0, -20]} intensity={0.5} />
         <pointLight position={[0, -10, 0]} intensity={1.5} />
       </>
-
-        {floorData.map((room, index) => <MemoizedRoomModel key={index} roomData={room} selectedUDK={selected} moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>)}
+        <FloorModel selected={selected} floorData={floorData} moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>
     </>
   );
 };
