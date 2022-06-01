@@ -41,6 +41,7 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position }) => {
   );
   cameraRotation.y = angle * (targetCameraPosition.current.x < 0 ? -1 : 1);
 
+
   const onDrag = (event: MouseEvent | TouchEvent) => {
     isDragEventOn.current = true;
     if (cameraRef.current != null) {
@@ -142,10 +143,11 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position }) => {
       document.removeEventListener('touchmove', onDrag);
     });
   }, []);
+  console.log(cameraRotation)
   return (
     <>
       <PerspectiveCamera
-        rotation={[cameraRotation.x, cameraRotation.y, cameraRotation.z]}
+        rotation={[cameraRotation.x, 0, cameraRotation.z]}
         makeDefault={true}
         ref={cameraRef}
         position={[position.x, position.y, position.z]}
