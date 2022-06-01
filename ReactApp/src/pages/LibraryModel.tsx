@@ -1,18 +1,22 @@
-import {useContext, useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import {Canvas} from 'react-three-fiber';
 import Button from '../components/Button';
 import {ModelContext, ModelType} from '../context/modelContext';
 import Model from '../3DComponents/Model';
 import {LibraryContext} from "../context/libraryContext";
+import {MenuContext, MenuContextType} from "../context/menuContext";
+import Drawer from "../components/Drawer";
 
 const RotateIconUrl = '../../images/rotate.png';
 const FirstPersonViewIconUrl = '../../images/360-view.png';
+const MenuIconUrl = '../../menu-button.svg';
 
 const LibraryModel = () => {
   const { selected } = useParams();
   const { modelType, setModelType } = useContext(ModelContext);
   const {floorData, getFloorData} = useContext(LibraryContext)
+    const { menuOpen, toggleMenuOpen } = React.useContext(MenuContext);
 
     useEffect(() => {
         if(selected)
@@ -49,6 +53,12 @@ const LibraryModel = () => {
         onClick={switchFromFirstPersonTo360View}
         image={modelType === ModelType.FIRST_PERSON ? RotateIconUrl : FirstPersonViewIconUrl}
       />
+        <Button
+            position={{ top: 8, left: 2 }}
+            onClick={toggleMenuOpen}
+            image={MenuIconUrl}
+        />
+        <Drawer isOpen={true}/>
     </>
   );
 };

@@ -15,27 +15,31 @@ import Login from './pages/Login';
 import AuthProvider from './context/authContext';
 import AddFloorPlan from './pages/AddFloorPlan';
 import LibraryProvider from "./context/libraryContext";
+import MenuProvider from "./context/menuContext";
 
 function App() {
   return (
-    <AuthProvider>
-      <LibraryProvider>
-      <ModelProvider>
-        <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path='/library-model'>
-              <Route path=':selected' element={<LibraryModel />}></Route>
-              <Route path='' element={<LibraryModel />} />
-            </Route>
-            <Route path='/' element={<Home />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/add-floor-plan' element={<AddFloorPlan />} />
-          </Routes>
-        </BrowserRouter>
-      </ModelProvider>
-      </LibraryProvider>
-    </AuthProvider>
+      <MenuProvider>
+          <AuthProvider>
+              <LibraryProvider>
+                  <ModelProvider>
+                      <BrowserRouter>
+                          <Header />
+                          <Routes>
+                              <Route path='/library-model'>
+                                  <Route path=':selected' element={<LibraryModel />}></Route>
+                                  <Route path='' element={<LibraryModel />} />
+                              </Route>
+                              <Route path='/' element={<Home />} />
+                              <Route path='/login' element={<Login />} />
+                              <Route path='/add-floor-plan' element={<AddFloorPlan />} />
+                          </Routes>
+                      </BrowserRouter>
+                  </ModelProvider>
+              </LibraryProvider>
+          </AuthProvider>
+      </MenuProvider>
+
   );
 }
 

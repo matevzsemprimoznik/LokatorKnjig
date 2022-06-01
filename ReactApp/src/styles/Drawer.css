@@ -1,12 +1,10 @@
 
 .drawer-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
     background: inherit;
     cursor: pointer;
     border: none;
-    padding: 0.5em;
+    margin-top: 5px;
+    margin-right: 10px;
 }
 
 .drawer {
@@ -15,16 +13,20 @@
     height: 100%;
     overflow: hidden;
     position: fixed;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    top: 90px;
+    box-shadow: 0 15px 15px rgba(0, 0, 0, 0.5);
     transition: transform 500ms ease;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .drawer-info-header {
-    margin-top: 3em;
     display: flex;
-    flex-direction: column;
     align-items: center;
+}
+.drawer-info-header div {
+    flex: 1;
+    display: flex;
+    justify-content: center;
 }
 
 .drawer-info-divider {
@@ -37,9 +39,9 @@
     transform: translateX(-100%);
 }
 
-.drawer-container.open .left {
-    transform: translateX(0);
-}
+/*.drawer-container.open .left {*/
+/*    transform: translateX(0);*/
+/*}*/
 
 .backdrop {
     visibility: hidden;
@@ -56,17 +58,25 @@
     z-index: 10;
 }
 
-
-.drawer-container.open .drawer {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+.drawer-close{
+    transform: translateX(-110%);
 }
 
-.drawer-container.open .backdrop {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
-    z-index: 999;
+.drawer-open{
+    transform: translateX(0%);
 }
+
+
+/*.drawer-container.open .drawer {*/
+/*    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);*/
+/*}*/
+
+/*.drawer-container.open .backdrop {*/
+/*    visibility: visible;*/
+/*    opacity: 1;*/
+/*    pointer-events: auto;*/
+/*    z-index: 999;*/
+/*}*/
 
 @media screen and (max-width: 1200px){
     .drawer {

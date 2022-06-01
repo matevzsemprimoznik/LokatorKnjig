@@ -9,31 +9,32 @@ type DrawerProps = {
 
 const Drawer: FC<DrawerProps> = ({isOpen, onClose}) => {
 
-    const { menuOpen, setMenuOpen } = React.useContext(MenuContext) as MenuContextType;
+    const { menuOpen, toggleMenuOpen } = React.useContext(MenuContext) as MenuContextType;
 
-
+    console.log(menuOpen)
 
     return (
         <div
-            className={menuOpen ? "drawer-container drawer" : "backdrop"}
+            className={menuOpen ? "drawer drawer-open" : "drawer drawer-close"}
         >
             <div
                 className="open"
                 role="dialog"
             >
-                <button type="button" onClick={() => setMenuOpen(!menuOpen)} className="drawer-button" >
-                    <img src="../close-icon.png"
-                         alt="menu" aria-hidden="true"
-                         onClick={() => setMenuOpen(!menuOpen)}/>
 
-                </button>
                 <div className="drawer-info-header">
-                    <h2>Seznam knjižnic</h2>
-                    <hr className="drawer-info-divider"/>
+                    <div>
+                        <h2>Knjižnica hoče</h2>
+                    </div>
+                    <button type="button" onClick={toggleMenuOpen} className='drawer-button' >
+                        <img src="../close-icon.png"
+                             alt="menu" aria-hidden="true"
+                             onClick={toggleMenuOpen}/>
+
+                    </button>
                 </div>
 
             </div>
-            <div className="backdrop" />
         </div>
     );
 };
