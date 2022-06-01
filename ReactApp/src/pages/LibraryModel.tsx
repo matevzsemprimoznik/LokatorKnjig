@@ -7,6 +7,7 @@ import Model from '../3DComponents/Model';
 import {LibraryContext} from "../context/libraryContext";
 import {MenuContext, MenuContextType} from "../context/menuContext";
 import Drawer from "../components/Drawer";
+import SearchUDK from '../components/SearchUDK';
 
 const RotateIconUrl = '../../images/rotate.png';
 const FirstPersonViewIconUrl = '../../images/360-view.png';
@@ -20,7 +21,9 @@ const LibraryModel = () => {
 
     useEffect(() => {
         if(selected)
-            getFloorData('KTF2', selected)
+          getFloorData('KTF2', selected)
+        else
+          getFloorData('KTF', "");
     }, [selected])
 
   const onClick = () => {
@@ -38,6 +41,7 @@ const LibraryModel = () => {
 
   return (
     <>
+      <SearchUDK />
       <div style={{height: "90vh"}}>
         <Canvas>
           <Model selected={selected} modelType={modelType} setModelType={setModelType} floorData={floorData} />
