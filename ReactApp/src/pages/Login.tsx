@@ -1,20 +1,11 @@
-import { FC, SetStateAction, useContext, useMemo, useState } from 'react';
+import React, {FC, FormEvent, FormEventHandler, useContext, useMemo, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
-import { auth } from '../firebase-config';
-import { Location } from 'history';
+import '../styles/login/login.css'
+import Footer from "../components/landing_page/Footer";
 
-interface LoginProps {
-  previousLocation: string;
-}
 
-interface LocationState {
-  from: {
-    pathname: string;
-  };
-}
-
-const Login: FC<LoginProps> = ({ previousLocation }) => {
+const Login: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState('');
@@ -31,21 +22,33 @@ const Login: FC<LoginProps> = ({ previousLocation }) => {
     return '/';
   }, [location]);
 
-  const onClick = async () => {
+  const onLogin = async (e: FormEvent) => {
+    e.preventDefault()
     try {
       if (loginUser) await loginUser(username, password);
-
       navigate(navigatePathname);
     } catch (error: any) {
       console.log(error);
     }
   };
   return (
-    <div>
-      <input type='email' name='email' onChange={(e) => setUsername(e.target.value)} />
-      <input type='password' name='password' onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={onClick}>Prijava</button>
-    </div>
+      <>
+      <div className='login'>
+        <form onSubmit={onLogin} >
+          <div className='input-container'>
+            <label htmlFor='email'>Elektronski naslov</label>
+            <input type='email' name='email' onChange={(e) => setUsername(e.target.value)} />
+          </div>
+          <div className='input-container'>
+            <label htmlFor='password'>Geslo</label>
+            <input type='password' name='password' onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          <button type='submit'>Prijava</button>
+        </form>
+      </div>
+        <Footer />
+      </>
+
   );
 };
 

@@ -29,7 +29,7 @@ function App() {
               <Route path='' element={<LibraryModel />} />
             </Route>
             <Route path='/' element={<Home />} />
-            <Route path='/login' element={<Login previousLocation='/' />} />
+            <Route path='/login' element={<Login />} />
             <Route path='/add-floor-plan' element={<AddFloorPlan />} />
           </Routes>
         </BrowserRouter>
