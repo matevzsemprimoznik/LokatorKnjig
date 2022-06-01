@@ -33,16 +33,16 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
   const selectedUDKPositions = getSelectedUDKPositions();
   return (
     <>
-      {roomData.entrances.map((entrance,index) => <EntranceText key={index} position={{ ...entrance.position }} />)}
+      {roomData.entrances.map((entrance,index) => <EntranceText key={index} position={{ x: entrance.position.x + roomData.center.x,y: entrance.position.y + roomData.center.y,z: entrance.position.z + roomData.center.z  }} />)}
       {roomData.bookshelves.map((bookshelf: Bookshelf, index: number) =>
           bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK) ? (
           <BookshelfPiece
             type={selectedBookshelf}
             key={index}
             position={{
-              x: bookshelf.position.x,
-              y: bookshelf.position.y,
-              z: bookshelf.position.z,
+              x: bookshelf.position.x + roomData.center.x,
+              y: bookshelf.position.y + roomData.center.y,
+              z: bookshelf.position.z + roomData.center.z,
             }}
             udk={bookshelf.udks}
             rotation={{
@@ -58,9 +58,9 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
             type={closeBookshelf}
             key={index}
             position={{
-              x: bookshelf.position.x,
-              y: bookshelf.position.y,
-              z: bookshelf.position.z,
+              x: bookshelf.position.x + roomData.center.x,
+              y: bookshelf.position.y + roomData.center.y,
+              z: bookshelf.position.z + roomData.center.z,
             }}
             rotation={{
               x: 0,
@@ -74,9 +74,9 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
             type={bookshelfGLB}
             key={index}
             position={{
-              x: bookshelf.position.x,
-              y: bookshelf.position.y,
-              z: bookshelf.position.z,
+              x: bookshelf.position.x + roomData.center.x,
+              y: bookshelf.position.y + roomData.center.y,
+              z: bookshelf.position.z + roomData.center.z,
             }}
             rotation={{
               x: 0,
@@ -87,7 +87,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
           />
         )
       )}
-      <Ground position={{ x: 0, y: 0.05, z: 0 }} onDoubleClick={moveCameraToDoubleClickedPoint} edges={roomData.ground} />
+      <Ground position={{ x: 0 + roomData.center.x, y: 0.05+ roomData.center.y, z: 0+ roomData.center.z }} onDoubleClick={moveCameraToDoubleClickedPoint} edges={roomData.ground} />
     </>
   );
 };

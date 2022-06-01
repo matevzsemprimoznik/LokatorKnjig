@@ -9,7 +9,6 @@ interface FloorModelProps{
     moveCameraToDoubleClickedPoint: (event: ThreeEvent<MouseEvent>) => void
 }
 const FloorModel:FC<FloorModelProps> = ({floorData, selected,moveCameraToDoubleClickedPoint}) => {
-    console.log('enkjrat')
     return <> {floorData.map((room, index) => <MemoizedRoomModel key={index} roomData={room} selectedUDK={selected} moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>)}</>
 }
 export default memo(FloorModel)

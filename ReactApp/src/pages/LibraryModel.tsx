@@ -16,11 +16,11 @@ const LibraryModel = () => {
   const { selected } = useParams();
   const { modelType, setModelType } = useContext(ModelContext);
   const {floorData, getFloorData} = useContext(LibraryContext)
-    const { menuOpen, toggleMenuOpen } = React.useContext(MenuContext);
+    const { toggleMenuOpen } = React.useContext(MenuContext);
 
     useEffect(() => {
         if(selected)
-            getFloorData('KTF', selected)
+            getFloorData('KTF2', selected)
     }, [selected])
 
   const onClick = () => {
