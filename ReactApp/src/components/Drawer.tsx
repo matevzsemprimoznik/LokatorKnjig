@@ -27,11 +27,14 @@ const Drawer: FC<DrawerProps> = ({isOpen, onClose}) => {
                         <h2>Knjižnica hoče</h2>
                     </div>
                     <button type="button" onClick={toggleMenuOpen} className='drawer-button' >
-                        <img src="../close-icon.png"
+                        <img src="../close-icon-white.png"
                              alt="menu" aria-hidden="true"
                              onClick={toggleMenuOpen}/>
 
                     </button>
+                </div>
+                <div className='drawer-info-body'>
+                    <div className='drawer-body-element'>1 Nadstropje</div>
                 </div>
 
             </div>
