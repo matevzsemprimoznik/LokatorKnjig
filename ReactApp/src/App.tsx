@@ -11,25 +11,28 @@ import Home from './pages/Home';
 import './index.css';
 import ModelProvider from './context/modelContext';
 import Header from './components/landing_page/Header';
-import LibraryProvider from "./context/libraryContext";
+import Login from './pages/Login';
+import AuthProvider from './context/authContext';
+import AddFloorPlan from './pages/AddFloorPlan';
 
 function App() {
   return (
-      <LibraryProvider>
-        <ModelProvider>
-          <BrowserRouter>
-            <Header />
-            <Routes>
-              <Route path='/library-model'>
-                <Route path=':selected' element={<LibraryModel />}></Route>
-                <Route path='' element={<LibraryModel />} />
-              </Route>
-              <Route path='/' element={<Home />} />
-            </Routes>
-          </BrowserRouter>
-        </ModelProvider>
-      </LibraryProvider>
-
+    <AuthProvider>
+      <ModelProvider>
+        <BrowserRouter>
+          <Header />
+          <Routes>
+            <Route path='/library-model'>
+              <Route path=':selected' element={<LibraryModel />}></Route>
+              <Route path='' element={<LibraryModel />} />
+            </Route>
+            <Route path='/' element={<Home />} />
+            <Route path='/login' element={<Login previousLocation='/' />} />
+            <Route path='/add-floor-plan' element={<AddFloorPlan />} />
+          </Routes>
+        </BrowserRouter>
+      </ModelProvider>
+    </AuthProvider>
   );
 }
 
