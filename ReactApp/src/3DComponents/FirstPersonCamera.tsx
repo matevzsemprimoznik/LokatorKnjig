@@ -147,7 +147,7 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position }) => {
   return (
     <>
       <PerspectiveCamera
-        rotation={[cameraRotation.x, 0, cameraRotation.z]}
+        rotation={[cameraRotation.x, cameraRotation.y, cameraRotation.z]}
         makeDefault={true}
         ref={cameraRef}
         position={[position.x, position.y, position.z]}
