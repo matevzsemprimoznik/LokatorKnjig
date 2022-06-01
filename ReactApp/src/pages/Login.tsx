@@ -1,16 +1,21 @@
-import React, {FC, FormEvent, FormEventHandler, useContext, useMemo, useState} from 'react';
+import React, {FC, FormEvent, FormEventHandler, useContext, useEffect, useMemo, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
 import '../styles/login/login.css'
 import Footer from "../components/landing_page/Footer";
-
+import Error from '../components/Error'
 
 const Login: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null)
   const { loginUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    setError(null)
+  }, [username, password])
 
   const navigatePathname = useMemo(() => {
     const state = location.state as { from: { pathname: string } };
@@ -22,13 +27,15 @@ const Login: FC = () => {
     return '/';
   }, [location]);
 
+
+
   const onLogin = async (e: FormEvent) => {
     e.preventDefault()
     try {
       if (loginUser) await loginUser(username, password);
       navigate(navigatePathname);
     } catch (error: any) {
-      console.log(error);
+      setError(error)
     }
   };
   return (
@@ -44,6 +51,7 @@ const Login: FC = () => {
             <input type='password' name='password' onChange={(e) => setPassword(e.target.value)} />
           </div>
           <button type='submit'>Prijava</button>
+          {error && <Error message={error}/>}
         </form>
       </div>
         <Footer />
