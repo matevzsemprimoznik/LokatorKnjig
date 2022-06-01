@@ -33,6 +33,7 @@
     top: 6em;
     width: 50%;
     transform: translateX(-50%);
+    background-color: white;
 }
 
 .search-icon {
