@@ -25,4 +25,15 @@ router.get('/:abbreviation/:udk', async (req, res) => {
     }
 });
 
+//returns all spaces on the first floor found
+router.get('/:abbreviation', async (req, res) => {
+    const queryResult = await Library.findOne({ abbreviation: req.params.abbreviation }, 'file -_id');
+
+    const file = await queryResult.file;
+    
+    let floor = file[0].floor;
+    let result = file.filter(room => (room.floor === floor));
+    return res.json(result);
+});
+
 export default router;
