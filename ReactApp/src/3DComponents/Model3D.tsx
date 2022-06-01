@@ -33,7 +33,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
   const selectedUDKPositions = getSelectedUDKPositions();
   return (
     <>
-      {roomData.entrances.map((entrance,index) => <EntranceText key={index} position={{ x: entrance.position.x + roomData.center.x,y: entrance.position.y + roomData.center.y,z: entrance.position.z + roomData.center.z  }} />)}
+      {roomData.entrances.map((entrance,index) => <EntranceText key={index} rotation={entrance.rotation} position={{ x: entrance.position.x + roomData.center.x,y: entrance.position.y + roomData.center.y,z: entrance.position.z + roomData.center.z  }} />)}
       {roomData.bookshelves.map((bookshelf: Bookshelf, index: number) =>
           bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK) ? (
           <BookshelfPiece
