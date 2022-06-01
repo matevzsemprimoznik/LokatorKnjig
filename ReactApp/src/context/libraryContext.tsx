@@ -6,12 +6,12 @@ import {Room} from "../models/library";
 
 export type LibraryContextType = {
     floorData: Array<Room>;
-    getFloorData: (library: string, udk: string) => void
+    getFloorData: ((library: string, udk: string) => void) | null
 };
 
 export const LibraryContext = createContext<LibraryContextType>({
     floorData: [],
-    getFloorData: () => {}
+    getFloorData: null
 });
 
 const LibraryProvider = ({ children }: any) => {
@@ -19,7 +19,9 @@ const LibraryProvider = ({ children }: any) => {
 
     const getFloorData = async (library: string, udk: string) => {
         try {
+            console.log('sdkdfkjg')
             const response = await libraryApi.get(`/${library}/${udk}`);
+            console.log(response)
             setFloorData(response.data)
         } catch (err) {
             console.log(err);

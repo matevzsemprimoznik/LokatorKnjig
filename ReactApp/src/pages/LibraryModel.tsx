@@ -15,9 +15,9 @@ const LibraryModel = () => {
   const {floorData, getFloorData} = useContext(LibraryContext)
 
     useEffect(() => {
-        if(selected)
+        if(selected && getFloorData)
             getFloorData('KTF', selected)
-    }, [selected])
+    }, [selected, getFloorData])
 
   const onClick = () => {
     if (modelType !== ModelType._2D) setModelType(ModelType._2D);

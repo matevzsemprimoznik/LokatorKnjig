@@ -14,10 +14,12 @@ import Header from './components/landing_page/Header';
 import Login from './pages/Login';
 import AuthProvider from './context/authContext';
 import AddFloorPlan from './pages/AddFloorPlan';
+import LibraryProvider from "./context/libraryContext";
 
 function App() {
   return (
     <AuthProvider>
+      <LibraryProvider>
       <ModelProvider>
         <BrowserRouter>
           <Header />
@@ -32,6 +34,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </ModelProvider>
+      </LibraryProvider>
     </AuthProvider>
   );
 }
