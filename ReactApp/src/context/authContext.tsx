@@ -1,8 +1,10 @@
 import { createContext, useEffect, useRef, useState } from 'react';
 import { auth } from '../firebase-config';
+import {User} from '@firebase/auth-types'
+
 
 export type AuthContextType = {
-  isAuth: boolean;
+  isAuth: boolean | null;
   loginUser?: (username: string, password: string) => Promise<void>;
 };
 
@@ -11,12 +13,28 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 const AuthProvider = ({ children }: any) => {
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState<boolean | null>(null);
+  const [user, setUser] = useState<User | null>(null)
+
+    useEffect(() => {
+        const unsubscribe =auth.onAuthStateChanged((authUser) => {
+            if(authUser) {
+                setUser(authUser)
+            }
+        })
+        if(user)
+            setIsAuth(true)
+        return () => {
+            unsubscribe();
+        }
+    }, [user]);
+
 
   const loginUser = async (username: string, password: string) =>
     new Promise<void>(async (resolve, reject) => {
       try {
         const result = await auth.signInWithEmailAndPassword(username, password);
+
         setIsAuth(true);
         resolve();
       } catch (error) {
