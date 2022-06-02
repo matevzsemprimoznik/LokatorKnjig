@@ -1,12 +1,11 @@
 .search-form {
-    background-color: #f0f1f6;
+    background-color: white;
 }
 
 .search-form form {
     padding: 50px;
     border-radius: 15px;
-    background-color: #8787e1;
-    background-image: url(../../../public/images/bg-wave1.svg);
+    background-color: #232027;
     background-size: cover;
     background-position: center;
     display: grid;
@@ -27,7 +26,7 @@
 .search-form form input:last-child {
     cursor: pointer;
     color: #fff;
-    background-color: #2acfcf;
+    background-color: #00a6fb;
 }
 
 
