@@ -10,7 +10,7 @@
     background-size: cover;
     background-position: center;
     display: grid;
-    grid-template-columns: auto 170px;
+    grid-template-columns: auto 180px 180px;
     gap: 20px;
     transform: translateY(-75px);
 }
@@ -36,6 +36,13 @@
     padding-left: 15px;
     padding-right: 15px;
     margin: auto;
+    justify-content: space-evenly;
+}
+
+.library-select {
+    border-radius: 8px;
+    font-size: 18px;
+    font-family: "Poppins", sans-serif;
 }
 
 @media (min-width: 1200px) {
@@ -51,6 +58,7 @@
         grid-template-columns: auto;
         transform: translateY(-92px);
     }
+
 
 }
 
