@@ -76,7 +76,6 @@ const LibraryModel = () => {
             onClick={toggleMenuOpen}
             image={MenuIconUrl}
         />
-        {console.log(floorData)}
         <Drawer isOpen={true} defaultFloor={floorData.length !== 0 ? floorData[0].floor : 0} bodyElements={floors.map(floor => {return {text: 'Nadstropje ' + floor, key: floor}})} onClickBodyElement={onClickDrawerBodyElement}/>
     </>
   );

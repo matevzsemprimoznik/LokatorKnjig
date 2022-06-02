@@ -35,7 +35,7 @@ const Drawer: FC<DrawerProps> = ({isOpen, onClose, bodyElements,onClickBodyEleme
                         <h2>Knjižnica hoče</h2>
                     </div>
                     <button type="button" onClick={toggleMenuOpen} className='drawer-button' >
-                        <img src="../close-icon-white.png"
+                        <img src="../../close-icon-white.png"
                              alt="menu" aria-hidden="true"
                              onClick={toggleMenuOpen}/>
 
