@@ -18,4 +18,5 @@ export interface Room{
     bookshelves: Array<Bookshelf>
     entrances: Array<Entrance>
     ground: Array<Position>
+    center: Position
 }
