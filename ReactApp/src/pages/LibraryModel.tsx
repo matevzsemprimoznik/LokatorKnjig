@@ -31,7 +31,8 @@ const LibraryModel = () => {
     }, [selected])
 
     useEffect(() => {
-        getAllFloors('KTF25')
+        if(library)
+        getAllFloors(library)
     }, [])
 
   const onClick = () => {
@@ -45,7 +46,8 @@ const LibraryModel = () => {
   };
 
   const onClickDrawerBodyElement = (element: any) => {
-      getSpecificFloorData('KTF25', element.key)
+      if(library)
+      getSpecificFloorData(library, element.key)
   }
 
   if(!floorData)
@@ -74,8 +76,8 @@ const LibraryModel = () => {
             onClick={toggleMenuOpen}
             image={MenuIconUrl}
         />
-        {console.log(floors)}
-        <Drawer isOpen={true} bodyElements={floors.map(floor => {return {text: 'Nadstropje ' + floor, key: floor}})} onClickBodyElement={onClickDrawerBodyElement}/>
+        {console.log(floorData)}
+        <Drawer isOpen={true} defaultFloor={floorData.length !== 0 ? floorData[0].floor : 0} bodyElements={floors.map(floor => {return {text: 'Nadstropje ' + floor, key: floor}})} onClickBodyElement={onClickDrawerBodyElement}/>
     </>
   );
 };
