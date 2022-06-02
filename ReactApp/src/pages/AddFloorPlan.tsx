@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
+import LibrarySelectionPage from "./LibrarySelectionPage";
 
 const AddFloorPlan = () => {
   const location = useLocation();
@@ -8,7 +9,7 @@ const AddFloorPlan = () => {
 
   if(isAuth == null) return <div>Loading</div>
   if (!isAuth) return <Navigate to='/login' replace state={{ from: location }} />;
-  return <div>Protected</div>;
+  return <LibrarySelectionPage />;
 };
 
 export default AddFloorPlan;
