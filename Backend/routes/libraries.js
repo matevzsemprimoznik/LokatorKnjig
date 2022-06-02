@@ -6006,12 +6006,23 @@ router.get('/all', async (req, res) => {
   return res.json(library).status(200);
 });
 
+//get all floors of library
+router.get('/:abbreviation/floors', async (req, res) => {
+  const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+  const file = queryResult.file;
+  //TODO: fix json format, change return response
+  let allFloors = file.map(room => room.floor);
+  const uniqueFloors = [...new Set(allFloors)];
+
+  return res.json(uniqueFloors);
+});
+
 //get floor(spaces) of library with the given abbreviation
 router.get('/:abbreviation/:floor', async (req, res) => {
   const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
   const file = queryResult.file;
   //TODO: fix json format, change return response
-  let floor = file.filter(prostor => (prostor.nadstropje == req.params.floor));
+  let floor = file.filter(room => (room.floor == req.params.floor));
 
   return res.json(floor);
 });

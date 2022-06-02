@@ -16,7 +16,7 @@ const MenuIconUrl = '../../menu-button.svg';
 const LibraryModel = () => {
   const { selected } = useParams();
   const { modelType, setModelType } = useContext(ModelContext);
-  const {floorData, getFloorData} = useContext(LibraryContext)
+  const {floorData, getFloorData ,getAllFloors, floors, getSpecificFloorData} = useContext(LibraryContext)
     const { toggleMenuOpen } = React.useContext(MenuContext);
 
     useEffect(() => {
@@ -25,6 +25,10 @@ const LibraryModel = () => {
         else
           getFloorData('KTF', "");
     }, [selected])
+
+    useEffect(() => {
+        getAllFloors('KTF25')
+    }, [])
 
   const onClick = () => {
     if (modelType !== ModelType._2D) setModelType(ModelType._2D);
@@ -35,6 +39,10 @@ const LibraryModel = () => {
     if (modelType === ModelType._3D) setModelType(ModelType.FIRST_PERSON);
     else setModelType(ModelType._3D);
   };
+
+  const onClickDrawerBodyElement = (element: any) => {
+      getSpecificFloorData('KTF25', element.key)
+  }
 
   if(!floorData)
       return <div>Loading</div>
@@ -62,7 +70,8 @@ const LibraryModel = () => {
             onClick={toggleMenuOpen}
             image={MenuIconUrl}
         />
-        <Drawer isOpen={true}/>
+        {console.log(floors)}
+        <Drawer isOpen={true} bodyElements={floors.map(floor => {return {text: 'Nadstropje ' + floor, key: floor}})} onClickBodyElement={onClickDrawerBodyElement}/>
     </>
   );
 };
