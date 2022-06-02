@@ -43,7 +43,7 @@ const LibraryModel = () => {
     <>
       <SearchUDK />
       <div style={{height: "90vh"}}>
-        <Canvas>
+        <Canvas id='canvas-container'>
           <Model selected={selected} modelType={modelType} setModelType={setModelType} floorData={floorData} />
         </Canvas>
       </div>

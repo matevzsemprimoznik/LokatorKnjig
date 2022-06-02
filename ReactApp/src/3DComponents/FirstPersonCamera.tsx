@@ -125,23 +125,26 @@ const FirstPersonCamera: FC<FirstPersonCameraProps> = ({ position }) => {
   });
 
   useEffect(() => {
-    document.addEventListener('mousedown', () => {
-      document.addEventListener('mousemove', onDrag);
-    });
-    document.addEventListener('mouseup', () => {
-      if (!isDragEventOn.current) moveCameraForward(2);
-      isDragEventOn.current = false;
-      document.removeEventListener('mousemove', onDrag);
-    });
-    document.addEventListener('touchstart', () => {
-      document.addEventListener('touchmove', onDrag);
-    });
-    document.addEventListener('touchend', () => {
-      if (!isDragEventOn.current) moveCameraForward(2);
-      isDragEventOn.current = false;
-      previousTouch.current = null;
-      document.removeEventListener('touchmove', onDrag);
-    });
+    const canvas = document.getElementById('canvas-container')?.getElementsByTagName('canvas')[0]
+    if(canvas) {
+      canvas.addEventListener('mousedown', () => {
+        canvas.addEventListener('mousemove', onDrag);
+      });
+      canvas.addEventListener('mouseup', () => {
+        if (!isDragEventOn.current) moveCameraForward(2);
+        isDragEventOn.current = false;
+        canvas.removeEventListener('mousemove', onDrag);
+      });
+      canvas.addEventListener('touchstart', () => {
+        canvas.addEventListener('touchmove', onDrag);
+      });
+      canvas.addEventListener('touchend', () => {
+        if (!isDragEventOn.current) moveCameraForward(2);
+        isDragEventOn.current = false;
+        previousTouch.current = null;
+        canvas.removeEventListener('touchmove', onDrag);
+      });
+    }
   }, []);
   console.log(cameraRotation)
   return (
