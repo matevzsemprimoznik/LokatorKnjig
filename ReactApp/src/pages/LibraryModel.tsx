@@ -14,16 +14,20 @@ const FirstPersonViewIconUrl = '../../images/360-view.png';
 const MenuIconUrl = '../../menu-button.svg';
 
 const LibraryModel = () => {
-  const { selected } = useParams();
+  const { library, selected } = useParams();
   const { modelType, setModelType } = useContext(ModelContext);
   const {floorData, getFloorData} = useContext(LibraryContext)
     const { toggleMenuOpen } = React.useContext(MenuContext);
 
     useEffect(() => {
-        if(selected)
-          getFloorData('KTF2', selected)
-        else
-          getFloorData('KTF', "");
+        if(library) {
+            if(selected)
+                getFloorData(library, selected)
+            else {
+                getFloorData(library, "");
+            }
+        }
+
     }, [selected])
 
   const onClick = () => {
@@ -41,7 +45,7 @@ const LibraryModel = () => {
 
   return (
     <>
-      <SearchUDK />
+      <SearchUDK library={library}/>
       <div style={{height: "90vh"}}>
         <Canvas id='canvas-container'>
           <Model selected={selected} modelType={modelType} setModelType={setModelType} floorData={floorData} />

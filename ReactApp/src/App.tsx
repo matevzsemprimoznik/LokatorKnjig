@@ -27,7 +27,9 @@ function App() {
                           <Header />
                           <Routes>
                               <Route path='/library-model'>
-                                  <Route path=':selected' element={<LibraryModel />}></Route>
+                                  <Route path=':library/' element={<LibraryModel />}>
+                                      <Route path=':selected' element={<LibraryModel />} />
+                                  </Route>
                                   <Route path='' element={<LibraryModel />} />
                               </Route>
                               <Route path='/' element={<Home />} />

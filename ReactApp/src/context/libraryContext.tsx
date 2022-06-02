@@ -19,7 +19,7 @@ const LibraryProvider = ({ children }: any) => {
 
     const getFloorData = async (library: string, udk: string) => {
         try {
-            const response = await libraryApi.get(`/${library}/${udk}`);
+            const response = await libraryApi.get(`udk/${library}/${udk}`);
             setFloorData(response.data)
         } catch (err) {
             console.log(err);
