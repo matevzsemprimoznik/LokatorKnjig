@@ -55,7 +55,7 @@
     justify-content: flex-end;
     padding-top: 1.5em;
 }
-.modal_buttonContainer > button {
+.modal_buttonContainer > button:last-child {
     margin-left: 1em;
     height: 2.5rem;
     margin-top: 1em;
@@ -64,6 +64,19 @@
     border: none;
     border-radius: 5px;
     color: white;
+    padding: 0 1em;
     box-shadow: 0 0 0 2px rgb(0 0 0 / 5%), 1px 5px 8px rgb(0 0 0 / 20%);
+    cursor: pointer;
+}
+.modal_buttonContainer > button:first-child {
+    margin-left: 1em;
+    height: 2.5rem;
+    margin-top: 1em;
+    margin-bottom: .3em;
+    background-color: #f6f6f6f6;
+    border-radius: 5px;
+    color: red;
+    border: 1px solid rgb(0 0 0 / 15%);
+    padding: 0 1em;
     cursor: pointer;
 }

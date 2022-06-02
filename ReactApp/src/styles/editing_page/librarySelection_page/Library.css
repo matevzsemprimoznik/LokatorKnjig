@@ -4,15 +4,24 @@
     cursor: pointer;
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
 }
+
+.libraryLink {
+    text-decoration: none;
+    color: inherit;
+}
+
 .library:hover {
     background-color: #f8f6f6;
 }
+
 .library__info > h2 {
     font-size: 1.2em;
 }
+
 .library__info {
     margin-left: 10px;
 }
+
 .library__info > img {
     color: black;
 }
