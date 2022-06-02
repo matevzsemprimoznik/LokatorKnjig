@@ -1,8 +1,11 @@
-import React, {ChangeEvent, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, useContext, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import rough from "roughjs/bin/rough";
 import {RoughCanvas} from "roughjs/bin/canvas";
 import {Drawable} from "roughjs/bin/core";
 import '../styles/2d_canvas_page/Canvas.css';
+import Modal from "./Modal";
+import {CanvasSVG} from "../utils/canvas-getsvg";
+import {WallContext} from "../context/wallElementsContext";
 
 const generator = rough.generator();
 
@@ -19,6 +22,12 @@ enum DrawingElement {
     DOOR = "DOOR",
     WALL = "WALL",
     BOOKSHELF = "BOOKSHELF"
+}
+
+enum ElementStyleType {
+    SelectedBookshelf = "SELECTED_BOOKSHELF",
+    UdkSettled = "UDK_SETTLED",
+    Normal = "NORMAL"
 }
 
 type ElementType = {
@@ -54,6 +63,7 @@ const Canvas = () => {
 
         const [wallElements, setWallElements] = useState<Array<ElementType>>([]);
         const [bookshelves, setBookshelves] = useState<Array<ElementType>>([]);
+        const [doorElements, setDoorElements] = useState<any>([]);
 
         const [currentDrawingBookshelf, setCurrentDrawingBookshelf] = useState<Array<ElementType>>([]);
         const [selectedElement, setSelectedElement] = useState<ElementType | null>(null);
@@ -74,22 +84,46 @@ const Canvas = () => {
         const [blockSplitOnPieces, setBlockSplitOnPieces] = useState<Array<ElementType>>([]);
 
 
+        const {walls, setWalls} = useContext(WallContext);
+
         useLayoutEffect(() => {
             const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-            const ctx = canvas!.getContext('2d');
+            let ctx = canvas!.getContext('2d');
+
+            let canvasSVGContext = new CanvasSVG.Deferred();
+
+
             ctx!.clearRect(0, 0, canvas.width, canvas.height);
 
             const roughCanvas: RoughCanvas = rough.canvas(canvas);
 
             bookshelves.map((item: ElementType, index: number) => item.id = index);
 
+            [...doorElements].forEach(({text, x, y}) => {
+                ctx!.font = '20px serif';
+                ctx!.fillText(text, x, y);
+            });
+
+            if (walls) {
+                for (let {start, end} of walls) {
+                    ctx!.beginPath();
+                    // Staring point (10,45)
+                    ctx!.moveTo(start.x, start.y);
+                    // End point (180,47)
+                    ctx!.lineTo(end.x, end.y);
+                    // Make the line visible
+                    ctx!.stroke();
+                }
+            }
+
             [...bookshelves, ...currentDrawingBookshelf, ...wallElements, ...currentDrawingBlock].forEach(({element}: { element: Drawable }) => roughCanvas.draw(element))
 
             window.addEventListener('keyup', handleKeyPress, false);
-
+            // @ts-ignore
+            canvasSVGContext.wrapCanvas(canvas);
             return () => window.removeEventListener("keyup", handleKeyPress);
 
-        }, [wallElements, bookshelves, currentDrawingBookshelf, currentDrawingBlock]);
+        }, [wallElements, bookshelves, currentDrawingBookshelf, currentDrawingBlock, doorElements, walls]);
 
         useEffect(() => {
             getImagePath(bs_details.sh_rotation);
@@ -112,12 +146,6 @@ const Canvas = () => {
             }
         }
 
-        enum ElementStyleType {
-            SelectedBookshelf = "SELECTED_BOOKSHELF",
-            UdkSettled = "UDK_SETTLED",
-            Normal = "NORMAL"
-        }
-
         const createElement = (id: number, x: number, y: number, x1: number, y1: number, type: DrawingElement, nb_of_shelves?: number, udk?: Array<Array<string>> | [], style?: ElementStyleType, rotation?: number) => {
 
             if (drawingElement === DrawingElement.BOOKSHELF) {
@@ -135,7 +163,6 @@ const Canvas = () => {
                         fill: `${style === ElementStyleType.SelectedBookshelf ? 'rgb(78,102,166)' : 'rgb(49,38,15)'}`,
                         roughness: 0
                     });
-
                     x1 = x + 50;
                     y1 = y + 30;
                     return {id, x, y, x1, y1, element, nb_of_shelves, udk, rotation}
@@ -167,20 +194,103 @@ const Canvas = () => {
             }
         }
 
-        const getElementAtPosition = (x: number, y: number, bookshelves: Array<ElementType>) => {
-            return bookshelves.find((bookshelf: ElementType) => isCursorOnElement(x, y, bookshelf));
+        const nearPoint = (x: number, y: number, x1: number, y1: number, name: string) => {
+            return Math.abs(x - x1) < 5 && Math.abs(y - y1) < 5 ? name : null;
         }
 
-        const isCursorOnElement = (clientX: number, clientY: number, element: ElementType): boolean => {
+        const getElementAtPosition = (x: number, y: number, bookshelves: Array<ElementType>, type: DrawingElement) => {
+            return bookshelves.find((bookshelf: ElementType) => isCursorOnElement(x, y, bookshelf, type));
+        }
+
+        const getWallAtPosition = (x: number, y: number, walls: Array<ElementType>, type: DrawingElement) => {
+
+            let copy = wallElements.filter((item: any) => item.id !== 0);
+            return copy?.map((element: any) => ({...element, position: isCursorOnElement(x, y, element, type)}))
+                .find((element: any) => element.position !== null);
+        }
+
+        const distance = (a: any, b: any) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
+
+
+        const isCursorOnElement = (clientX: number, clientY: number, element: ElementType, type: DrawingElement) => {
             const {x, y, x1, y1}: { x: number, y: number, x1: number, y1: number } = element;
 
-            const minX = Math.min(x, x1);
-            const maxX = Math.max(x, x1);
-            const minY = Math.min(y, y1);
-            const maxY = Math.max(y, y1);
+            if (type === DrawingElement.BOOKSHELF) {
+                const minX = Math.min(x, x1);
+                const maxX = Math.max(x, x1);
+                const minY = Math.min(y, y1);
+                const maxY = Math.max(y, y1);
 
-            return clientX >= minX && clientX <= maxX && clientY >= minY && clientY <= maxY;
+                return clientX >= minX && clientX <= maxX && clientY >= minY && clientY <= maxY;
+            }
+            if (type === DrawingElement.WALL) {
+                let a = {x: element.x, y: element.y};
+                let b = {x: element.x1, y: element.y1};
+                let c = {x: clientX, y: clientY};
+                const offset = distance(a, b) - (distance(a, c) + distance(b, c));
+
+
+                const start = nearPoint(clientX, clientY, element.x, element.y, "start");
+                const inside = Math.abs(offset) < 1.5 ? "on" : null;
+                return start || inside;
+            }
         }
+
+        // x,y -> točka,,, x1..y1 --> line segment
+        function pDistance(x: number, y: number, x1: number, y1: number, x2: number, y2: number) {
+
+            let A = x - x1;
+            let B = y - y1;
+            let C = x2 - x1;
+            let D = y2 - y1;
+
+            let dot = A * C + B * D;
+            let len_sq = C * C + D * D;
+            let param = -1;
+            if (len_sq != 0) //in case of 0 length line
+                param = dot / len_sq;
+
+            let xx, yy;
+
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+
+            let dx = x - xx;
+            let dy = y - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // A, B, P [AB -> line segment, P -> točka
+        function getClosestPoint(x: number, y: number, x1: number, y1: number, x2: number, y2: number) {
+            let a_to_p = [x - x1, y - y1];  // Storing vector A->P
+            let a_to_b = [x2 - x1, y2 - y1];     // Storing vector A->B
+
+            let atb2 = a_to_b[0] ** 2 + a_to_b[1] ** 2;  // **2 means "squared"
+            //   Basically finding the squared magnitude
+            //   of a_to_b
+
+            let atp_dot_atb = a_to_p[0] * a_to_b[0] + a_to_p[1] * a_to_b[1];
+            // The dot product of a_to_p and a_to_b
+
+            let t = atp_dot_atb / atb2;  // The normalized "distance" from a to
+            //   your closest point
+
+            return {
+                x: x1 + a_to_b[0] * t,
+                y: y1 + a_to_b[1] * t
+            };
+            //  Add the distance to A, moving
+            //    towards B
+        }
+
 
         const calculateCoordinates = (clientX: number, clientY: number): { clientX: number, clientY: number } => {
             /*round to 10 nearest*/
@@ -193,6 +303,9 @@ const Canvas = () => {
             return {clientX, clientY};
         }
 
+        const [drawingDoor, setDrawingDoor] = useState(false);
+        const [selectedWall, setSelectedWall] = useState<any>();
+
 
         const handleMouseDown = (event: any) => {
             const {
@@ -200,9 +313,39 @@ const Canvas = () => {
                 clientY
             } = drawingElement === DrawingElement.BOOKSHELF ? calculateCoordinates(event.clientX, event.clientY) : event;
 
+            if (drawingDoor) {
+                const element = getWallAtPosition(clientX, clientY, bookshelves, DrawingElement.WALL);
+                if (element) {
+                    if (selectedWall) {
+                        const {
+                            x,
+                            y
+                        } = getClosestPoint(clientX, clientY, selectedWall.x, selectedWall.y, selectedWall.x1, selectedWall.y1);
+                        if (Math.abs(element.x - element.x1) > Math.abs(element.y - element.y1))
+                            setDoorElements((prevState: any) => [...prevState, {
+                                text: "Vrata",
+                                x: x + 5,
+                                y: y + 20,
+                                rotation: 0
+                            }])
+                        if (Math.abs(element.x - element.x1) < Math.abs(element.y - element.y1))
+                            setDoorElements((prevState: any) => [...prevState, {
+                                text: "Vrata",
+                                x: x + 5,
+                                y: y + 5,
+                                rotation: 0
+                            }])
+                    } else {
+                        // ni cursor blizu stene
+                    }
+                }
+            }
+
             /*drawing walls*/
             if (drawingElement === DrawingElement.WALL && action === ActionTypes.NONE) {
                 if (!isFirstCornerSelected) {
+
+                    console.log(isFirstCornerSelected);
                     setWallEdgePressed(true);
                     const id = wallElements.length;
                     const element = createElement(id, clientX, clientY, clientX, clientY, DrawingElement.WALL);
@@ -211,7 +354,14 @@ const Canvas = () => {
                 }
                 setAction(ActionTypes.DRAWING);
             } else if (drawingElement === DrawingElement.WALL && action === ActionTypes.DRAWING) {
-
+                const elementAt = getWallAtPosition(clientX, clientY, wallElements, DrawingElement.WALL);
+                if (elementAt) {
+                    if (wallElements.length - elementAt.id > 1) {
+                        setSelectedWall(elementAt);
+                    } else {
+                        setSelectedWall(null);
+                    }
+                }
             }
 
             if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.DRAWING) {
@@ -222,7 +372,7 @@ const Canvas = () => {
             }
             // select bookshelf at cursor position
             if (action === ActionTypes.SELECTING) {
-                const selectedElement = getElementAtPosition(clientX, clientY, bookshelves);
+                const selectedElement = getElementAtPosition(clientX, clientY, bookshelves, DrawingElement.BOOKSHELF);
                 if (selectedElement) {
                     setSelectedElement(selectedElement);
                 } else {
@@ -231,11 +381,31 @@ const Canvas = () => {
             }
         }
 
+        const cursorStyle = (position: any) => {
+            switch (position) {
+                case "on":
+                    return "move";
+                default:
+                    return "resize";
+            }
+        }
+
         const handleMouseMove = (event: any) => {
             const {
                 clientX,
                 clientY
             } = drawingElement === DrawingElement.BOOKSHELF ? calculateCoordinates(event.clientX, event.clientY) : event;
+
+            if (drawingDoor) {
+                const element = getWallAtPosition(clientX, clientY, wallElements, DrawingElement.WALL);
+
+                // event.target.style.cursor = element
+                //     ? cursorForPosition(element.position) : "default";
+
+                if (element) {
+                    setSelectedWall(element);
+                }
+            }
 
             if (drawingElement === DrawingElement.WALL && action === ActionTypes.DRAWING) {
                 setWallNotSettled(true);
@@ -254,7 +424,7 @@ const Canvas = () => {
                 }
             }
             if (drawingElement === DrawingElement.BOOKSHELF && action === ActionTypes.SELECTING) {
-                if (getElementAtPosition(clientX, clientY, bookshelves)) {
+                if (getElementAtPosition(clientX, clientY, bookshelves, DrawingElement.BOOKSHELF)) {
                     event.target.style.cursor = "move";
                 } else {
                     event.target.style.cursor = "default";
@@ -285,7 +455,13 @@ const Canvas = () => {
                 } else {
                     const index = wallElements.length - 1;
                     const wallPiece = wallElements[index];
-                    const element = createElement(index, wallPiece.x1, wallPiece.y1, clientX, clientY, DrawingElement.WALL);
+                    // const elementAtPosition = getWallAtPosition(clientX, clientY, wallElements, DrawingElement.WALL);
+                    let element;
+                    /// cursor style crosshair
+                    selectedWall?.position === "edge"
+                        ? element = createElement(index, wallPiece.x1, wallPiece.y1, selectedWall.x, selectedWall.y, DrawingElement.WALL)
+                        :
+                        element = createElement(index, wallPiece.x1, wallPiece.y1, clientX, clientY, DrawingElement.WALL);
 
                     const wallElementsCopy = [...wallElements, element] as ElementType[];
                     setWallElements(wallElementsCopy);
@@ -352,7 +528,7 @@ const Canvas = () => {
         const handleDoubleClick = (event: any) => {
             const {clientX, clientY}: { clientX: number, clientY: number } = event;
 
-            const selectedElement = getElementAtPosition(clientX, clientY, bookshelves);
+            const selectedElement = getElementAtPosition(clientX, clientY, bookshelves, DrawingElement.BOOKSHELF);
             if (selectedElement && edit) {
                 setSelectedElement(selectedElement);
                 setLeftDivOpen(true);
@@ -552,9 +728,9 @@ const Canvas = () => {
         // če je z lihi je premik 0.5 (vztran od centra)
 
 
-        const recalculateBookshelfCoordinates = (elements: ElementType[], startingPointX: number, startingPointY: number) => {
+        const recalculateBookshelfCoordinates = (startingPointX: number, startingPointY: number) => {
             let bookShelfCoords: ElementType[] = [];
-            elements.forEach((item: ElementType) => {
+            bookshelves.forEach((item: ElementType) => {
                 let {x, y, ...rest}: any = calculateBookshelfCenterPoint(item);
                 bookShelfCoords.push({
                     x: Number(((x - startingPointX) / 10).toFixed(2)) / 2.5,
@@ -564,26 +740,158 @@ const Canvas = () => {
             return bookShelfCoords;
         }
 
-        const saveToJson = () => {
-            const [startingPointX, startingPointY] = getRoomCenter(wallElements);
-            let recalcArrOfBookShelves = recalculateBookshelfCoordinates(bookshelves, startingPointX, startingPointY);
-            let police: any = []
+        const recalculateGroundCoordinates = (startingPointX: number, startingPointY: number) => {
+            let ground: any = [];
+            wallElements.forEach(({x1, y1}: ElementType) => {
+                ground.push({
+                    x: Number(((x1 - startingPointX) / 10).toFixed(2)) / 2.5,
+                    z: Number(((y1 - startingPointY) / 10).toFixed(2)) / 3,
+                    y: 0,
+                });
+            });
+            return ground;
+        }
+
+        const recalculateEntrancesCoordinates = (startingPointX: number, startingPointY: number) => {
+            let entrances: any = [];
+            doorElements.forEach(({x, y}: ElementType) => {
+                entrances.push({
+                    x: Number(((x - startingPointX) / 10).toFixed(2)) / 2.5,
+                    z: Number(((y - startingPointY) / 10).toFixed(2)) / 3,
+                    y: 0
+                });
+            });
+            return entrances;
+        }
+
+        const makeEntrancesData = (entrances: any) => {
+            let entranceArr: any = [];
+
+            entrances.forEach((item: any) => {
+                entranceArr.push({
+                    position: {x: item.x, z: item.z, y: item.y},
+                    rotation: 0,
+                })
+            });
+            return entranceArr;
+        }
+
+        const makeBookshelvesData = (recalcArrOfBookShelves: any) => {
+            let bookshelves: any = [];
+
             recalcArrOfBookShelves.forEach((item: any) => Array(Number(item.nb_of_shelves)).fill(null).forEach((el: null, index: number, arr: any) => {
-                police.push({
-                    udk: item?.udk[arr.length -1 -index] || [],
-                    pozicija: {x: item.x, z: item.z, y: (index * 0.64) + 0.4},
-                    rotacija: item.rotation
+                bookshelves.push({
+                    udks: item?.udk[arr.length - 1 - index] || [],
+                    position: {x: item.x, z: item.z, y: (index * 0.64) + 0.4},
+                    rotation: item.rotation
                 })
             }));
-            console.log(JSON.stringify({police}));
-            return JSON.stringify({police});
+            return bookshelves;
+        }
+
+        const makeOriginalBookshelvesData = () => {
+            let original: any = [];
+            bookshelves.forEach((item: any) => {
+                console.log(item);
+                original.push({
+                    id: item.id,
+                    x: item.x,
+                    y: item.y,
+                    x1: item.x1,
+                    y1: item.y1,
+                    udk: item.udk,
+                    rotation: item.rotation,
+                    nb_of_shelves: item.nb_of_shelves,
+                })
+            })
+            return original;
+        }
+
+        const makeOriginalGroundData = (wallElements: any) => {
+            let original: any = [];
+            wallElements.forEach((item: any) => {
+                original.push({
+                    id: item.id,
+                    x: item.x,
+                    y: item.y,
+                    x1: item.x1,
+                    y1: item.y1,
+                })
+            })
+            return original;
+        }
+
+        const makeOriginalEntrancesData = (entrances: any) => {
+            let original: any = [];
+            entrances.forEach((item: any) => {
+                original.push({
+                    x: item.x,
+                    y: item.y,
+                    rotation: item.rotation,
+                })
+            })
+            return original;
+        }
+
+        const saveToJson = (label: string, floor: number, canvas: any) => {
+            const [startingPointX, startingPointY] = getRoomCenter(wallElements);
+
+            // recalculated coords
+            let bookshelves = makeBookshelvesData(recalculateBookshelfCoordinates(startingPointX, startingPointY));
+            let ground = recalculateGroundCoordinates(startingPointX, startingPointY);
+            let entrances = makeEntrancesData(recalculateEntrancesCoordinates(startingPointX, startingPointY));
+
+            // original coords
+            let bookshelvesOriginal = makeOriginalBookshelvesData();
+            let groundOriginal = makeOriginalGroundData(wallElements);
+            let entrancesOriginal = makeOriginalEntrancesData(doorElements);
+
+
+            let JSON_FORMAT_ORIGINAL = [];
+            JSON_FORMAT_ORIGINAL.push({
+                label,
+                floor,
+                ground: groundOriginal,
+                entrances: entrancesOriginal,
+                bookshelves: bookshelvesOriginal,
+            });
+
+            let JSON_FORMAT = [];
+            JSON_FORMAT.push({
+                label,
+                floor,
+                ground,
+                entrances,
+                bookshelves
+            })
+
+            let context = canvas!.getContext('2d');
+            let res = context!.getSVG();
+            console.log(res);
+
+            /*TODO*/
+            // svg se more shranit na bazo
+
+            console.log("TO KAJ JE PRERAČUNANO", JSON.stringify(JSON_FORMAT));
+            console.log("ORIGINAL", JSON.stringify(JSON_FORMAT_ORIGINAL))
+
+            return [JSON.stringify(JSON_FORMAT), JSON.stringify(JSON_FORMAT_ORIGINAL)];
         }
 
         /*SHRANJEVANJE KOORDINAT V JSON*/
 
+        const addDoors = () => {
+            setDrawingDoor(!drawingDoor);
+            setDrawingElement(DrawingElement.NONE);
+        }
+
+        const [isOpen, setIsOpen] = useState<boolean>(false);
+        const onClose = () => setIsOpen(false);
+
 
         return (
             <>
+               <Modal open={isOpen} onClose={onClose} saveToJson={saveToJson}/>
                 <div className="topDiv">
                     <div className={`topDiv-element${(radio === 0) ? '--checked' : ''}`} onClick={handleElementSelection}>
                         <input id="radio-select" type="radio" name="action-selection" className="topDiv-elementRadio"
@@ -641,8 +949,12 @@ const Canvas = () => {
                             </svg>
                         </label>
                     </div>
-                    <div className={`topDiv-element`} onClick={handleElementDelete}>
-                        <button onClick={saveToJson}>Shrani v json</button>
+                    <div className={`topDiv-element`}>
+                        <button onClick={addDoors}>Vstavi vrata</button>
+                    </div>
+                    <div className={`topDiv-element`}>
+                        {/*<button onClick={saveToJson}>Shrani v json</button>*/}
+                        <button onClick={() => setIsOpen(true)}>Shrani v json</button>
                     </div>
                 </div>
                 {/*EDITING AND DRAWING SHELVES*/}
@@ -653,7 +965,7 @@ const Canvas = () => {
                                 <h2>Določanje udk</h2>
                                 {Array(Number(selectedElement.nb_of_shelves)).fill(null).map((item: null, index: number) => {
                                     return (
-                                        <React.Fragment key={index} >
+                                        <React.Fragment key={index}>
                                             <div className="inputContainer">
                                                 <label htmlFor='udk'>Udk {index}: </label>
                                                 <input name={index.toString()} id="udk" type="text"
