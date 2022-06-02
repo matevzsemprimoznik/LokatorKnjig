@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  webapp:
+    build: ./ReactApp
+    container_name: reactapp
+    image: lokatorknjig
+    ports:
+      - "3000:5000"
+    env_file:
+      - .env
+
+  backend:
+    build: ./Backend
+    container_name: backend
+    image: lokatorknjigbackend
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env

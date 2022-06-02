@@ -1,0 +1,35 @@
+.login{
+    display: flex;
+    justify-content: center;
+    margin-top: 100px;
+    flex: 1;
+    margin-bottom: 100px;
+}
+.login form{
+    width: min(1110px, 95%);
+}
+
+.login .input-container{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+.login label{
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+.login input{
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #99989d;
+}
+.login button{
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    margin-top: 6px;
+    background-color: #2acfcf;
+    color: white;
+    font-size: 16px;
+}
