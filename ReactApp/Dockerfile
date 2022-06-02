@@ -10,7 +10,9 @@ COPY . .
 
 ARG BACKEND_URI_ARG
 
-RUN REACT_APP_BACKEND_URI=${BACKEND_URI_ARG} npm run build
+ENV REACT_APP_BACKEND_URI=$BACKEND_URI_ARG
+
+RUN npm run build
 
 FROM nginx:stable-alpine
 
