@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, Suspense} from 'react';
 import {useParams} from 'react-router-dom';
 import {Canvas} from 'react-three-fiber';
 import Button from '../components/Button';
@@ -8,6 +8,7 @@ import {LibraryContext} from "../context/libraryContext";
 import {MenuContext, MenuContextType} from "../context/menuContext";
 import Drawer from "../components/Drawer";
 import SearchUDK from '../components/SearchUDK';
+import {Loading} from "../components/Loading";
 
 const RotateIconUrl = '../../images/rotate.png';
 const FirstPersonViewIconUrl = '../../images/360-view.png';
@@ -46,20 +47,20 @@ const LibraryModel = () => {
   };
 
   const onClickDrawerBodyElement = (element: any) => {
-      if(library)
-      getSpecificFloorData(library, element.key)
+      if(library) getSpecificFloorData(library, element.key)
   }
 
   if(floorData.length === 0)
-      return <div>Loading</div>
+      return <Loading/>
 
   return (
     <>
-      <SearchUDK library={library}/>
       <div style={{height: "90vh"}}>
-        <Canvas id='canvas-container'>
-          <Model selected={selected} modelType={modelType} setModelType={setModelType} floorData={floorData} />
-        </Canvas>
+          <Suspense fallback={<Loading/>}>
+              <Canvas id='canvas-container'>
+                  <Model selected={selected} modelType={modelType} setModelType={setModelType} floorData={floorData} />
+              </Canvas>
+          </Suspense>
       </div>
       <Button
         position={{ top: 8, right: 2 }}
@@ -77,7 +78,7 @@ const LibraryModel = () => {
             image={MenuIconUrl}
         />
         <Drawer isOpen={true} defaultFloor={floorData.length !== 0 ? floorData[0].floor : 0} bodyElements={floors.map(floor => {return {text: 'Nadstropje ' + floor, key: floor}})} onClickBodyElement={onClickDrawerBodyElement}/>
-    </>
+ </>
   );
 };
 
