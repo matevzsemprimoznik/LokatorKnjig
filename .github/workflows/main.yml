@@ -33,6 +33,6 @@ jobs:
           usedocker: true
           appdir: "/ReactApp"
           docker_build_args: |
-            BACKEND_URI_ARG
+            REACT_APP_BACKEND_URI
         env:
-          BACKEND_URI_ARG: ${{secrets.REACT_APP_BACKEND_URI}}
+          REACT_APP_BACKEND_URI: ${{secrets.REACT_APP_BACKEND_URI}}
