@@ -17,14 +17,14 @@ const LibrariesInfoSection = () => {
         <div className="libraries-info">
             <div className="libraries-info-container">
                 <h2>Knjižnice v sistemu</h2>
-                <p>Trenutno naša spletna stran omogoča pregled 1 knjižnice. 
+                <p>Trenutno naša spletna stran omogoča pregled {libraryData.length} knjižnic.
                     Lahko si ogledate sam model knjižnice ali pa poiščete knjigo glede na njen UDK.
                     Spodaj je prikazanih nekaj knjižnic, ob kliku na kvadratek vas bo stran popeljala na 3D model izbrane 
                     knjižnice.
                 </p>
                 <div className="library-info-row">
                 {
-                    libraryData.map((library: any, index: number) => (
+                    libraryData.filter((library, index) => index <3).map((library: any, index: number) => (
                         <div key={index} className="col-md-4" onClick={() => handleNavigate(library.abbreviation)}>
                             <div className="library-card">
                                 <div className="icon">
