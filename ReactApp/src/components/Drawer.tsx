@@ -5,12 +5,13 @@ import '../styles/Drawer.css';
 type DrawerProps = {
     isOpen?: boolean,
     onClose?: (value: boolean | ((prevVal: boolean) => boolean)) => void,
+    section: string
     bodyElements: Array<any>
     onClickBodyElement: (element: any) => void
     defaultFloor: number
 }
 
-const Drawer: FC<DrawerProps> = ({isOpen, onClose, bodyElements,onClickBodyElement, defaultFloor}) => {
+const Drawer: FC<DrawerProps> = ({isOpen, onClose, section, bodyElements,onClickBodyElement, defaultFloor}) => {
 
     const { menuOpen, toggleMenuOpen } = React.useContext(MenuContext) as MenuContextType;
     const prevClickedElement = useRef<{key: number} | null>({key: defaultFloor})
@@ -32,13 +33,12 @@ const Drawer: FC<DrawerProps> = ({isOpen, onClose, bodyElements,onClickBodyEleme
 
                 <div className="drawer-info-header">
                     <div>
-                        <h2>Knjižnica hoče</h2>
+                        <h2>{section}</h2>
                     </div>
                     <button type="button" onClick={toggleMenuOpen} className='drawer-button' >
                         <img src="../../close-icon-white.png"
                              alt="menu" aria-hidden="true"
                              onClick={toggleMenuOpen}/>
-
                     </button>
                 </div>
                 <div className='drawer-info-body'>

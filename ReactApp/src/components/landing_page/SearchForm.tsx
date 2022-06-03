@@ -1,14 +1,13 @@
-import React, {FC} from 'react';
+import React, {useContext, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
 import '../../styles/landing_page/SearchForm.css';
+import {LibraryContext} from "../../context/libraryContext";
 
-type SearchFormProps = {
-    libraries: any;
-}
 
-const SearchForm: FC<SearchFormProps> = ({libraries}) => {
+const SearchForm = () => {
+    const {libraryData} = useContext(LibraryContext);
     const [searchedUDK, setSearchedUDK] = React.useState("");
-    const [library, setLibrary] = React.useState(libraries[0].abbreviation);
+    const [library, setLibrary] = React.useState("");
     let navigate = useNavigate();
 
     const handleUDKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,13 +15,18 @@ const SearchForm: FC<SearchFormProps> = ({libraries}) => {
     }
     const handleLibraryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setLibrary(e.target.value);
-
     }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         let link = "/library-model/" + library + "/" + searchedUDK;
         navigate(link);
     }
+
+    useEffect(() => {
+        if (libraryData.length != 0) {
+            setLibrary(libraryData[0].abbreviation);
+        }
+    }, [libraryData])
 
     return (
         <div className="search-form">
@@ -36,12 +40,11 @@ const SearchForm: FC<SearchFormProps> = ({libraries}) => {
                     <select
                         className="library-select"
                         onChange={handleLibraryChange}>
-                        {   libraries ?
-                                libraries.map((library: any) => (
-                                    <option value={library.abbreviation}>
+                        {   libraryData.map((library: any, index: number) => (
+                                    <option key={index} value={library.abbreviation}>
                                         {library.abbreviation}
                                     </option>
-                                )) : null
+                                ))
                         }
                     </select>
                     <input type="submit" value="Išči"/>
