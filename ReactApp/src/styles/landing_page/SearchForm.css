@@ -10,7 +10,7 @@
     background-size: cover;
     background-position: center;
     display: grid;
-    grid-template-columns: auto 180px 180px;
+    grid-template-columns: 1fr 1fr 180px;
     gap: 20px;
     transform: translateY(-75px);
 }
@@ -24,7 +24,7 @@
     border: transparent 2px solid;
 }
 
-.search-form form input:last-child {
+.search-form-button{
     cursor: pointer;
     color: #fff;
     background-color: #2acfcf;
@@ -43,6 +43,31 @@
     border-radius: 8px;
     font-size: 18px;
     font-family: "Poppins", sans-serif;
+}
+
+.react-datalist-input__container{
+    position: relative;
+
+}
+.react-datalist-input__listbox{
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: white;
+    list-style-type: none;
+    margin: 0;
+    border-radius: 5px;
+    padding: 0;
+}
+.react-datalist-input__listbox-option{
+    padding: 11px 20px ;
+}
+.react-datalist-input__listbox-option:hover{
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.react-datalist-input__listbox-option mark{
+    background-color: inherit;
 }
 
 @media (min-width: 1200px) {
