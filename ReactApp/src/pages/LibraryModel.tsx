@@ -5,7 +5,7 @@ import Button from '../components/Button';
 import {ModelContext, ModelType} from '../context/modelContext';
 import Model from '../3DComponents/Model';
 import {LibraryContext} from "../context/libraryContext";
-import {MenuContext, MenuContextType} from "../context/menuContext";
+import {MenuContext} from "../context/menuContext";
 import Drawer from "../components/Drawer";
 import SearchUDK from '../components/SearchUDK';
 import {Loading} from "../components/Loading";
@@ -17,7 +17,7 @@ const MenuIconUrl = '../../menu-button.svg';
 const LibraryModel = () => {
   const { library, selected } = useParams();
   const { modelType, setModelType } = useContext(ModelContext);
-  const {floorData, getFloorData ,getAllFloors, floors, getSpecificFloorData} = useContext(LibraryContext)
+  const {floorData, getFloorData ,getAllFloors, floors, getSpecificFloorData, section} = useContext(LibraryContext)
     const { toggleMenuOpen } = React.useContext(MenuContext);
 
     useEffect(() => {
@@ -55,6 +55,7 @@ const LibraryModel = () => {
 
   return (
     <>
+      <SearchUDK library={library}/>
       <div style={{height: "90vh"}}>
           <Suspense fallback={<Loading/>}>
               <Canvas id='canvas-container'>
@@ -77,8 +78,8 @@ const LibraryModel = () => {
             onClick={toggleMenuOpen}
             image={MenuIconUrl}
         />
-        <Drawer isOpen={true} defaultFloor={floorData.length !== 0 ? floorData[0].floor : 0} bodyElements={floors.map(floor => {return {text: 'Nadstropje ' + floor, key: floor}})} onClickBodyElement={onClickDrawerBodyElement}/>
- </>
+        <Drawer isOpen={true} section={section} defaultFloor={floorData.length !== 0 ? floorData[0].floor : 0} bodyElements={floors.map(floor => {return {text: 'Nadstropje ' + floor, key: floor}})} onClickBodyElement={onClickDrawerBodyElement}/>
+    </>
   );
 };
 

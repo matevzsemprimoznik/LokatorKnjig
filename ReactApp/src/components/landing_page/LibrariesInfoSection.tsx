@@ -1,12 +1,10 @@
-import React, {FC} from 'react';
+import React, {useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/landing_page/LibrariesInfoSection.css';
+import {LibraryContext} from "../../context/libraryContext";
 
-type LibrariesInfoProps = {
-    libraries: any;
-}
-
-const LibrariesInfoSection: FC<LibrariesInfoProps> = ({libraries}) => {
+const LibrariesInfoSection = () => {
+    const {libraryData} = useContext(LibraryContext);
     let navigate = useNavigate();
     
     const handleNavigate = (abbreviation: any) => {
@@ -26,8 +24,8 @@ const LibrariesInfoSection: FC<LibrariesInfoProps> = ({libraries}) => {
                 </p>
                 <div className="library-info-row">
                 {
-                    libraries.map((library: any) => (
-                        <div className="col-md-4" onClick={() => handleNavigate(library.abbreviation)}>
+                    libraryData.map((library: any, index: number) => (
+                        <div key={index} className="col-md-4" onClick={() => handleNavigate(library.abbreviation)}>
                             <div className="library-card">
                                 <div className="icon">
                                     <p className="library-alias">{library.abbreviation}</p>
