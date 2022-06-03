@@ -22,6 +22,9 @@ interface BookshelfPieceProps {
 const BookshelfPiece: FC<BookshelfPieceProps> = ({ position, type, rotation = { x: 0, y: 0, z: 0 }, udk }) => {
   const { nodes, materials }: any = useGLTF(type);
 
+  if(udk == null || (Array.isArray(udk) && udk.length === 0))
+    udk = ['']
+
   return (
     <>
       <mesh

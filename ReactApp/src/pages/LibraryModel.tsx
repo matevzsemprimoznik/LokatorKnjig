@@ -50,7 +50,7 @@ const LibraryModel = () => {
       getSpecificFloorData(library, element.key)
   }
 
-  if(!floorData)
+  if(floorData.length === 0)
       return <div>Loading</div>
 
   return (

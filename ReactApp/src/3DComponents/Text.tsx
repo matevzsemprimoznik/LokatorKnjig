@@ -3,7 +3,6 @@ import * as THREE from "three";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import Roboto from "../assets/Roboto_Bold.json";
-import {Text3D} from "@react-three/drei";
 
 interface TextProps {
   text: string;
@@ -32,19 +31,24 @@ const Text: FC<TextProps> = ({ text, color='white', size = 0.1, position, rotati
     }
   }, []);
 
+  const font = new FontLoader().parse(Roboto);
+  const geometry: any = new TextGeometry(text, {
+    font: font,
+    size: size,
+    height: 0.1,
+  });
 
   const material = [new THREE.MeshPhongMaterial({ color })];
 
+
   return (
-      <Text3D
-          //@ts-ignore
-          font={Roboto}
-          ref={textRef}
-          position={[position.x,position.y, position.z]}
-          rotation={[rotation.x, rotation.y, rotation.z]}
-          material={material} size={size} height={0.1} >
-        {text}
-      </Text3D>
+      <mesh
+    ref={textRef}
+    position={[position.x, position.y, position.z]}
+    rotation={[rotation.x, rotation.y, rotation.z]}
+    geometry={geometry}
+    material={material}
+    />
   );
 };
 
