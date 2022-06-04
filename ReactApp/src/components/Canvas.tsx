@@ -833,8 +833,13 @@ const Canvas = () => {
             return original;
         }
 
+        const makeSvgCapture = (item: any) => {
+            setWalls(item);
+        }
+
         const saveToJson = (label: string, floor: number, canvas: any) => {
             const [startingPointX, startingPointY] = getRoomCenter(wallElements);
+
 
             // recalculated coords
             let bookshelves = makeBookshelvesData(recalculateBookshelfCoordinates(startingPointX, startingPointY));
@@ -863,7 +868,11 @@ const Canvas = () => {
                 ground,
                 entrances,
                 bookshelves
-            })
+            });
+
+
+            setWallElements([]);
+            console.log(walls)
 
             let context = canvas!.getContext('2d');
             let res = context!.getSVG();
@@ -886,12 +895,17 @@ const Canvas = () => {
         }
 
         const [isOpen, setIsOpen] = useState<boolean>(false);
+
+        useEffect(() => {
+            makeSvgCapture(wallElements);
+        }, [isOpen]);
+
         const onClose = () => setIsOpen(false);
 
 
         return (
             <>
-               <Modal open={isOpen} onClose={onClose} saveToJson={saveToJson}/>
+                <Modal open={isOpen} onClose={onClose} saveToJson={saveToJson}/>
                 <div className="topDiv">
                     <div className={`topDiv-element${(radio === 0) ? '--checked' : ''}`} onClick={handleElementSelection}>
                         <input id="radio-select" type="radio" name="action-selection" className="topDiv-elementRadio"

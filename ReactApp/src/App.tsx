@@ -16,6 +16,8 @@ import AddFloorPlan from './pages/AddFloorPlan';
 import LibraryProvider from "./context/libraryContext";
 import MenuProvider from "./context/menuContext";
 import Canvas from "./components/Canvas";
+import FloorPlanEditingPage from "./pages/FloorPlanEditingPage";
+import WallProvider from "./context/wallElementsContext";
 
 function App() {
     return (
@@ -36,9 +38,10 @@ function App() {
                                 <Route path='/login' element={<Login/>}/>
                                 <Route path='/add-floor-plan'>
                                     <Route path='' element={<AddFloorPlan/>}/>
-                                    <Route path=':abbr' element={<AddFloorPlan/>}/>
-                                    <Route path=':room-editing' element={<Canvas/>}/>
+                                    <Route path=':abbr/' element={<AddFloorPlan/>}/>
+                                    <Route path=':floor-editing' element={<FloorPlanEditingPage/>}/>
                                 </Route>
+                                <Route path='/room-editing' element={<WallProvider><Canvas/></WallProvider>}/>
                             </Routes>
                         </BrowserRouter>
                     </ModelProvider>

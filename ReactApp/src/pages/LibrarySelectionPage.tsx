@@ -10,9 +10,10 @@ const LibrarySelectionPage = () => {
     const location = useLocation();
     const {abbr} = useParams();
 
+
     return (
         <>
-            <Modal open={open} onClose={() => setOpen(!open)}/>
+            <Modal open={open} onClose={() => setOpen(!open)} />
 
             {!abbr ? (
                 <div className="libSelPage">
@@ -44,6 +45,7 @@ const LibrarySelectionPage = () => {
                                 <div className="libSelPage_body_element">
                                     <h2>Nadstropja</h2>
                                     <div className="libSelPage_body_libraryCollection">
+
                                         <Library/>
                                         <Library/>
                                         <Library/>

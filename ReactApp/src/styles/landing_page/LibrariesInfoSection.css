@@ -24,6 +24,7 @@
     padding: 30px;
     z-index: 3;
     margin-top: 45px;
+    height: 200px;
 }
 
 .libraries-info .library-card h3 {

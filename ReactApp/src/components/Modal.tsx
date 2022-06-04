@@ -21,13 +21,18 @@ interface SaveLibrary {
     desc: string,
 }
 
+type StateType = SaveRoom | SaveLibrary;
+
 enum ModalType {
     ADD_FLOOR_PLAN = "ADD_FLOOR_PLAN",
     DEFAULT = "DEFAULT"
 }
 
 const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson}) => {
-    const [saveElement, setSaveElement] = useState<SaveRoom | SaveLibrary>();
+    const [saveElement, setSaveElement] = useState<StateType>({
+        label: "string",
+        floor: 0
+    });
     const [modalType, setModalType] = useState<ModalType>();
     const location = useLocation();
     const urlPath = location.pathname;
@@ -55,15 +60,18 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson}) => {
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // if (saveToJson) saveToJson(saveElement?.label, saveElement!.floor, document.getElementById("canvas"));
+        if (saveToJson) {
+            if ("label" in saveElement) {
+                saveToJson(saveElement?.label, saveElement!.floor, document.getElementById("canvas"));
+            }
+        }
     }
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement> |ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const name = e.target.name;
         const value = e.target.value;
 
-        // setSaveElement({...saveElement, [name]: value});
-
+        setSaveElement({...saveElement, [name]: value});
     }
 
     if (!open) return null;
@@ -81,43 +89,53 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson}) => {
                     </svg>
                 </div>
                 <form onSubmit={handleSubmit} className="modal_form">
-                    {/*<div className="modal_inputContainer">*/}
-                    {/*    <label htmlFor='label'>Knjižnica: </label>*/}
-                    {/*    <input name="label" id="label" type="text" required*/}
-                    {/*           value={saveElement.label}*/}
-                    {/*           onChange={handleChange}/>*/}
-                    {/*</div>*/}
-                    {/*<div className="modal_inputContainer">*/}
-                    {/*    <label htmlFor='label'>Nadstropje: </label>*/}
-                    {/*    <input name="floor" id="floor" type="number" min="0"*/}
-                    {/*           value={saveElement.floor}*/}
-                    {/*           onChange={handleChange}/>*/}
-                    {/*</div>*/}
-
-                    <div className="modal_inputContainer">
-                        <label htmlFor='label'>Knjižnica: </label>
-                        <input name="section" id="label" type="text" required
-                               // value={saveElement?.section}
-                               onChange={handleChange}/>
-                    </div>
-                    <div className="modal_inputContainer">
-                        <label htmlFor='label'>Knjižnica: </label>
-                        <input name="abbreviation" id="label" type="text" required
-                               // value={saveElement.abbreviation}
-                               onChange={handleChange}/>
-                    </div>
-                    <div className="modal_inputContainer">
-                        <label htmlFor='label'>Knjižnica: </label>
-                        <input name="label" id="label" type="text" required
-                               // value={saveElement.label}
-                               onChange={handleChange}/>
-                    </div>
-                    <div className="modal_buttonContainer">
-                        <button onClick={onClose}>Prekliči</button>
-                        <button type="submit">Shrani</button>
-                    </div>
+                    {("label" in saveElement) && (
+                        <>
+                            <div className="modal_inputContainer">
+                                <label htmlFor='label'>Label: </label>
+                                <input name="label" id="label" type="text" required
+                                       value={saveElement.label}
+                                       onChange={handleChange}/>
+                            </div>
+                            <div className="modal_inputContainer">
+                                <label htmlFor='label'>Floor: </label>
+                                <input name="floor" id="floor" type="number" min="0"
+                                       value={saveElement.floor}
+                                       onChange={handleChange}/>
+                            </div>
+                            <div className="modal_buttonContainer">
+                                <button onClick={onClose}>Prekliči</button>
+                                <button type="submit">Shrani</button>
+                            </div>
+                        </>
+                    )}
+                    {("section" in saveElement) && (
+                        <>
+                            <div className="modal_inputContainer">
+                                <label htmlFor='label'>Section: </label>
+                                <input name="section" id="label" type="text" required
+                                    value={saveElement?.section}
+                                       onChange={handleChange}/>
+                            </div>
+                            <div className="modal_inputContainer">
+                                <label htmlFor='label'>Abbreviation: </label>
+                                <input name="abbreviation" id="label" type="text" required
+                                    value={saveElement?.abbreviation}
+                                       onChange={handleChange}/>
+                            </div>
+                            <div className="modal_inputContainer">
+                                <label htmlFor='label'>Desc: </label>
+                                <textarea name="desc" value={saveElement?.desc} onChange={handleChange}/>
+                            </div>
+                            <div className="modal_buttonContainer">
+                                <button onClick={onClose}>Prekliči</button>
+                                <button type="submit">Shrani</button>
+                            </div>
+                        </>
+                    )}
                 </form>
             </div>
+
         </>,
         document.getElementById('portal') as HTMLElement
     );
