@@ -7,6 +7,7 @@ type ModalPropsType = {
     open: boolean,
     onClose: () => void,
     saveToJson?: Function,
+    addLibrary?: Function
 }
 
 
@@ -28,7 +29,7 @@ enum ModalType {
     DEFAULT = "DEFAULT"
 }
 
-const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson}) => {
+const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
     const [saveElement, setSaveElement] = useState<StateType>({
         label: "string",
         floor: 0
@@ -64,6 +65,8 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson}) => {
             if ("label" in saveElement) {
                 saveToJson(saveElement?.label, saveElement!.floor, document.getElementById("canvas"));
             }
+        } if (addLibrary && "section" in saveElement) {
+            addLibrary(saveElement);
         }
     }
 
@@ -78,10 +81,10 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson}) => {
 
     return ReactDOM.createPortal(
         <>
-            <div className="OVERLAY_STYLES"/>
-            <div className="MODAL_STYLES">
+            <div className="overlay_styles"/>
+            <div className="modal_styles">
                 <div className="top_row">
-                    <h3 style={{color: "#6965db"}}>Shrani model</h3>
+                    <h3 style={{color: "#6965db"}}>Dodajanje knjižnice</h3>
                     <svg aria-hidden="true" focusable="false" role="img" viewBox="0 0 352 512" className="close_modal"
                          onClick={onClose}>
                         <path fill="currentColor"
@@ -112,19 +115,19 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson}) => {
                     {("section" in saveElement) && (
                         <>
                             <div className="modal_inputContainer">
-                                <label htmlFor='label'>Section: </label>
+                                <label htmlFor='label'>Naziv: </label>
                                 <input name="section" id="label" type="text" required
                                     value={saveElement?.section}
                                        onChange={handleChange}/>
                             </div>
                             <div className="modal_inputContainer">
-                                <label htmlFor='label'>Abbreviation: </label>
+                                <label htmlFor='label'>Okrajšava: </label>
                                 <input name="abbreviation" id="label" type="text" required
                                     value={saveElement?.abbreviation}
                                        onChange={handleChange}/>
                             </div>
                             <div className="modal_inputContainer">
-                                <label htmlFor='label'>Desc: </label>
+                                <label htmlFor='label'>Opis: </label>
                                 <textarea name="desc" value={saveElement?.desc} onChange={handleChange}/>
                             </div>
                             <div className="modal_buttonContainer">

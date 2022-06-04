@@ -3,6 +3,15 @@
     padding: 5px;
     cursor: pointer;
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+}
+.library-active {
+    display: flex;
+    padding: 5px;
+    cursor: pointer;
+    background-color: #f8f6f6;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    flex-direction: column;
 }
 
 .libraryLink {
@@ -20,8 +29,17 @@
 
 .library__info {
     margin-left: 10px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.library__info1 {
+    margin-left: 10px;
 }
 
-.library__info > img {
+.library__info > a >img {
     color: black;
+    object-fit: contain;
+    height: 1.2em;
 }

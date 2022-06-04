@@ -2,7 +2,7 @@ import Grid from './components/Grid';
 import Model from './3DComponents/Model';
 
 import {Controls, useControl} from 'react-three-gui';
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import {BrowserRouter, Outlet, Route, Routes} from 'react-router-dom';
 import LibraryModel from './pages/LibraryModel';
 import {useState} from 'react';
 import {ModelShape} from '@babylonjs/core/Particles/solidParticle';
@@ -28,6 +28,7 @@ function App() {
                         <BrowserRouter>
                             <Header/>
                             <Routes>
+                                <Route path='/' element={<Home/>}/>
                                 <Route path='/library-model'>
                                     <Route path=':library/' element={<LibraryModel/>}>
                                         <Route path=':selected' element={<LibraryModel/>}/>
@@ -36,12 +37,17 @@ function App() {
                                 </Route>
                                 <Route path='/' element={<Home/>}/>
                                 <Route path='/login' element={<Login/>}/>
-                                <Route path='/add-floor-plan'>
-                                    <Route path='' element={<AddFloorPlan/>}/>
-                                    <Route path=':abbr/' element={<AddFloorPlan/>}/>
-                                    <Route path=':floor-editing' element={<FloorPlanEditingPage/>}/>
+                                <Route path='add-floor-plan' element={<Outlet />}>
+                                    <Route path='' element={<AddFloorPlan />} />
+                                    <Route path=':abbr/'>
+                                        <Route path='' element={<>
+                                            <AddFloorPlan/>
+                                            <Outlet />
+                                        </>} />
+                                        <Route path='floor-editing' element={<FloorPlanEditingPage />} />
+                                        <Route path='room-editing' element={<WallProvider><Canvas /></WallProvider>}/>
+                                    </Route>
                                 </Route>
-                                <Route path='/room-editing' element={<WallProvider><Canvas/></WallProvider>}/>
                             </Routes>
                         </BrowserRouter>
                     </ModelProvider>
