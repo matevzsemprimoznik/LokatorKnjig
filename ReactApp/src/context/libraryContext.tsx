@@ -1,6 +1,5 @@
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, useState } from 'react';
 import {libraryApi} from "./axios";
-import data from '../data.json'
 import {Room} from "../models/library";
 
 
@@ -10,6 +9,9 @@ export type LibraryContextType = {
     floors: Array<number>
     getAllFloors: (library: string) => void
     getSpecificFloorData: (library: string, floor: number) => void
+    getLibraryData: () => void
+    libraryData: Array<any>
+    section: string
 };
 
 export const LibraryContext = createContext<LibraryContextType>({
@@ -17,12 +19,17 @@ export const LibraryContext = createContext<LibraryContextType>({
     getFloorData: () => {},
     getAllFloors: () => {},
     floors: [],
-    getSpecificFloorData: () => {}
+    getSpecificFloorData: () => {},
+    getLibraryData: () => {},
+    libraryData: [],
+    section: ""
 });
 
 const LibraryProvider = ({ children }: any) => {
+    const [libraryData, setLibraryData] = useState([]);
     const [floorData, setFloorData] = useState<Array<Room>>([])
     const [floors, setFloor] = useState<Array<number>>([])
+    const [section, setSection] = useState<string>("");
 
     const getFloorData = async (library: string, udk: string) => {
         try {
@@ -35,8 +42,9 @@ const LibraryProvider = ({ children }: any) => {
 
     const getAllFloors = async (library: string) => {
         try {
-            const response = await libraryApi.get(`libraries/${library}/floors`);
-            setFloor(response.data)
+            const response = await libraryApi.get(`libraries/${library}/floors`)
+            setSection(response.data.section)
+            setFloor(response.data.floors)
         } catch (err) {
             console.log(err);
         }
@@ -51,8 +59,17 @@ const LibraryProvider = ({ children }: any) => {
         }
     }
 
+    const getLibraryData = async () => {
+        try {
+            const response = await libraryApi.get(`/libraries/`);
+            setLibraryData(response.data)
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     return (
-        <LibraryContext.Provider value={{floors, getAllFloors,getSpecificFloorData, floorData, getFloorData }}>
+        <LibraryContext.Provider value={{floors, getAllFloors,getSpecificFloorData, floorData, getFloorData, getLibraryData, libraryData, section }}>
             {children}
         </LibraryContext.Provider>
     );

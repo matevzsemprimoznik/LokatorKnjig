@@ -32,3 +32,7 @@ jobs:
           heroku_email: ${{secrets.HEROKU_EMAIL}}
           usedocker: true
           appdir: "/ReactApp"
+          docker_build_args: |
+            REACT_APP_BACKEND_URI
+        env:
+          REACT_APP_BACKEND_URI: ${{secrets.REACT_APP_BACKEND_URI}}

@@ -39,14 +39,16 @@ const Text: FC<TextProps> = ({ text, color='white', size = 0.1, position, rotati
   });
 
   const material = [new THREE.MeshPhongMaterial({ color })];
+
+
   return (
-    <mesh
-      ref={textRef}
-      position={[position.x,position.y, position.z]}
-      rotation={[rotation.x, rotation.y, rotation.z]}
-      geometry={geometry}
-      material={material}
-    ></mesh>
+      <mesh
+    ref={textRef}
+    position={[position.x, position.y, position.z]}
+    rotation={[rotation.x, rotation.y, rotation.z]}
+    geometry={geometry}
+    material={material}
+    />
   );
 };
 

@@ -57,7 +57,7 @@
     padding: 10px 15px;
     margin-bottom: 6px;
 }
-.drawer-body-element:hover{
+.drawer-body-element:hover, .drawer-body-element-active:hover{
     background-color: #2a2d35;
     border-radius: 7px;
     padding: 10px 15px;

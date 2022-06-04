@@ -1,28 +1,33 @@
-import React, {FC} from 'react';
+import React, {useContext, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
 import '../../styles/landing_page/SearchForm.css';
+import {LibraryContext} from "../../context/libraryContext";
+import DatalistInput, {Item} from "react-datalist-input";
 
-type SearchFormProps = {
-    libraries: any;
-}
 
-const SearchForm: FC<SearchFormProps> = ({libraries}) => {
+const SearchForm = () => {
+    const {libraryData} = useContext(LibraryContext);
     const [searchedUDK, setSearchedUDK] = React.useState("");
-    const [library, setLibrary] = React.useState(libraries[0].abbreviation);
+    const [library, setLibrary] = React.useState("");
     let navigate = useNavigate();
 
     const handleUDKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchedUDK(e.currentTarget.value);
     }
-    const handleLibraryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setLibrary(e.target.value);
-
+    const handleLibraryChange = (item: Item) => {
+        setLibrary(item.value);
     }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         let link = "/library-model/" + library + "/" + searchedUDK;
         navigate(link);
     }
+
+    useEffect(() => {
+        if (libraryData.length != 0) {
+            setLibrary(libraryData[0].abbreviation);
+        }
+    }, [libraryData])
 
     return (
         <div className="search-form">
@@ -33,18 +38,14 @@ const SearchForm: FC<SearchFormProps> = ({libraries}) => {
                         placeholder="Išči po UDK..."
                         onChange={handleUDKChange}
                     />
-                    <select
-                        className="library-select"
-                        onChange={handleLibraryChange}>
-                        {   libraries ?
-                                libraries.map((library: any) => (
-                                    <option value={library.abbreviation}>
-                                        {library.abbreviation}
-                                    </option>
-                                )) : null
-                        }
-                    </select>
-                    <input type="submit" value="Išči"/>
+
+                    <DatalistInput
+                        placeholder="Knjižnica"
+                        label={null}
+                        onSelect={handleLibraryChange}
+                        items={libraryData.map((library: any) => {return {id: library.abbreviation, value: library.abbreviation}})}
+                    />
+                    <input type="submit" value="Išči" className='search-form-button'/>
                 </form>
             </div>
         </div>
