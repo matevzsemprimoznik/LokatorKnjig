@@ -134,27 +134,31 @@ router.post('/:abbreviation', async (req, res) => {
 
 //adds new attributes to selected space
 router.post('/:abbreviation/space/:spaceLabel', async (req, res) => {
-  const library = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+  try {
+    const library = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
 
-  if(library != null) {
-    let spaces = library.file;
+    if(library != null) {
+      let spaces = library.file;
 
-    //it's only one space being added per request
-    const newSpace = req.body.space;
-    let index = spaces.findIndex(space => (space.label == newSpace.label));
+      //it's only one space being added per request
+      const newSpace = req.body.space;
+      let index = spaces.findIndex(space => (space.label == newSpace.label));
 
-    if (index == -1) {
-      spaces.push(newSpace);
-    } else {
-      let updatedSpace = Object.assign(spaces[index], newSpace);
-      spaces[index] = updatedSpace;
+      if (index == -1) {
+        spaces.push(newSpace);
+      } else {
+        let updatedSpace = Object.assign(spaces[index], newSpace);
+        spaces[index] = updatedSpace;
+      }
+
+      let result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
+        $set: {"file": spaces}
+      });
+
+      return res.json(result);
     }
-
-    let result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
-      $set: {"file": spaces}
-    });
-
-    return res.json(result);
+  } catch (err) {
+    res.status(500).json("The server could not add data specified.");
   }
 });
 
