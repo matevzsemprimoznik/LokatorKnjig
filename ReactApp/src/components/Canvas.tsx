@@ -6,6 +6,8 @@ import '../styles/2d_canvas_page/Canvas.css';
 import Modal from "./Modal";
 import {CanvasSVG} from "../utils/canvas-getsvg";
 import {WallContext} from "../context/wallElementsContext";
+import {libraryApi} from "../context/axios";
+import {useParams} from "react-router-dom";
 
 const generator = rough.generator();
 
@@ -85,6 +87,8 @@ const Canvas = () => {
 
 
         const {walls, setWalls} = useContext(WallContext);
+
+        const {abbr} = useParams();
 
         useLayoutEffect(() => {
             const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -851,24 +855,21 @@ const Canvas = () => {
             let groundOriginal = makeOriginalGroundData(wallElements);
             let entrancesOriginal = makeOriginalEntrancesData(doorElements);
 
-
-            let JSON_FORMAT_ORIGINAL = [];
-            JSON_FORMAT_ORIGINAL.push({
+            let spaceOriginal = {
                 label,
                 floor,
                 ground: groundOriginal,
                 entrances: entrancesOriginal,
                 bookshelves: bookshelvesOriginal,
-            });
+            };
 
-            let JSON_FORMAT = [];
-            JSON_FORMAT.push({
+            let space = {
                 label,
                 floor,
                 ground,
                 entrances,
                 bookshelves
-            });
+            };
 
 
             setWallElements([]);
@@ -878,13 +879,19 @@ const Canvas = () => {
             let res = context!.getSVG();
             console.log(res);
 
-            /*TODO*/
-            // svg se more shranit na bazo
+            // console.log("TO KAJ JE PRERAČUNANO",{space});
+            // console.log("ORIGINAL", spaceOriginal)
 
-            console.log("TO KAJ JE PRERAČUNANO", JSON.stringify(JSON_FORMAT));
-            console.log("ORIGINAL", JSON.stringify(JSON_FORMAT_ORIGINAL))
+            return addSpace({space});
 
-            return [JSON.stringify(JSON_FORMAT), JSON.stringify(JSON_FORMAT_ORIGINAL)];
+        }
+
+        const addSpace = async (newSpace: any) => {
+            try {
+                await libraryApi.post(`libraries/${abbr}`, newSpace);
+            } catch (err) {
+                console.log(err);
+            }
         }
 
         /*SHRANJEVANJE KOORDINAT V JSON*/

@@ -37,15 +37,19 @@ function App() {
                                 </Route>
                                 <Route path='/' element={<Home/>}/>
                                 <Route path='/login' element={<Login/>}/>
-                                <Route path='add-floor-plan' element={<Outlet />}>
-                                    <Route path='' element={<AddFloorPlan />} />
+                                <Route path='add-floor-plan' element={<Outlet/>}>
+                                    <Route path='' element={<AddFloorPlan/>}/>
                                     <Route path=':abbr/'>
                                         <Route path='' element={<>
                                             <AddFloorPlan/>
-                                            <Outlet />
-                                        </>} />
-                                        <Route path='floor-editing' element={<FloorPlanEditingPage />} />
-                                        <Route path='room-editing' element={<WallProvider><Canvas /></WallProvider>}/>
+                                            <Outlet/>
+                                        </>}/>
+                                        <Route path='floor-editing' element={<FloorPlanEditingPage/>}>
+                                            <Route path=':floor' element={<FloorPlanEditingPage/>}/>
+                                        </Route>
+                                        <Route path='room-editing' element={<WallProvider><Canvas/></WallProvider>}>
+                                            <Route path=':label' element={<WallProvider><Canvas/></WallProvider>}/>
+                                        </Route>
                                     </Route>
                                 </Route>
                             </Routes>

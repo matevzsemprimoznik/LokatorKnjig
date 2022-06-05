@@ -15,7 +15,7 @@ export type LibraryDataType = {
 const LibrarySelectionPage = () => {
     const [open, setOpen] = useState<boolean>(false);
     const ref = useRef<boolean>(false);
-    const [floorIndex, setFloorIndex] = useState<number>(0)
+    const [floorIndex, setFloorIndex] = useState<number>(0);
     const {abbr} = useParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -111,7 +111,7 @@ const LibrarySelectionPage = () => {
                                             <Library label={label} key={index} abbreviation={abbr}/>
                                         ))}
                                     </div>
-                                    <div className="libSelPageAdd" onClick={() => setOpen(true)}>
+                                    <div className="libSelPageAdd" onClick={() => navigate(`room-editing`)}>
                                         <svg aria-hidden="true" focusable="false" role="img" viewBox="0 0 448 512"
                                              className="libSelPageAddButton">
                                             <path fill="currentColor"

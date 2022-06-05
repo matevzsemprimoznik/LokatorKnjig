@@ -1,6 +1,6 @@
 import React, {ChangeEvent, FC, FormEvent, ReactNode, useEffect, useState} from 'react';
 import ReactDOM from "react-dom";
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import "../styles/Modal/Modal.css";
 
 type ModalPropsType = {
@@ -30,6 +30,7 @@ enum ModalType {
 }
 
 const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
+   const navigate = useNavigate();
     const [saveElement, setSaveElement] = useState<StateType>({
         label: "string",
         floor: 0
@@ -64,6 +65,7 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
         if (saveToJson) {
             if ("label" in saveElement) {
                 saveToJson(saveElement?.label, saveElement!.floor, document.getElementById("canvas"));
+                navigate(-1)
             }
         } if (addLibrary && "section" in saveElement) {
             addLibrary(saveElement);

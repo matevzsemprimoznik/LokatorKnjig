@@ -22,14 +22,14 @@ const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, labe
                     <div className="library__info" onClick={() => changeFloor!(floor)}>
                         <h2>Nadstropje {floor}</h2>
                         { (floor === floorIndex) && (
-                            <Link to={`/add-floor-plan/${abbreviation}/floor-editing`} className="libraryLink">
+                            <Link to={`/add-floor-plan/${abbreviation}/floor-editing/${floor}`} className="libraryLink">
                                 <img src="../../icons8-open-64.png" alt="Preglej nadstropje"/>
                             </Link>
                         )}
                     </div>
                 </div>
             ) : (label !== undefined && abbreviation) ? (
-                <Link to={`/add-floor-plan/${abbreviation}/room-editing`} className="libraryLink">
+                <Link to={`/add-floor-plan/${abbreviation}/room-editing/${label}`} className="libraryLink">
                     <div className="library">
                         <div className="library__info">
                             <h2>{label}</h2>
