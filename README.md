@@ -71,7 +71,7 @@ Your frontend .env file should be located in the ReactApp directory and should i
 REACT_APP_BACKEND_URI=http://localhost:5000/
 ```
 
-To start the application you should run the backend and frontend server, which you can do by running these commands:
+To start the application you should run the backend and frontend, which you can do by running these commands:
 ```
 cd backend
 npm start
