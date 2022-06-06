@@ -6,30 +6,19 @@
 .cursor {
     cursor: move;
 }
-.no-cursor {
-    cursor: auto;
-}
-.cursor-y {
-    cursor: ns-resize;
-}
-.cursor-x {
-    cursor: ew-resize;
-}
-.react-draggable strong {
-    background: #ddd;
-    border: 1px solid #999;
-    border-radius: 3px;
-    display: block;
-    margin-bottom: 10px;
-    padding: 3px 5px;
-    text-align: center;
-}
-.box {
-    background: #fff;
-    border: 1px solid #999;
-    border-radius: 3px;
-    margin: 10px;
-    padding: 10px;
-    float: left;
 
+span {
+    transform: scale(0.3);
+    object-fit: contain;
+    width: fit-content;
+    block-size: fit-content;
+    height: fit-content;
+}
+.react-draggable {
+    width: fit-content;
+    transform: scale(0.3);
+}
+span  svg {
+    transform: scale(0.3);
+    block-size: fit-content;
 }

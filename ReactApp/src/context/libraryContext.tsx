@@ -7,12 +7,19 @@ export type LibraryContextType = {
     floorData: Array<Room>;
     getFloorData: ((library: string, udk: string) => void)
     floors: Array<number>
-    getAllFloors: (library: string) => void
-    getSpecificFloorData: (library: string, floor: number) => void
-    getLibraryData: () => void
+    getAllFloors: (serverRoute: ServerRoute, library: string) => void
+    getSpecificFloorData: (serverRoute: ServerRoute, library: string, floor: number) => void
+    getLibraryData: (serverRoute: ServerRoute) => void
     libraryData: Array<any>
     section: string
+    getFloorsAndSpaces: (abbr: string) => void,
+    floorsAndSpaces: any
 };
+
+export enum ServerRoute {
+    LIBRARIES = 'libraries',
+    EDITOR = 'editor',
+}
 
 export const LibraryContext = createContext<LibraryContextType>({
     floorData: [],
@@ -22,7 +29,9 @@ export const LibraryContext = createContext<LibraryContextType>({
     getSpecificFloorData: () => {},
     getLibraryData: () => {},
     libraryData: [],
-    section: ""
+    getFloorsAndSpaces: (abbr: string) => {},
+    section: "",
+    floorsAndSpaces: [],
 });
 
 const LibraryProvider = ({ children }: any) => {
@@ -30,6 +39,7 @@ const LibraryProvider = ({ children }: any) => {
     const [floorData, setFloorData] = useState<Array<Room>>([])
     const [floors, setFloor] = useState<Array<number>>([])
     const [section, setSection] = useState<string>("");
+    const [floorsAndSpaces, setFloorAndSpaces] = useState([]);
 
     const getFloorData = async (library: string, udk: string) => {
         try {
@@ -40,9 +50,9 @@ const LibraryProvider = ({ children }: any) => {
         }
     }
 
-    const getAllFloors = async (library: string) => {
+    const getAllFloors = async (serverRoute: ServerRoute,library: string) => {
         try {
-            const response = await libraryApi.get(`libraries/${library}/floors`)
+            const response = await libraryApi.get(`${serverRoute}/${library}/floors`)
             setSection(response.data.section)
             setFloor(response.data.floors)
         } catch (err) {
@@ -50,26 +60,35 @@ const LibraryProvider = ({ children }: any) => {
         }
     }
 
-    const getSpecificFloorData = async (library: string, floor: number) => {
+    const getSpecificFloorData = async (serverRoute: ServerRoute, library: string, floor: number) => {
         try {
-            const response = await libraryApi.get(`libraries/${library}/${floor}`);
+            const response = await libraryApi.get(`${serverRoute}/${library}/${floor}`);
             setFloorData(response.data)
         } catch (err) {
             console.log(err);
         }
     }
 
-    const getLibraryData = async () => {
+    const getLibraryData = async (serverRoute: ServerRoute) => {
         try {
-            const response = await libraryApi.get(`/libraries/`);
+            const response = await libraryApi.get(`/${serverRoute}/`);
             setLibraryData(response.data)
         } catch (err) {
             console.log(err);
         }
     }
 
+    const getFloorsAndSpaces = async (abbr: string) => {
+        try {
+            const response = await libraryApi.get(`/editor/${abbr}/floors-and-spaces`);
+            setFloorAndSpaces(response.data)
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     return (
-        <LibraryContext.Provider value={{floors, getAllFloors,getSpecificFloorData, floorData, getFloorData, getLibraryData, libraryData, section }}>
+        <LibraryContext.Provider value={{floors, getAllFloors,getSpecificFloorData, floorData, getFloorData, getLibraryData, libraryData, section, getFloorsAndSpaces, floorsAndSpaces }}>
             {children}
         </LibraryContext.Provider>
     );

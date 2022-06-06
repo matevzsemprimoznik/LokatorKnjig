@@ -1,14 +1,17 @@
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
+
+const {Schema} = mongoose;
 
 const libraryEditorSchema = new Schema(
     {
         section: String,
         abbreviation: String,
         desc: String,
-        file: Object
+        file: Object,
+        svg: Object,
+        fileOrg: Object,
     },
-    { timestamps: true }
+    {timestamps: true}
 );
 
 const LibraryEditor = mongoose.model('LibraryEditor', libraryEditorSchema);

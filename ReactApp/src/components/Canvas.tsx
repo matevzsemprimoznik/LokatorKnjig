@@ -796,7 +796,6 @@ const Canvas = () => {
         const makeOriginalBookshelvesData = () => {
             let original: any = [];
             bookshelves.forEach((item: any) => {
-                console.log(item);
                 original.push({
                     id: item.id,
                     x: item.x,
@@ -855,7 +854,14 @@ const Canvas = () => {
             let groundOriginal = makeOriginalGroundData(wallElements);
             let entrancesOriginal = makeOriginalEntrancesData(doorElements);
 
-            let spaceOriginal = {
+            let context = canvas!.getContext('2d');
+            let res = context!.getSVG();
+            console.log(res);
+            // @ts-ignore
+            let serializedSVG = new XMLSerializer().serializeToString(res);
+            let base64Data = window.btoa(serializedSVG);
+
+            let orgSpace = {
                 label,
                 floor,
                 ground: groundOriginal,
@@ -871,24 +877,30 @@ const Canvas = () => {
                 bookshelves
             };
 
+            let svg = {
+                label,
+                data: `data:image/svg+xml;base64,${base64Data}`
+            }
+
 
             setWallElements([]);
             console.log(walls)
 
-            let context = canvas!.getContext('2d');
-            let res = context!.getSVG();
-            console.log(res);
 
             // console.log("TO KAJ JE PRERAČUNANO",{space});
-            // console.log("ORIGINAL", spaceOriginal)
+            // console.log("ORIGINAL", orgSpace)
 
-            return addSpace({space});
+
+
+            // console.log({space, orgSpace, svg})
+
+            return addSpace({space, orgSpace, svg});
 
         }
 
-        const addSpace = async (newSpace: any) => {
+        const addSpace = async (data: any) => {
             try {
-                await libraryApi.post(`libraries/${abbr}`, newSpace);
+                await libraryApi.post(`editor/${abbr}`, data);
             } catch (err) {
                 console.log(err);
             }

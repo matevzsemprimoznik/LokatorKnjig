@@ -4,6 +4,16 @@ import LibraryEditor from "../models/libraryEditorSchema.js";
 
 const router = express.Router();
 
+//get all libraries (returns section, abbreviation and description of each library)
+router.get('/', async (req, res) => {
+    try {
+        const library = await LibraryEditor.find({}, 'section abbreviation desc -_id');
+        return res.json(library).status(200);
+    } catch (err) {
+        return res.status(500).json("The server could not provide data specified");
+    }
+});
+
 //get all floors and spaces of editor library
 router.get('/:abbreviation/floors-and-spaces', async (req, res) => {
     try {
@@ -39,31 +49,69 @@ router.get('/:abbreviation/:floor', async (req, res) => {
     }
 });
 
+router.post('/',  async (req, res) => {
+    try {
+        const editor = new LibraryEditor({
+            "section": req.body.section,
+            "abbreviation": req.body.abbreviation,
+            "desc": req.body.desc,
+            "file": [],
+            "svg": [],
+            "fileOrg": []
+        });
+
+        const editorResult = await editor.save();
+        return res.json(editorResult);
+
+    } catch (err) {
+        return res.status(500).json("The server could not add data specified.");
+    }
+
+});
+
 router.post('/:abbreviation', async (req, res) => {
     try {
-        const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+        const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation});
 
         if(library == null) {
             const reqLibrary = req.body;
             const library = new LibraryEditor({ ...reqLibrary });
             const result = await library.save();
-
             return res.json(result);
         } else {
             let spaces = library.file;
+            let svgs = library.svg;
+            let orgSpaces = library.fileOrg;
 
             //it's only one space being added per request as an object
             const newSpace = req.body.space;
+            const newSvg = req.body.svg;
+            const newOrgSpace = req.body.orgSpace;
+
+
             let index = spaces.findIndex(space => (space.label == newSpace.label));
+
+            let data = newSvg.data;
+            let split = data.split(','); // or whatever is appropriate here. this will work for the example given
+            let base64string = split[1];
+            let buffer = Buffer.from(base64string, 'base64');
 
             if (index == -1) {
                 spaces.push(newSpace);
+                svgs.push({label: req.body.svg.label, svg: buffer});
+                orgSpaces.push(newOrgSpace);
             } else {
                 spaces[index] = newSpace;
+                svgs[index] = newSvg;
+                orgSpaces[index] = newOrgSpace;
             }
 
             let result = await LibraryEditor.updateOne({abbreviation: req.params.abbreviation}, {
-                $set: {"file": spaces}
+                $set: {
+                    "file": spaces,
+                    "svg": svgs,
+                    "fileOrg": orgSpaces,
+                }
             });
 
             return res.json(result);

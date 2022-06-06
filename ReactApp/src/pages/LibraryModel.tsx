@@ -1,10 +1,10 @@
-import React, {useContext, useEffect, Suspense} from 'react';
+import React, {Suspense, useContext, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import {Canvas} from 'react-three-fiber';
 import Button from '../components/Button';
 import {ModelContext, ModelType} from '../context/modelContext';
 import Model from '../3DComponents/Model';
-import {LibraryContext} from "../context/libraryContext";
+import {LibraryContext, ServerRoute} from "../context/libraryContext";
 import {MenuContext} from "../context/menuContext";
 import Drawer from "../components/Drawer";
 import SearchUDK from '../components/SearchUDK';
@@ -33,7 +33,7 @@ const LibraryModel = () => {
 
     useEffect(() => {
         if(library)
-        getAllFloors(library)
+        getAllFloors(ServerRoute.LIBRARIES, library)
     }, [])
 
   const onClick = () => {
@@ -47,7 +47,7 @@ const LibraryModel = () => {
   };
 
   const onClickDrawerBodyElement = (element: any) => {
-      if(library) getSpecificFloorData(library, element.key)
+      if(library) getSpecificFloorData(ServerRoute.LIBRARIES, library, element.key)
   }
 
   if(floorData.length === 0)

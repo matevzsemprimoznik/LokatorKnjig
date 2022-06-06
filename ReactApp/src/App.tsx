@@ -18,6 +18,7 @@ import MenuProvider from "./context/menuContext";
 import Canvas from "./components/Canvas";
 import FloorPlanEditingPage from "./pages/FloorPlanEditingPage";
 import WallProvider from "./context/wallElementsContext";
+import {TransformComponent, TransformWrapper} from 'react-zoom-pan-pinch';
 
 function App() {
     return (
@@ -45,7 +46,7 @@ function App() {
                                             <Outlet/>
                                         </>}/>
                                         <Route path='floor-editing' element={<FloorPlanEditingPage/>}>
-                                            <Route path=':floor' element={<FloorPlanEditingPage/>}/>
+                                            <Route path=':floor' element={<FloorPlanEditingPage />}/>
                                         </Route>
                                         <Route path='room-editing' element={<WallProvider><Canvas/></WallProvider>}>
                                             <Route path=':label' element={<WallProvider><Canvas/></WallProvider>}/>
