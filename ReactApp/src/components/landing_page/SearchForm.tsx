@@ -19,7 +19,7 @@ const SearchForm = () => {
     }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        let link = "/library-model/" + library + "/" + searchedUDK;
+        let link = "/library-model/" + library + "?udk=" + searchedUDK;
         navigate(link);
     }
 
