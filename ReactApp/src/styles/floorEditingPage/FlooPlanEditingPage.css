@@ -1,35 +1,21 @@
-* {
-    box-sizing: border-box;
+.draggable{
+    position: relative;
 }
-
-.react-draggable,
-.cursor {
-    cursor: move;
+.draggable button{
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    width: 30px;
+    height: 30px;
 }
-.no-cursor {
-    cursor: auto;
+.draggable button:active{
+    opacity: 0.6;
 }
-.cursor-y {
-    cursor: ns-resize;
-}
-.cursor-x {
-    cursor: ew-resize;
-}
-.react-draggable strong {
-    background: #ddd;
-    border: 1px solid #999;
-    border-radius: 3px;
-    display: block;
-    margin-bottom: 10px;
-    padding: 3px 5px;
-    text-align: center;
-}
-.box {
-    background: #fff;
-    border: 1px solid #999;
-    border-radius: 3px;
-    margin: 10px;
-    padding: 10px;
-    float: left;
-
+.draggable button img{
+    width: 30px;
+    height: 30px;
 }

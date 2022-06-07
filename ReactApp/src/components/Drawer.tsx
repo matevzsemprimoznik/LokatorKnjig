@@ -8,13 +8,13 @@ type DrawerProps = {
     section: string
     bodyElements: Array<any>
     onClickBodyElement: (element: any) => void
-    defaultFloor: number
+    defaultFloor?: number
 }
 
 const Drawer: FC<DrawerProps> = ({isOpen, onClose, section, bodyElements,onClickBodyElement, defaultFloor}) => {
 
     const { menuOpen, toggleMenuOpen } = React.useContext(MenuContext) as MenuContextType;
-    const prevClickedElement = useRef<{key: number} | null>({key: defaultFloor})
+    const prevClickedElement = useRef<{key: number | undefined} | null>({key: defaultFloor})
 
     const onClick = (element: any) => {
         if(prevClickedElement.current && element.key !== prevClickedElement.current.key)
