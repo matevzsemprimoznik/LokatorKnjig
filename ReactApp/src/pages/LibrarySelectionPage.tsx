@@ -1,9 +1,9 @@
-import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import '../styles/editing_page/librarySelection_page/LibrarySelectionPage.css'
 import Library from "../components/editing_page/Library";
 import Modal from "../components/Modal";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
-import libraryContext, {LibraryContext, LibraryContextType} from "../context/libraryContext";
+import {LibraryContext, LibraryContextType, ServerRoute} from "../context/libraryContext";
 import {libraryApi} from "../context/axios";
 
 export type LibraryDataType = {
@@ -30,13 +30,15 @@ const LibrarySelectionPage = () => {
         section,
         floors,
         libraryData,
-        floorData
+        floorData,
+        getFloorsAndSpaces,
+        floorsAndSpaces
     } = useContext(LibraryContext) as LibraryContextType;
 
 
     const saveLibraryInfo = async (library: LibraryDataType) => {
         try {
-            await libraryApi.post(`libraries/`, library);
+            await libraryApi.post(`editor/`, library);
         } catch (err) {
             console.log(err);
         }
@@ -44,13 +46,14 @@ const LibrarySelectionPage = () => {
 
     useEffect(() => {
         if (!ref.current) {
-            getLibraryData();
+            getLibraryData(ServerRoute.EDITOR);
         } else {
-            getAllFloors(abbr!);
-            getSpecificFloorData(abbr!, floorIndex);
+            getAllFloors(ServerRoute.EDITOR, abbr!);
+            getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
+            getFloorsAndSpaces(abbr!);
         }
 
-    }, [abbr, floorIndex]);
+    }, [abbr, floorIndex, floorsAndSpaces, libraryData]);
 
 
     const changeFloorIndex = (index: number) => {
@@ -90,7 +93,7 @@ const LibrarySelectionPage = () => {
                                 <div className="libSelPage_body_element">
                                     <h2>Nadstropja</h2>
                                     <div className="libSelPage_body_libraryCollection">
-                                        {floors?.map((floor: number, index: number) => (
+                                        {floorsAndSpaces.floors?.map((floor: number, index: number) => (
                                             <Library floor={floor} key={index} abbreviation={abbr}
                                                      changeFloor={changeFloorIndex} floorIndex={floorIndex}/>
                                         ))}

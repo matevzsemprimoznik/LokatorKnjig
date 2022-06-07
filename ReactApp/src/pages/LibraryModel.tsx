@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, Suspense} from 'react';
-import {useParams} from 'react-router-dom';
+import {useParams, useSearchParams} from 'react-router-dom';
 import {Canvas} from 'react-three-fiber';
 import Button from '../components/Button';
 import {ModelContext, ModelType} from '../context/modelContext';
 import Model from '../3DComponents/Model';
-import {LibraryContext} from "../context/libraryContext";
+import {LibraryContext, ServerRoute} from "../context/libraryContext";
 import {MenuContext} from "../context/menuContext";
 import Drawer from "../components/Drawer";
 import SearchUDK from '../components/SearchUDK';
@@ -15,7 +15,10 @@ const FirstPersonViewIconUrl = '../../images/360-view.png';
 const MenuIconUrl = '../../menu-button.svg';
 
 const LibraryModel = () => {
-  const { library, selected } = useParams();
+  const { library } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const selected = searchParams.get("udk");
   const { modelType, setModelType } = useContext(ModelContext);
   const {floorData, getFloorData ,getAllFloors, floors, getSpecificFloorData, section} = useContext(LibraryContext)
     const { toggleMenuOpen } = React.useContext(MenuContext);
@@ -33,7 +36,7 @@ const LibraryModel = () => {
 
     useEffect(() => {
         if(library)
-        getAllFloors(library)
+        getAllFloors(ServerRoute.LIBRARIES, library)
     }, [])
 
   const onClick = () => {
@@ -47,7 +50,7 @@ const LibraryModel = () => {
   };
 
   const onClickDrawerBodyElement = (element: any) => {
-      if(library) getSpecificFloorData(library, element.key)
+      if(library) getSpecificFloorData(ServerRoute.LIBRARIES, library, element.key)
   }
 
   if(floorData.length === 0)

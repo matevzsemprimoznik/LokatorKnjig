@@ -69,6 +69,7 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
             }
         } if (addLibrary && "section" in saveElement) {
             addLibrary(saveElement);
+            onClose();
         }
     }
 
