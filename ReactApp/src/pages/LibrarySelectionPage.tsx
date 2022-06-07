@@ -49,11 +49,16 @@ const LibrarySelectionPage = () => {
             getLibraryData(ServerRoute.EDITOR);
         } else {
             getAllFloors(ServerRoute.EDITOR, abbr!);
-            getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
             getFloorsAndSpaces(abbr!);
         }
 
-    }, [abbr, floorIndex, floorsAndSpaces, libraryData]);
+    }, [abbr, floorIndex, libraryData]);
+
+    useEffect(() => {
+        getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
+
+    }, [abbr, floorIndex]);
+
 
 
     const changeFloorIndex = (index: number) => {

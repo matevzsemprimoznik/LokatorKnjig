@@ -87,7 +87,7 @@ const Canvas = () => {
 
     const [blockSplitOnPieces, setBlockSplitOnPieces] = useState<Array<ElementType>>([]);
 
-    const {abbr} = useParams();
+    const { abbr } = useParams();
 
     useLayoutEffect(() => {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -388,7 +388,6 @@ const Canvas = () => {
                         setDoorElements((prevState: any) => [
                             ...prevState,
                             {
-                                text: "Vrata",
                                 x: x,
                                 y: y,
                                 rotation: 0,
@@ -400,7 +399,6 @@ const Canvas = () => {
                         setDoorElements((prevState: any) => [
                             ...prevState,
                             {
-                                text: "Vrata",
                                 x,
                                 y,
                                 rotation: 0,
@@ -1030,6 +1028,7 @@ const Canvas = () => {
 
         let viewBox = [minX, minY, maxX - minX, maxY - minY].join(" ");
         console.log(viewBox);
+        res.addAttribute('viewBox', viewBox);
 
 
         res.removeAttribute("viewPort");
