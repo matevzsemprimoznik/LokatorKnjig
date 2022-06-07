@@ -20,7 +20,7 @@ router.get('/:abbreviation/floors-and-spaces', async (req, res) => {
         }
 
         return res.json(result);
-    } catch {
+    } catch (err) {
         res.status(500).json("The server could not provide data specified");
     }
 });
@@ -28,13 +28,25 @@ router.get('/:abbreviation/floors-and-spaces', async (req, res) => {
 //get floor(spaces) of library with the given abbreviation
 router.get('/:abbreviation/:floor', async (req, res) => {
     try {
-        const queryResult = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+        const queryResult = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file svg -_id');
         const file = queryResult.file;
+        const svg = queryResult.svg;
 
         let floor = file.filter(room => (room.floor == req.params.floor));
 
-        return res.json(floor);
-    } catch {
+
+        let spacesWithSVG = [];
+
+        for (const space of floor) {
+            let index = svg.findIndex(svgSpace => (svgSpace.label == space.label));
+
+            if(index != -1) {
+                spacesWithSVG.push(svg[index]);
+            }
+        }
+
+        return res.json(spacesWithSVG);
+    } catch (err) {
         res.status(500).json("The server could not provide data specified");
     }
 });
@@ -68,29 +80,31 @@ router.post('/:abbreviation', async (req, res) => {
 
             return res.json(result);
         }
-    } catch {
+    } catch (err) {
         res.status(500).json("The server could not add data specified");
     }
 });
 
-//adds new attributes to selected space
-router.post('/:abbreviation/space/:spaceLabel', async (req, res) => {
+//adds new attributes to selected spaces
+router.post('/:abbreviation/space/', async (req, res) => {
     try {
         const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
 
         if(library != null) {
             let spaces = library.file;
 
-            //it's only one space being added per request
-            const newSpace = req.body.space;
-            let index = spaces.findIndex(space => (space.label == newSpace.label));
+            //array of spaces being addded
+            const newSpaces = req.body.spaces;
+            for (const newSpace of newSpaces) {
+                let index = spaces.findIndex(space => (space.label == newSpace.label));
 
-            if (index == -1) {
-                spaces.push(newSpace);
-            } else {
-                let updatedSpace = Object.assign(spaces[index], newSpace);
-                spaces[index] = updatedSpace;
+                if (index == -1) {
+                    spaces.push(newSpace);
+                } else {
+                    Object.assign(spaces[index], newSpace);
+                }
             }
+
 
             let result = await LibraryEditor.updateOne({abbreviation: req.params.abbreviation}, {
                 $set: {"file": spaces}
