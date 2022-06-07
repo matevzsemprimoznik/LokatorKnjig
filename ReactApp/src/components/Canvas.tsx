@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useEffect, useLayoutEffect, useState,} from "react";
+import React, {ChangeEvent, useContext, useEffect, useLayoutEffect, useRef, useState,} from "react";
 import rough from "roughjs/bin/rough";
 import {RoughCanvas} from "roughjs/bin/canvas";
 import {Drawable} from "roughjs/bin/core";
@@ -199,7 +199,7 @@ const Canvas = () => {
             }
 
             if (rotation === 0 || rotation === 180) {
-                const element: Drawable = generator.rectangle(x, y, 50, 30, {
+                const element: Drawable = generator.rectangle(x, y, 40, 10, {
                     strokeWidth: 1,
                     fillStyle: "solid",
                     // fill: 'rgb(49,38,15)',
@@ -210,11 +210,11 @@ const Canvas = () => {
                     }`,
                     roughness: 0,
                 });
-                x1 = x + 50;
-                y1 = y + 30;
+                x1 = x + 40;
+                y1 = y + 10;
                 return {id, x, y, x1, y1, element, nb_of_shelves, udk, rotation};
             } else {
-                const element: Drawable = generator.rectangle(x, y, 30, 50, {
+                const element: Drawable = generator.rectangle(x, y, 10, 40, {
                     strokeWidth: 1,
                     fillStyle: "solid",
                     fill: `${
@@ -225,8 +225,8 @@ const Canvas = () => {
                     roughness: 0,
                 });
 
-                x1 = x + 30;
-                y1 = y + 50;
+                x1 = x + 10;
+                y1 = y + 40;
                 return {id, x, y, x1, y1, element, nb_of_shelves, udk, rotation};
             }
         } else if (drawingElement === DrawingElement.WALL) {
@@ -694,16 +694,16 @@ const Canvas = () => {
         let bs_rotation = Number(bs_details.sh_rotation);
         if (bs_rotation === 1 || bs_rotation === 3) {
             for (let i = 0; i < bs_details.sh_length; i++) {
-                let x = clientX + i * 50;
+                let x = clientX + i * 40;
                 let y = clientY;
-                const element = generator.rectangle(x, y, 50, 30, {
+                const element = generator.rectangle(x, y, 40, 10, {
                     strokeWidth: 1,
                     fillStyle: "solid",
                     fill: "rgb(49,38,15)",
                     roughness: 0,
                 });
-                let x1 = x + 50;
-                let y1 = y + 30;
+                let x1 = x + 40;
+                let y1 = y + 10;
                 bs_arr.push({
                     id: i,
                     x,
@@ -719,15 +719,15 @@ const Canvas = () => {
         } else {
             for (let i = 0; i < bs_details.sh_length; i++) {
                 let x = clientX;
-                let y = clientY + i * 50;
-                const element = generator.rectangle(x, y, 30, 50, {
+                let y = clientY + i * 40;
+                const element = generator.rectangle(x, y, 10, 40, {
                     strokeWidth: 1,
                     fillStyle: "solid",
                     fill: "rgb(49,38,15)",
                     roughness: 0,
                 });
-                let x1 = x + 30;
-                let y1 = y + 50;
+                let x1 = x + 10;
+                let y1 = y + 40;
                 bs_arr.push({
                     id: i,
                     x,
@@ -758,8 +758,8 @@ const Canvas = () => {
             fill: "rgb(49,38,15)",
             roughness: 0,
         });
-        let x1 = x + 50;
-        let y1 = y + 30;
+        let x1 = x + 40;
+        let y1 = y + 10;
         bigPiece.push({
             id: bookshelves.length,
             x,
@@ -903,8 +903,8 @@ const Canvas = () => {
         bookshelves.forEach((item: ElementType) => {
             let {x, y, ...rest}: any = calculateBookshelfCenterPoint(item);
             bookShelfCoords.push({
-                x: Number(((x - startingPointX) / 10).toFixed(2)) / 2.5,
-                z: Number(((y - startingPointY) / 10).toFixed(2)) / 6,
+                x: Number(((x - startingPointX) / 10).toFixed(2)) / 2,
+                z: Number(((y - startingPointY) / 10).toFixed(2)),
                 ...rest,
             });
         });
@@ -918,8 +918,8 @@ const Canvas = () => {
         let ground: any = [];
         wallElements.forEach(({x1, y1}: WallType) => {
             ground.push({
-                x: Number(((x1 - startingPointX) / 10).toFixed(2)) / 2.5,
-                z: Number(((y1 - startingPointY) / 10).toFixed(2)) / 3,
+                x: Number(((x1 - startingPointX) / 10).toFixed(2)) / 2.5 ,
+                z: Number(((y1 - startingPointY) / 10).toFixed(2)) / 6,
                 y: 0,
             });
         });
@@ -934,7 +934,7 @@ const Canvas = () => {
         doorElements.forEach(({x, y}: ElementType) => {
             entrances.push({
                 x: Number(((x - startingPointX) / 10).toFixed(2)) / 2.5,
-                z: Number(((y - startingPointY) / 10).toFixed(2)) / 3,
+                z: Number(((y - startingPointY) / 10).toFixed(2)) / 6,
                 y: 0,
             });
         });
@@ -1024,11 +1024,12 @@ const Canvas = () => {
 
         let context = canvas!.getContext("2d");
         let res = context!.getSVG();
-        console.log(res.viewBox);
+        console.log(res);
 
         let viewBox = [minX, minY, maxX - minX, maxY - minY].join(" ");
         console.log(viewBox);
-        res.addAttribute('viewBox', viewBox);
+
+        res.setAttribute('viewBox', viewBox);
 
 
         res.removeAttribute("viewPort");
@@ -1075,7 +1076,9 @@ const Canvas = () => {
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    const onClose = () => setIsOpen(true);
+    const onClose = () => setIsOpen(false);
+    const ref =useRef<boolean>(false)
+
 
     return (
         <>
@@ -1227,16 +1230,11 @@ const Canvas = () => {
                         value="4"
                     />
                     <label htmlFor="radio-door">
-                        <img src="../../icons8-door-white.png" style={{height: "1em", objectFit: "contain"}} alt="nekaj" />
+                        <img src="../../icons8-open-door-50.png" style={{height: "1em", objectFit: "contain"}} alt="nekaj" />
                     </label>
                 </div>
-                {/*<div className={`topDiv-element`}>*/}
-                {/*    <button onClick={addDoors}>*/}
-                {/*        </button>*/}
-                {/*</div>*/}
-                <div className={`topDiv-element`}>
-                    {/*<button onClick={saveToJson}>Shrani v json</button>*/}
-                    <button onClick={() => setIsOpen(true)}>Shrani v json</button>
+                <div className={`topDiv-element`} style={{position: "absolute", top: "2px", left: "300px"}} onClick={() => setIsOpen(true)}>
+                    <img src="../../icons8-save-30.png" style={{height: "1em", objectFit: "contain"}} alt="nekaj" />
                 </div>
             </div>
             {/*EDITING AND DRAWING SHELVES*/}

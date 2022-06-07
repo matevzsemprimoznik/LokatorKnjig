@@ -47,7 +47,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
             udk={bookshelf.udks}
             rotation={{
               x: 0,
-              y: bookshelf.rotation === 0 ? 0 : Math.PI,
+              y: bookshelf.rotation / 180 * Math.PI,
               z: 0,
             }}
           />
@@ -64,7 +64,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
             }}
             rotation={{
               x: 0,
-              y: bookshelf.rotation === 0 ? 0 : Math.PI,
+              y: bookshelf.rotation / 180 * Math.PI,
               z: 0,
             }}
             udk={bookshelf.udks}
@@ -80,7 +80,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
             }}
             rotation={{
               x: 0,
-              y: bookshelf.rotation === 0 ? 0 : Math.PI,
+              y: bookshelf.rotation / 180 * Math.PI,
               z: 0,
             }}
             udk={bookshelf.udks}

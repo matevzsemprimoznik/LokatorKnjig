@@ -34,12 +34,23 @@
     align-items: center;
     justify-content: space-between;
 }
-.library__info1 {
-    margin-left: 10px;
-}
+
 
 .library__info > a >img {
     color: black;
     object-fit: contain;
     height: 1.2em;
+}
+.library__info1 {
+    margin: 0 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.library__info1  > img {
+    color: black;
+    object-fit: contain;
+    height: 2em;
 }

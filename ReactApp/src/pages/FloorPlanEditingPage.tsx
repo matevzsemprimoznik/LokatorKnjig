@@ -8,6 +8,7 @@ import {LibraryContext, ServerRoute} from '../context/libraryContext';
 import {useNavigate, useParams} from 'react-router-dom';
 import {MenuContext} from '../context/menuContext';
 import {libraryApi} from '../context/axios';
+import Header from "../components/landing_page/Header";
 
 const MenuIconUrl = '../../menu-button.svg';
 const RotateIconUrl = '../../rotate.png';
@@ -89,7 +90,7 @@ const FloorPlanEditingPage = () => {
 
     const saveCenterOfAllRooms = async (data: any) => {
         try {
-            const response = await libraryApi.post(`editor/${abbr}/space`, data);
+            const response = await libraryApi.post(`editor/${abbr}/space`, {spaces: data});
             navigate(`/add-floor-plan/${abbr}`);
 
         } catch (err) {
@@ -112,6 +113,7 @@ const FloorPlanEditingPage = () => {
 
     return (
         <>
+            <Header />
             <Button onClick={onSubmit} position={{top: 8, right: 2}} text={'Save'}/>
             <TransformWrapper
                 initialScale={1}

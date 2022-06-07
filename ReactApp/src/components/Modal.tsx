@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, FormEvent, ReactNode, useContext, useEffect, useState} from 'react';
+import React, {ChangeEvent, FC, FormEvent, ReactNode, useContext, useEffect, useRef, useState} from 'react';
 import ReactDOM from "react-dom";
 import {useLocation, useNavigate} from 'react-router-dom';
 import "../styles/Modal/Modal.css";
@@ -41,6 +41,9 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
     const location = useLocation();
     const urlPath = location.pathname;
 
+    const ref = useRef<boolean>(false);
+    ref.current = location?.pathname?.match(/\//g)!.length > 1;
+
     useEffect(() => {
         switch (urlPath) {
             case '/add-floor-plan':
@@ -67,7 +70,7 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
         if (saveToJson) {
             if ("label" in saveElement) {
                 saveToJson(saveElement?.label, saveElement!.floor, document.getElementById("canvas"));
-                // navigate(-1)
+                navigate(-1)
             }
         } if (addLibrary && "section" in saveElement) {
             addLibrary(saveElement);
@@ -89,7 +92,7 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
             <div className="overlay_styles"/>
             <div className="modal_styles">
                 <div className="top_row">
-                    <h3 style={{color: "#6965db"}}>Dodajanje knjižnice</h3>
+                    <h3 style={{color: "#6965db"}}>{ref.current ? "Shrani prostor" : "Dodajanje knjižnice"}</h3>
                     <svg aria-hidden="true" focusable="false" role="img" viewBox="0 0 352 512" className="close_modal"
                          onClick={onClose}>
                         <path fill="currentColor"
