@@ -6,7 +6,9 @@ const libraryEditorSchema = new Schema(
         section: String,
         abbreviation: String,
         desc: String,
-        file: Object
+        file: Object,
+        svg: Object,
+        fileOrg: Object,
     },
     { timestamps: true }
 );
