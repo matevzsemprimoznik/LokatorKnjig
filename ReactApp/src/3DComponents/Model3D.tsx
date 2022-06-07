@@ -7,6 +7,7 @@ import Ground from "./Ground";
 import {ThreeEvent} from "react-three-fiber";
 import {Bookshelf, Room} from "../models/library";
 import EntranceText from "./EntranceText";
+import Entrance from "./Entrance";
 
 interface BookShelfsProps {
   selectedUDK: string;
@@ -33,7 +34,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
   const selectedUDKPositions = getSelectedUDKPositions();
   return (
     <>
-      {roomData.entrances.map((entrance,index) => <EntranceText key={index} rotation={entrance.rotation} position={{ x: entrance.position.x + roomData.center.x,y: entrance.position.y + roomData.center.y,z: entrance.position.z + roomData.center.z  }} />)}
+      {roomData.entrances.map((entrance,index) => <Entrance key={index} rotation={entrance.rotation} position={{ x: entrance.position.x + roomData.center.x,y: entrance.position.y + roomData.center.y,z: entrance.position.z + roomData.center.z  }} />)}
       {roomData.bookshelves.map((bookshelf: Bookshelf, index: number) =>
           bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK) ? (
           <BookshelfPiece
@@ -87,7 +88,7 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleC
           />
         )
       )}
-      <Ground position={{ x: 0 + roomData.center.x, y: 0.05+ roomData.center.y, z: 0+ roomData.center.z }} onDoubleClick={moveCameraToDoubleClickedPoint} edges={roomData.ground} />
+      <Ground position={{ x: 0 + roomData.center.x, y: roomData.center.y, z: 0+ roomData.center.z }} onDoubleClick={moveCameraToDoubleClickedPoint} edges={roomData.ground} />
     </>
   );
 };

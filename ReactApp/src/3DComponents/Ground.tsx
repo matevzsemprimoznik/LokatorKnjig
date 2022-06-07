@@ -1,7 +1,7 @@
 import { useGLTF } from "@react-three/drei";
 import React, { FC } from "react";
 import {ThreeEvent} from "react-three-fiber";
-import {MeshBasicMaterial, Vector3} from "three";
+import {BackSide, MeshBasicMaterial, Vector3} from "three";
 import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
 import {Position} from "../models/library";
 
@@ -17,16 +17,39 @@ interface GroundProps {
 
 const Ground: FC<GroundProps> = ({ position , onDoubleClick, edges}) => {
 
-  return (
-    <mesh
-        onDoubleClick={onDoubleClick}
+  const calculateInnerEgdes = () => {
+    return edges.map(edge => {
+      const difference = 0.2
+      const newEdge = {
+        x: edge.x > 0? edge.x - difference : edge.x + difference,
+        y: edge.y,
+        z: edge.z > 0? edge.z - difference : edge.z + difference
+      }
+      return new Vector3(newEdge.x, newEdge.y, newEdge.z)
+    })
+  }
+  console.log(position)
+  const innerEdges = calculateInnerEgdes()
+
+  return (<><mesh
+      onDoubleClick={onDoubleClick}
       castShadow
       receiveShadow
-      geometry={new ConvexGeometry( edges.map(edge => new Vector3(edge.x, edge.y, edge.z)))}
+      geometry={new ConvexGeometry( innerEdges)}
       material={new MeshBasicMaterial( { color: '#e9ecef' } )}
-      position={[position.x, position.y, position.z]}
-      scale={[1.5, 1, 1]}
-    />
+      position={[position.x, position.y + 0.005, position.z]}
+      scale={[1, 1, 1]}
+  /><mesh
+          onDoubleClick={onDoubleClick}
+          castShadow
+          receiveShadow
+          geometry={new ConvexGeometry( edges.map(edge => new Vector3(edge.x, edge.y, edge.z)))}
+          material={new MeshBasicMaterial( { color: '#7f8487' } )}
+          position={[position.x, position.y, position.z]}
+          scale={[1, 1, 1]}
+      />
+      </>
+
   );
 };
 
