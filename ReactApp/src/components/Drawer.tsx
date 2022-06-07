@@ -11,17 +11,15 @@ type DrawerProps = {
     defaultFloor?: number
 }
 
-const Drawer: FC<DrawerProps> = ({isOpen, onClose, section, bodyElements,onClickBodyElement, defaultFloor}) => {
+const Drawer: FC<DrawerProps> = ({isOpen, onClose, section, bodyElements, onClickBodyElement, defaultFloor}) => {
 
-    const { menuOpen, toggleMenuOpen } = React.useContext(MenuContext) as MenuContextType;
-    const prevClickedElement = useRef<{key: number | undefined} | null>({key: defaultFloor})
+    const {menuOpen, toggleMenuOpen} = React.useContext(MenuContext) as MenuContextType;
+    const prevClickedElement = useRef<{ key: number | undefined } | null>({key: defaultFloor})
 
     const onClick = (element: any) => {
-        if(prevClickedElement.current && element.key !== prevClickedElement.current.key)
-            onClickBodyElement(element)
+        onClickBodyElement(element)
         prevClickedElement.current = element
     }
-    console.log(prevClickedElement)
     return (
         <div
             className={menuOpen ? "drawer drawer-open" : "drawer drawer-close"}
@@ -35,14 +33,15 @@ const Drawer: FC<DrawerProps> = ({isOpen, onClose, section, bodyElements,onClick
                     <div>
                         <h2>{section}</h2>
                     </div>
-                    <button type="button" onClick={toggleMenuOpen} className='drawer-button' >
+                    <button type="button" onClick={toggleMenuOpen} className='drawer-button'>
                         <img src="../../close-icon-white.png"
                              alt="menu" aria-hidden="true"
                              onClick={toggleMenuOpen}/>
                     </button>
                 </div>
                 <div className='drawer-info-body'>
-                    {bodyElements.map((element, index) => <div onClick={() => onClick(element)} key={index} className={ prevClickedElement.current?.key === element.key ? 'drawer-body-element-active' : 'drawer-body-element'}>{element.text}</div>)}
+                    {bodyElements.map((element, index) => <div onClick={() => onClick(element)} key={index}
+                                                               className={prevClickedElement.current?.key === element.key ? 'drawer-body-element-active' : 'drawer-body-element'}>{element.text}</div>)}
                 </div>
 
             </div>
