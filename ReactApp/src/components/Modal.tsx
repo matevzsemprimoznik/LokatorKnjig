@@ -1,13 +1,15 @@
-import React, {ChangeEvent, FC, FormEvent, ReactNode, useEffect, useState} from 'react';
+import React, {ChangeEvent, FC, FormEvent, ReactNode, useContext, useEffect, useState} from 'react';
 import ReactDOM from "react-dom";
 import {useLocation, useNavigate} from 'react-router-dom';
 import "../styles/Modal/Modal.css";
+import {WallContext} from "../context/wallElementsContext";
 
 type ModalPropsType = {
     open: boolean,
     onClose: () => void,
     saveToJson?: Function,
-    addLibrary?: Function
+    addLibrary?: Function,
+    abbr?: string
 }
 
 
@@ -65,7 +67,7 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
         if (saveToJson) {
             if ("label" in saveElement) {
                 saveToJson(saveElement?.label, saveElement!.floor, document.getElementById("canvas"));
-                navigate(-1)
+                // navigate(-1)
             }
         } if (addLibrary && "section" in saveElement) {
             addLibrary(saveElement);

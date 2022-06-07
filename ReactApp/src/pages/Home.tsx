@@ -4,6 +4,7 @@ import Footer from '../components/landing_page/Footer';
 import LibrariesInfoSection from '../components/landing_page/LibrariesInfoSection';
 import SearchForm from '../components/landing_page/SearchForm';
 import {LibraryContext, ServerRoute} from "../context/libraryContext";
+import Header from "../components/landing_page/Header";
 
 const Home = () => {
     const {getLibraryData} = useContext(LibraryContext);
@@ -14,6 +15,7 @@ const Home = () => {
 
     return (
         <>
+            <Header/>
             <div className='app-container'>
                 <Banner/>
                 <SearchForm/>

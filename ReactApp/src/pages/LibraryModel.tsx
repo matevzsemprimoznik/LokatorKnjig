@@ -9,6 +9,7 @@ import {MenuContext} from "../context/menuContext";
 import Drawer from "../components/Drawer";
 import SearchUDK from '../components/SearchUDK';
 import {Loading} from "../components/Loading";
+import Header from "../components/landing_page/Header";
 
 const RotateIconUrl = '../../images/rotate.png';
 const FirstPersonViewIconUrl = '../../images/360-view.png';
@@ -58,6 +59,7 @@ const LibraryModel = () => {
 
   return (
     <>
+        <Header/>
       <SearchUDK library={library}/>
       <div style={{height: "90vh"}}>
           <Suspense fallback={<Loading/>}>

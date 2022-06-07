@@ -4,6 +4,7 @@ import { AuthContext } from '../context/authContext';
 import '../styles/login/login.css'
 import Footer from "../components/landing_page/Footer";
 import Error from '../components/Error'
+import Header from "../components/landing_page/Header";
 
 const Login: FC = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const Login: FC = () => {
   };
   return (
       <>
+        <Header/>
       <div className='login'>
         <form onSubmit={onLogin} >
           <div className='input-container'>

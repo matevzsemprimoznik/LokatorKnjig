@@ -27,7 +27,6 @@ function App() {
                 <LibraryProvider>
                     <ModelProvider>
                         <BrowserRouter>
-                            <Header/>
                             <Routes>
                                 <Route path='/' element={<Home/>}/>
                                 <Route path='/library-model'>
