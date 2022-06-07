@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
-import Draggable, { DraggableEvent } from 'react-draggable';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import Draggable, {DraggableEvent} from 'react-draggable';
 import '../styles/floorEditingPage/FlooPlanEditingPage.css';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import {TransformComponent, TransformWrapper} from 'react-zoom-pan-pinch';
 import Button from '../components/Button';
 import Drawer from '../components/Drawer';
-import { LibraryContext } from '../context/libraryContext';
+import {LibraryContext, ServerRoute} from '../context/libraryContext';
 import {useNavigate, useParams} from 'react-router-dom';
-import { MenuContext } from '../context/menuContext';
-import {libraryApi} from "../context/axios";
+import {MenuContext} from '../context/menuContext';
+
 const MenuIconUrl = '../../menu-button.svg';
 const RotateIconUrl = '../../rotate.png';
 
@@ -23,7 +22,7 @@ const FloorPlanEditingPage = () => {
   const [rooms, setRooms] = useState([...floorData]);
 
   useEffect(() => {
-    if (abbr) getSpecificFloorData(abbr, 0);
+    if (abbr) getSpecificFloorData(ServerRoute.EDITOR, abbr, 0);
   }, []);
 
   useEffect(() => {
