@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import {createContext, useState} from 'react';
 import {libraryApi} from "./axios";
 import {Room} from "../models/library";
 
@@ -13,7 +13,9 @@ export type LibraryContextType = {
     libraryData: Array<any>
     section: string
     getFloorsAndSpaces: (abbr: string) => void,
-    floorsAndSpaces: any
+    floorsAndSpaces: any,
+    svgs: Array<any>
+    getSvgs: (library: string, floor: string) => void
 };
 
 export enum ServerRoute {
@@ -22,24 +24,42 @@ export enum ServerRoute {
 }
 
 export const LibraryContext = createContext<LibraryContextType>({
+    svgs: [],
+    getSvgs: () => {
+    },
     floorData: [],
-    getFloorData: () => {},
-    getAllFloors: () => {},
+    getFloorData: () => {
+    },
+    getAllFloors: () => {
+    },
     floors: [],
-    getSpecificFloorData: () => {},
-    getLibraryData: () => {},
+    getSpecificFloorData: () => {
+    },
+    getLibraryData: () => {
+    },
     libraryData: [],
-    getFloorsAndSpaces: (abbr: string) => {},
+    getFloorsAndSpaces: (abbr: string) => {
+    },
     section: "",
     floorsAndSpaces: [],
 });
 
-const LibraryProvider = ({ children }: any) => {
+const LibraryProvider = ({children}: any) => {
     const [libraryData, setLibraryData] = useState([]);
     const [floorData, setFloorData] = useState<Array<Room>>([])
     const [floors, setFloor] = useState<Array<number>>([])
     const [section, setSection] = useState<string>("");
     const [floorsAndSpaces, setFloorAndSpaces] = useState([]);
+    const [svgs, setSvgs] = useState([])
+
+    const getSvgs = async (library: string, floor: string) => {
+        try {
+            const response = await libraryApi.get(`editor/${library}/${floor}`);
+            setSvgs(response.data)
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const getFloorData = async (library: string, udk: string) => {
         try {
@@ -50,7 +70,7 @@ const LibraryProvider = ({ children }: any) => {
         }
     }
 
-    const getAllFloors = async (serverRoute: ServerRoute,library: string) => {
+    const getAllFloors = async (serverRoute: ServerRoute, library: string) => {
         try {
             const response = await libraryApi.get(`${serverRoute}/${library}/floors`)
             setSection(response.data.section)
@@ -88,7 +108,20 @@ const LibraryProvider = ({ children }: any) => {
     }
 
     return (
-        <LibraryContext.Provider value={{floors, getAllFloors,getSpecificFloorData, floorData, getFloorData, getLibraryData, libraryData, section, getFloorsAndSpaces, floorsAndSpaces }}>
+        <LibraryContext.Provider value={{
+            floors,
+            getAllFloors,
+            getSpecificFloorData,
+            floorData,
+            getFloorData,
+            getLibraryData,
+            libraryData,
+            section,
+            getFloorsAndSpaces,
+            floorsAndSpaces,
+            svgs,
+            getSvgs
+        }}>
             {children}
         </LibraryContext.Provider>
     );
