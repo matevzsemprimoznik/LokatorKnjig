@@ -89,7 +89,7 @@ npm start
 Your application should now be running and available on this link: http://localhost:3000
 
 ## Getting started (installation with Docker):
-After downloading all the necessary code for the project you will need to add a .env file to root directory. Your env file should look like this (same as backend .env for local installation, [here](#backend-env-file) .
+After downloading all the necessary code for the project you will need to add a .env file to root directory. Your env file should look like this (same as backend .env for local installation, [click here](#backend-env-file)).
 ```
 MONGO_URI=mongodb+srv://<username>:<password>@clustername.mongodb.net/test?retryWrites=true&w=majority
 PORT=5000
