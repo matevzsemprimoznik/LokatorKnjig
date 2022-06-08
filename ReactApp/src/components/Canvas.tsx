@@ -87,7 +87,7 @@ const Canvas = () => {
 
     const [blockSplitOnPieces, setBlockSplitOnPieces] = useState<Array<ElementType>>([]);
 
-    const { abbr } = useParams();
+    const {abbr} = useParams();
 
     useLayoutEffect(() => {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -903,8 +903,8 @@ const Canvas = () => {
         bookshelves.forEach((item: ElementType) => {
             let {x, y, ...rest}: any = calculateBookshelfCenterPoint(item);
             bookShelfCoords.push({
-                x: Number(((x - startingPointX) / 10).toFixed(2)) / 2,
-                z: Number(((y - startingPointY) / 10).toFixed(2)) / 2,
+                x: Number(((x - startingPointX)).toFixed(2)),
+                z: Number(((y - startingPointY)).toFixed(2)),
                 ...rest,
             });
         });
@@ -916,10 +916,12 @@ const Canvas = () => {
         startingPointY: number
     ) => {
         let ground: any = [];
+        console.log(wallElements)
+        console.log(startingPointX, startingPointY)
         wallElements.forEach(({x1, y1}: WallType) => {
             ground.push({
-                x: Number(((x1 - startingPointX) / 10).toFixed(2)) / 2 ,
-                z: Number(((y1 - startingPointY) / 10).toFixed(2)) / 2,
+                x: Number(((x1 - startingPointX)).toFixed(2)),
+                z: Number(((y1 - startingPointY)).toFixed(2)),
                 y: 0,
             });
         });
@@ -933,8 +935,8 @@ const Canvas = () => {
         let entrances: any = [];
         doorElements.forEach(({x, y}: ElementType) => {
             entrances.push({
-                x: Number(((x - startingPointX) / 10).toFixed(2)) / 2,
-                z: Number(((y - startingPointY) / 10).toFixed(2)) / 2,
+                x: Number(((x - startingPointX)).toFixed(2)),
+                z: Number(((y - startingPointY)).toFixed(2)),
                 y: 0,
             });
         });
@@ -1027,12 +1029,14 @@ const Canvas = () => {
         console.log(res);
 
         let viewBox = [minX, minY, maxX - minX, maxY - minY].join(" ");
-        console.log(viewBox);
+        console.log('VIEW', viewBox);
 
         res.setAttribute('viewBox', viewBox);
 
 
         res.removeAttribute("viewPort");
+        res.removeAttribute("width");
+        res.removeAttribute("height");
         console.log(res);
 
         // @ts-ignore
@@ -1077,7 +1081,7 @@ const Canvas = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const onClose = () => setIsOpen(false);
-    const ref =useRef<boolean>(false)
+    const ref = useRef<boolean>(false)
 
 
     return (
@@ -1230,11 +1234,13 @@ const Canvas = () => {
                         value="4"
                     />
                     <label htmlFor="radio-door">
-                        <img src="../../icons8-open-door-50.png" style={{height: "1em", objectFit: "contain"}} alt="nekaj" />
+                        <img src="../../icons8-open-door-50.png" style={{height: "1em", objectFit: "contain"}}
+                             alt="nekaj"/>
                     </label>
                 </div>
-                <div className={`topDiv-element`} style={{position: "absolute", top: "2px", left: "300px"}} onClick={() => setIsOpen(true)}>
-                    <img src="../../icons8-save-30.png" style={{height: "1em", objectFit: "contain"}} alt="nekaj" />
+                <div className={`topDiv-element`} style={{position: "absolute", top: "2px", left: "300px"}}
+                     onClick={() => setIsOpen(true)}>
+                    <img src="../../icons8-save-30.png" style={{height: "1em", objectFit: "contain"}} alt="nekaj"/>
                 </div>
             </div>
             {/*EDITING AND DRAWING SHELVES*/}

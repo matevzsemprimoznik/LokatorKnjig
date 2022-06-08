@@ -69,12 +69,11 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) =
                     <PerspectiveCamera
                         makeDefault={modelType === ModelType._3D}
                         position={[-10, 9, 15]}
-                        far={300}
+                        far={1000}
                         ref={perspectiveCameraRef}
                     />
                     <OrbitControls
                         minZoom={1}
-                        maxDistance={70}
                         ref={orbitControlsRef}
                         maxAzimuthAngle={modelType === ModelType._3D ? Infinity : Math.PI}
                         minAzimuthAngle={modelType === ModelType._3D ? -Infinity : Math.PI}

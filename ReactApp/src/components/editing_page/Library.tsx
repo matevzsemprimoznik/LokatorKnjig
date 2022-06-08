@@ -23,7 +23,7 @@ const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, labe
     const saveToAllLibraries = async () => {
         try {
             const response = await libraryApi.post(`${ServerRoute.EDITOR}/newLibrary/${abbreviation}`);
-
+            console.log(response)
 
         } catch (err) {
             console.log(err);
@@ -57,7 +57,7 @@ const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, labe
                 <div style={{display: "flex", alignItems: "center", marginLeft: "2em"}}>
                     <Link to={`/add-floor-plan/${abbreviation}`}
                           className="libraryLink" style={{width: "95%"}}>
-                        <div className="library" >
+                        <div className="library">
                             <div className="library__info1">
                                 <div className="library__info-left">
                                     <h3>{section}</h3>

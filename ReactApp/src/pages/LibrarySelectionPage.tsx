@@ -46,13 +46,17 @@ const LibrarySelectionPage = () => {
 
 
     useEffect(() => {
-        getFloorsAndSpaces(abbr!);
+        if (abbr)
+            getFloorsAndSpaces(abbr!);
         getLibraryData(ServerRoute.EDITOR);
     }, [])
 
     useEffect(() => {
-        getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
-        getAllFloors(ServerRoute.EDITOR, abbr!);
+
+        if (abbr) {
+            getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
+            getAllFloors(ServerRoute.EDITOR, abbr!);
+        }
 
     }, [floorIndex]);
 

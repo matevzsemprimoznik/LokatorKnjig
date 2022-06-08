@@ -29,15 +29,21 @@ const FloorPlanEditingPage = () => {
     useEffect(() => {
         setRooms(svgs.map(svg => {
             const svgString = window.atob(svg.svg).toString()
-            const widthPosition = svgString.indexOf('width') + 7
-            const width = svgString.substring(widthPosition, svgString.indexOf('"', widthPosition) - 2)
+            const widthPosition = svgString.indexOf('viewBox') + 9
+            const viewBoxString = svgString.substring(widthPosition, svgString.indexOf('"', widthPosition))
+            const width = viewBoxString.split(' ')[2]
+            const height = viewBoxString.split(' ')[3]
             return {
                 ...svg,
                 rotation: 0,
                 isRotationButtonHidden: true,
                 isOnCanvas: false,
-                position: {x: 0, y: 0},
-                width: parseInt(width) / 5
+                position: {
+                    x: window.screen.width / 2 - 150,
+                    y: 100
+                },
+                width,
+                height
             }
         }));
     }, [svgs.length]);
@@ -65,22 +71,23 @@ const FloorPlanEditingPage = () => {
 
     const onSubmit = () => {
         console.log(rooms)
+
+        const maxX = Math.max(...rooms.map((room: any) => room.position.x))
+        const minX = Math.min(...rooms.map((room: any) => room.position.x))
+        const maxY = Math.max(...rooms.map((room: any) => room.position.y))
+        const minY = Math.min(...rooms.map((room: any) => room.position.y))
         const center = {
-            x:
-                rooms.map((room: any) => room.position).reduce((previousValue: any, currentValue: any) => previousValue + currentValue.x, 0) /
-                rooms.length,
-            y:
-                rooms.map((room: any) => room.position).reduce((previousValue: any, currentValue: any) => previousValue + currentValue.y, 0) /
-                rooms.length,
+            x: (maxX + minX) / 2,
+            y: (maxY + minY) / 2,
         };
         console.log('center', center)
         const data = rooms.map((room: any) => {
             return {
                 label: room.label,
                 center: {
-                    x: (room.position.x - center.x) / 4,
+                    x: (room.position.x - center.x),
                     y: 0,
-                    z: (room.position.y - center.y) / 4
+                    z: (room.position.y - center.y)
                 }
             }
         })
@@ -88,10 +95,19 @@ const FloorPlanEditingPage = () => {
         saveCenterOfAllRooms(data)
     };
     const saveElementPosition = (e: DraggableEvent, label: string) => {
+        //@ts-ignore
+        const viewportOffset = e.target.getBoundingClientRect()
+        console.log(label, viewportOffset)
         if ('clientX' in e && 'clientY' in e) {
             setRooms((prevState: any) => [...prevState.map((room: any) => {
                 if (room.label === label) {
-                    return {...room, position: {x: e.clientX, y: e.clientY}}
+                    return {
+                        ...room,
+                        position: {
+                            x: viewportOffset.x + viewportOffset.width / 2,
+                            y: viewportOffset.y + viewportOffset.height / 2
+                        }
+                    }
                 }
                 return room
             })]);
@@ -137,9 +153,7 @@ const FloorPlanEditingPage = () => {
             >
                 <TransformComponent contentClass='main' wrapperStyle={{height: '100%', width: '100%'}}>
                     {rooms.map((element: any, index: number) => {
-                            {
 
-                            }
                             return element.isOnCanvas && (
                                 <Draggable
                                     key={index}
@@ -147,7 +161,8 @@ const FloorPlanEditingPage = () => {
                                     scale={scale}
                                     onDrag={(e) => saveElementPosition(e, element.label)}
                                 >
-                                    <div className='draggable'>
+                                    <div className='draggable'
+                                         style={{width: element.width + 'px', height: element.height + 'px'}}>
 
                                         <img style={{
                                             transform: `rotate(${element.rotation}deg)`,
