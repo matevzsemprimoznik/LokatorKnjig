@@ -3,6 +3,7 @@ import cors from 'cors';
 import { createConnection } from './connection.js';
 import librariesRoute from './routes/libraries.js';
 import udkRoute from './routes/librariesUDK.js';
+import editorRoute from './routes/editor.js';
 import 'dotenv/config';
 
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use('/libraries', librariesRoute);
 app.use('/udk', udkRoute);
+app.use('/editor', editorRoute);
 
 app.listen(PORT, () => {
   createConnection();

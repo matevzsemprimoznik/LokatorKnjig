@@ -16,7 +16,7 @@ const SearchUDK : FC<SearchUDKProps> = ({library}) => {
     }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        let link = "/library-model/" + library + "/" + searchedUDK;
+        let link = "/library-model/" + library + "?udk=" + searchedUDK;
         navigate(link);
     }
 
@@ -29,7 +29,7 @@ const SearchUDK : FC<SearchUDKProps> = ({library}) => {
                     onChange={handleUDKChange}
                 />
                 <div className='search-icon' onClick={handleSubmit}>
-                    <img src={search} style={{width: "35px", height: "35px"}}/>
+                    <img src={search} alt="Search icon" style={{width: "35px", height: "35px"}}/>
                 </div>
             </form>
         </div>
