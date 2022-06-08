@@ -57,7 +57,6 @@ const Canvas = () => {
         setBs_details
     } = useContext(WallContext);
 
-    const [nekaj, setNekaj] = useState<any>();
 
     const [currentDrawingBookshelf, setCurrentDrawingBookshelf] = useState<Array<ElementType>>([]);
     const [selectedElement, setSelectedElement] = useState<ElementType | null>(
@@ -73,10 +72,9 @@ const Canvas = () => {
 
     const [selectedRoomBoundary, setSelectedRoomBoundary] = useState<any>(null);
 
-    //vrata
+
     const [drawingDoor, setDrawingDoor] = useState(false);
     const [selectedWall, setSelectedWall] = useState<any>();
-    // vrata
 
 
     const [leftDivOpen, setLeftDivOpen] = useState<boolean>(false);
@@ -101,14 +99,16 @@ const Canvas = () => {
 
         bookshelves.map((item: ElementType, index: number) => (item.id = index));
 
-        [...doorElements].forEach(({text, x, y}) => {
-            let startAngle = (1 * Math.PI) / 2;
-            let endAngle = startAngle + Math.PI / 2;
-            ctx!.beginPath();
-            ctx!.moveTo(x, y);
-            ctx!.arc(x, y, 50, startAngle, endAngle);
-            ctx!.closePath();
-            ctx!.stroke();
+        [...doorElements].forEach(({rotation, x, y}) => {
+            if (rotation === 90) {
+                ctx!.beginPath();
+                ctx!.fillStyle = "#023e8a";
+                ctx!.fillRect(x, y - 10, 10, 40);
+            } else {
+                ctx!.beginPath();
+                ctx!.fillStyle = "#023e8a";
+                ctx!.fillRect(x - 10, y, 40, 10);
+            }
         });
 
         [...wallElements].forEach((item: any) => {
@@ -360,64 +360,45 @@ const Canvas = () => {
                 ? calculateCoordinates(event.clientX, event.clientY)
                 : event;
 
-        /* VRATA */
 
         if (drawingDoor) {
-            const element = getWallPieceAtPosition(
-                clientX,
-                clientY,
-                wallElements,
-                DrawingElement.DOOR
-            );
-            console.log("ko pritisnem je to stranica za vrata", element);
-            console.log(" selected wall ko pritisnem", selectedWall)
-            if (element) {
-                if (nekaj) {
-                    const {x, y} = getClosestPoint(
-                        clientX,
-                        clientY,
-                        nekaj.x,
-                        nekaj.y,
-                        nekaj.x1,
-                        nekaj.y1
-                    );
-                    console.log(x, y);
-                    if (
-                        Math.abs(element.x - element.x1) > Math.abs(element.y - element.y1)
-                    )
-                        setDoorElements((prevState: any) => [
-                            ...prevState,
-                            {
-                                x: x,
-                                y: y,
-                                rotation: 0,
-                            },
-                        ]);
-                    if (
-                        Math.abs(element.x - element.x1) < Math.abs(element.y - element.y1)
-                    )
-                        setDoorElements((prevState: any) => [
-                            ...prevState,
-                            {
-                                x,
-                                y,
-                                rotation: 0,
-                            },
-                        ]);
-                } else {
-                    console.log("ni blizu stene")
-                    // ni cursor blizu stene
-                }
+            const roomBoundaries = maxMinWallElements();
+
+            if (clientX > roomBoundaries[2] || clientX < roomBoundaries[0] || clientY > roomBoundaries[3] || clientY < roomBoundaries[1]) {
+
+            } else if ((Math.abs(clientX - roomBoundaries[0]) < 20) || (Math.abs(clientX - roomBoundaries[2]) < 20)) {
+                setDoorElements((prevState: any) => [
+                    ...prevState,
+                    {
+                        x: clientX,
+                        y: clientY,
+                        rotation: 90,
+                    },
+                ]);
+            } else {
+                setDoorElements((prevState: any) => [
+                    ...prevState,
+                    {
+                        x: clientX,
+                        y: clientY,
+                        rotation: 0,
+                    },
+                ]);
             }
+
         }
 
-        /* VRATA */
 
         /*drawing walls*/
         if (drawingElement === DrawingElement.WALL && action === ActionTypes.NONE) {
-            const element = createElement(1, clientX, clientY, clientX, clientY, DrawingElement.WALL);
-            setRoomBoundaries((prevState: any) => [...prevState, element]);
-            setAction(ActionTypes.DRAWING)
+            const element = createElement(0, clientX, clientY, clientX, clientY, DrawingElement.WALL);
+            if (roomBoundaries.length < 1) {
+                setRoomBoundaries((prevState: any) => [...prevState, element]);
+                setAction(ActionTypes.DRAWING)
+            } else {
+                setAction(ActionTypes.NONE);
+                setDrawingElement(DrawingElement.NONE);
+            }
         }
 
 
@@ -486,14 +467,6 @@ const Canvas = () => {
             // event.target.style.cursor = element
             //     ? cursorStyle(element.position)
             //     : "default";
-
-            if (element) {
-                // setSelectedWall(element);
-                setNekaj(element);
-            } else {
-                // setSelectedWall([]);
-                setNekaj([]);
-            }
         }
 
         /* vrata */
@@ -666,8 +639,8 @@ const Canvas = () => {
         }
         event.target.style.cursor = "default";
 
-        if (drawingElement === DrawingElement.DOOR && nekaj) {
-            console.log("moglo bi se narisat");
+        if (drawingElement === DrawingElement.DOOR && drawingDoor) {
+            setDrawingDoor(false);
             setAction(ActionTypes.NONE);
         }
     };
@@ -918,10 +891,10 @@ const Canvas = () => {
         let ground: any = [];
         console.log(wallElements)
         console.log(startingPointX, startingPointY)
-        wallElements.forEach(({x1, y1}: WallType) => {
+        wallElements.forEach(({x, y}: WallType) => {
             ground.push({
-                x: Number(((x1 - startingPointX)).toFixed(2)),
-                z: Number(((y1 - startingPointY)).toFixed(2)),
+                x: Number(((x - startingPointX)).toFixed(2)),
+                z: Number(((y - startingPointY)).toFixed(2)),
                 y: 0,
             });
         });
@@ -1074,14 +1047,13 @@ const Canvas = () => {
 
 
     const addDoors = () => {
-        setDrawingDoor(!drawingDoor);
-        setDrawingElement(DrawingElement.NONE);
+        setDrawingDoor(true);
+        setDrawingElement(DrawingElement.DOOR);
     };
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const onClose = () => setIsOpen(false);
-    const ref = useRef<boolean>(false)
 
 
     return (
@@ -1200,6 +1172,20 @@ const Canvas = () => {
                         </svg>
                     </label>
                 </div>
+                <div className={`topDiv-element${radio === 5 ? "--checked" : ""}`} onClick={addDoors}>
+                    <input
+                        id="radio-door"
+                        type="radio"
+                        name="action-selection"
+                        className="topDiv-elementRadio"
+                        onChange={handleRadioChange}
+                        value="5"
+                    />
+                    <label htmlFor="radio-door">
+                        <img src="../../icons8-open-door-50.png" style={{height: "1em", objectFit: "contain"}}
+                             alt="nekaj"/>
+                    </label>
+                </div>
                 <div className={`topDiv-element`} onClick={handleElementDelete}>
                     <input
                         id="radio-delete"
@@ -1222,20 +1208,6 @@ const Canvas = () => {
                                 d="M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"
                             ></path>
                         </svg>
-                    </label>
-                </div>
-                <div className={`topDiv-element`} onClick={addDoors}>
-                    <input
-                        id="radio-door"
-                        type="radio"
-                        name="action-selection"
-                        className="topDiv-elementRadio"
-                        onChange={handleRadioChange}
-                        value="4"
-                    />
-                    <label htmlFor="radio-door">
-                        <img src="../../icons8-open-door-50.png" style={{height: "1em", objectFit: "contain"}}
-                             alt="nekaj"/>
                     </label>
                 </div>
                 <div className={`topDiv-element`} style={{position: "absolute", top: "2px", left: "300px"}}

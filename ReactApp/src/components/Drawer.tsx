@@ -1,6 +1,7 @@
 import React, {FC, useRef} from 'react';
 import {MenuContext, MenuContextType} from '../context/menuContext';
 import '../styles/Drawer.css';
+import CloseIcon from '../assets/close-icon-white.png';
 
 type DrawerProps = {
     isOpen?: boolean,
@@ -34,7 +35,7 @@ const Drawer: FC<DrawerProps> = ({isOpen, onClose, section, bodyElements, onClic
                         <h2>{section}</h2>
                     </div>
                     <button type="button" onClick={toggleMenuOpen} className='drawer-button'>
-                        <img src="../../close-icon-white.png"
+                        <img src={CloseIcon}
                              alt="menu" aria-hidden="true"
                              onClick={toggleMenuOpen}/>
                     </button>
