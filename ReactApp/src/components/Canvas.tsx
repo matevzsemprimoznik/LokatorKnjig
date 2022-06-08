@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useEffect, useLayoutEffect, useRef, useState,} from "react";
+import React, {ChangeEvent, useContext, useEffect, useLayoutEffect, useState,} from "react";
 import rough from "roughjs/bin/rough";
 import {RoughCanvas} from "roughjs/bin/canvas";
 import {Drawable} from "roughjs/bin/core";
@@ -20,7 +20,6 @@ import {
     calculateCoordinates,
     cursorStyle,
     distance,
-    getClosestPoint,
     nearPoint,
     resizedCoordinates,
 } from "../utils/canvas_utils/canvas_math_functions/canvas_math";
@@ -72,7 +71,7 @@ const Canvas = () => {
     const [selectedRoomBoundary, setSelectedRoomBoundary] = useState<any>(null);
 
 
-    const [drawingDoor, setDrawingDoor] = useState(false);
+    // const [drawingDoor, setDrawingDoor] = useState(false);
     const [selectedWall, setSelectedWall] = useState<any>();
 
 
@@ -204,7 +203,7 @@ const Canvas = () => {
                     fill: `${
                         style === ElementStyleType.SelectedBookshelf
                             ? "rgb(78,102,166)"
-                            : "rgba(173, 142, 100)"
+                            : "rgb(173, 142, 100)"
                     }`,
                     roughness: 0,
                 });
@@ -218,7 +217,7 @@ const Canvas = () => {
                     fill: `${
                         style === ElementStyleType.SelectedBookshelf
                             ? "rgb(78,102,166)"
-                            : "rgba(173, 142, 100)"
+                            : "rgb(173, 142, 100)"
                     }`,
                     roughness: 0,
                 });
@@ -350,7 +349,7 @@ const Canvas = () => {
                 : event;
 
 
-        if (drawingDoor) {
+        if (drawingElement === DrawingElement.DOOR) {
             const roomBoundaries = maxMinWallElements();
 
             if (clientX > roomBoundaries[2] || clientX < roomBoundaries[0] || clientY > roomBoundaries[3] || clientY < roomBoundaries[1]) {
@@ -483,13 +482,12 @@ const Canvas = () => {
             }
         }
 
-        /*določam, kaj delamo*/
-        if (action === ActionTypes.SELECTING/* && drawingElement === DrawingElement.NONE*/) {
+        if (action === ActionTypes.SELECTING) {
             let wallAtPos = getWallAtPosition(clientX,
                 clientY,
                 roomBoundaries,
                 DrawingElement.WALL);
-            console.log(wallAtPos)
+
             event.target.style.cursor = wallAtPos ? cursorStyle(wallAtPos.position) : "default";
             let bShelfAtPos = getElementAtPosition(clientX,
                 clientY,
@@ -611,8 +609,8 @@ const Canvas = () => {
         }
         event.target.style.cursor = "default";
 
-        if (drawingElement === DrawingElement.DOOR && drawingDoor) {
-            setDrawingDoor(false);
+        if (drawingElement === DrawingElement.DOOR) {
+            setDrawingElement(DrawingElement.NONE);
             setAction(ActionTypes.NONE);
         }
     };
@@ -644,7 +642,7 @@ const Canvas = () => {
                 const element = generator.rectangle(x, y, 40, 10, {
                     strokeWidth: 1,
                     fillStyle: "solid",
-                    fill: "rgba(173, 142, 100)",
+                    fill: "rgb(173, 142, 100)",
                     roughness: 0,
                 });
                 let x1 = x + 40;
@@ -668,7 +666,7 @@ const Canvas = () => {
                 const element = generator.rectangle(x, y, 10, 40, {
                     strokeWidth: 1,
                     fillStyle: "solid",
-                    fill: "rgba(173, 142, 100)",
+                    fill: "rgb(173, 142, 100)",
                     roughness: 0,
                 });
                 let x1 = x + 10;
@@ -700,7 +698,7 @@ const Canvas = () => {
         const element = generator.rectangle(x, y, width, height, {
             strokeWidth: 1,
             fillStyle: "solid",
-            fill: "rgba(173, 142, 100)",
+            fill: "rgb(173, 142, 100)",
             roughness: 0,
         });
         let x1 = x + 40;
@@ -719,12 +717,11 @@ const Canvas = () => {
     };
 
 
-    // element selecting action
     const handleElementSelection = () => {
 
         setDrawingElement(DrawingElement.NONE);
-
         setAction(ActionTypes.SELECTING);
+
         setSelectedElement(null);
         setLeftDivOpen(false);
     };
@@ -875,6 +872,7 @@ const Canvas = () => {
     ) => {
         let entrances: any = [];
         doorElements.forEach(({x, y, rotation}: ElementType) => {
+            console.log("rekalkuliramo vhode" , x,y,rotation)
             entrances.push(
                 { position: {
                     x: Number(((x - startingPointX)).toFixed(2)),
@@ -1011,14 +1009,11 @@ const Canvas = () => {
         // console.log("TO KAJ JE PRERAČUNANO",{space});
         // console.log("ORIGINAL", orgSpace)
 
-        // console.log({space, orgSpace, svg})
-
         return addSpace({space, orgSpace, svg}, abbr!);
     };
 
 
     const addDoors = () => {
-        setDrawingDoor(true);
         setDrawingElement(DrawingElement.DOOR);
     };
 

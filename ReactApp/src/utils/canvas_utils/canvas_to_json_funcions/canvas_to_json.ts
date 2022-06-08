@@ -43,7 +43,7 @@ export const makeEntrancesData = (entrances: any) => {
 
     entrances.forEach((item: any) => {
         entranceArr.push({
-            position: {x: item.x, z: item.z, y: item.y},
+            position: {x: item.position.x, z: item.position.z, y: item.position.y},
             rotation: item.rotation,
         });
     });
