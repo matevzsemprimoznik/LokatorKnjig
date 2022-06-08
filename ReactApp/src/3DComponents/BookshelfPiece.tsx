@@ -35,7 +35,8 @@ const BookshelfPiece: FC<BookshelfPieceProps> = ({position, type, rotation = {x:
                 position={[position.x / 20, position.y, position.z / 20]}
                 rotation={[rotation.x, rotation.y, rotation.z]}
             />
-            <Text text={`${udk[0]}`} position={position} rotation={rotation}/>
+            <Text text={`${udk[0]}`} position={{x: position.x / 20, y: position.y, z: position.z / 20}}
+                  rotation={rotation}/>
         </>
     );
 };

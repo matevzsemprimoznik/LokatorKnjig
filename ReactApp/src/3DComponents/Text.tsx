@@ -45,7 +45,7 @@ const Text: FC<TextProps> = ({text, color = 'white', size = 0.1, position, rotat
     return (
         <mesh
             ref={textRef}
-            position={[position.x / 20, position.y / 20, position.z / 20]}
+            position={[position.x, position.y, position.z]}
             rotation={[rotation.x, rotation.y, rotation.z]}
             geometry={geometry}
             material={material}

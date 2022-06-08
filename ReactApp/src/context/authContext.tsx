@@ -22,8 +22,8 @@ const AuthProvider = ({children}: any) => {
                 setUser(authUser)
             }
         })
-        // if(user)
-        //     setIsAuth(true)
+        if (user)
+            setIsAuth(true)
         return () => {
             unsubscribe();
         }
