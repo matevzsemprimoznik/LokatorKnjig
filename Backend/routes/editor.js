@@ -124,25 +124,21 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
         const uploadedLibrary = await Library.findOne({abbreviation: req.params.abbreviation}).collation({locale: "sl", strength: 1});
 
         if(library != null && uploadedLibrary === null) {
-            //TODO turn json into correct format from editor format
-            const file = [];
 
             const newLibrary = new Library({
                 "section": library.section,
                 "abbreviation": library.abbreviation,
                 "desc": library.desc,
-                "file": file
+                "file": library.file
             });
 
             newLibrary.save();
 
             return res.status(200).json("The library has been posted.");
         } else {
-            //TODO json format from editor format
-            const file = [{"nekaj": "nekaj"}];
 
             const result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
-                "section": library.section, "desc": library.desc, "file": file
+                "section": library.section, "desc": library.desc, "file": library.file
             }).collation({locale: "sl", strength: 1});
 
             return res.json(result);
