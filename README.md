@@ -42,6 +42,8 @@ npm i
 
 After the installation process is complete you will need two .env files (one for backend and one for frontend).
 
+### Backend .env file
+
 For your backend you will need a firebase service account and its data, which should be in this format:
 ```
 {
@@ -66,6 +68,8 @@ PORT=5000
 SERVICE_KEY=service_account!<project_id>!<private_key_id>!<private_key>!<client_email>!<client_id>!<auth_uri>!<token_uri>!<auth_provider_url>!<client_url>
 ```
 
+### Frontend .env file
+
 Your frontend .env file should be located in the ReactApp directory and should include:
 ```
 REACT_APP_BACKEND_URI=http://localhost:5000/
@@ -83,3 +87,21 @@ npm start
 ```
 
 Your application should now be running and available on this link: http://localhost:3000
+
+## Getting started (installation with Docker):
+After downloading all the necessary code for the project you will need to add a .env file to root directory. Your env file should look like this (same as backend .env for local installation, [here](#backend-env-file) .
+```
+MONGO_URI=mongodb+srv://<username>:<password>@clustername.mongodb.net/test?retryWrites=true&w=majority
+PORT=5000
+SERVICE_KEY=service_account!<project_id>!<private_key_id>!<private_key>!<client_email>!<client_id>!<auth_uri>!<token_uri>!<auth_provider_url>!<client_url>
+```
+
+Then you should open the root directory in cmd. Run the next commands in the terminal:
+```
+docker-compose build
+```
+When the build is complete run:
+```
+docker-compose up
+```
+When it's finished your application should be available on this link: http://localhost:3000
