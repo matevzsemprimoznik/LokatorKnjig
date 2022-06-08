@@ -31,8 +31,7 @@ import {
     makeBookshelvesData,
     makeEntrancesData,
 } from "../utils/canvas_utils/canvas_to_json_funcions/canvas_to_json";
-import {Cache} from "three";
-import add = Cache.add;
+
 
 export const generator = rough.generator();
 
@@ -202,11 +201,10 @@ const Canvas = () => {
                 const element: Drawable = generator.rectangle(x, y, 40, 10, {
                     strokeWidth: 1,
                     fillStyle: "solid",
-                    // fill: 'rgb(49,38,15)',
                     fill: `${
                         style === ElementStyleType.SelectedBookshelf
                             ? "rgb(78,102,166)"
-                            : "rgba(49,38,15,0.8)"
+                            : "rgba(173, 142, 100)"
                     }`,
                     roughness: 0,
                 });
@@ -220,7 +218,7 @@ const Canvas = () => {
                     fill: `${
                         style === ElementStyleType.SelectedBookshelf
                             ? "rgb(78,102,166)"
-                            : "rgba(49,38,15,0.8)"
+                            : "rgba(173, 142, 100)"
                     }`,
                     roughness: 0,
                 });
@@ -290,15 +288,6 @@ const Canvas = () => {
             isCursorOnElement(x, y, bookshelf, type)
         );
     };
-
-    const getWallPieceAtPosition = (x: number,
-                                    y: number,
-                                    walls: Array<WallType>,
-                                    type: DrawingElement) => {
-        return walls.find((wall: any) =>
-            isCursorOnElement(x, y, wall, type)
-        );
-    }
 
     const getWallAtPosition = (
         x: number,
@@ -453,23 +442,6 @@ const Canvas = () => {
             drawingElement === DrawingElement.BOOKSHELF
                 ? calculateCoordinates(event.clientX, event.clientY)
                 : event;
-
-        /* VRATA */
-        if (drawingDoor) {
-            const element = getWallPieceAtPosition(
-                clientX,
-                clientY,
-                wallElements,
-                DrawingElement.DOOR
-            );
-            // console.log("element stene ko premikamo", element)
-
-            // event.target.style.cursor = element
-            //     ? cursorStyle(element.position)
-            //     : "default";
-        }
-
-        /* vrata */
 
         if (
             drawingElement === DrawingElement.WALL &&
@@ -672,7 +644,7 @@ const Canvas = () => {
                 const element = generator.rectangle(x, y, 40, 10, {
                     strokeWidth: 1,
                     fillStyle: "solid",
-                    fill: "rgb(49,38,15)",
+                    fill: "rgba(173, 142, 100)",
                     roughness: 0,
                 });
                 let x1 = x + 40;
@@ -696,7 +668,7 @@ const Canvas = () => {
                 const element = generator.rectangle(x, y, 10, 40, {
                     strokeWidth: 1,
                     fillStyle: "solid",
-                    fill: "rgb(49,38,15)",
+                    fill: "rgba(173, 142, 100)",
                     roughness: 0,
                 });
                 let x1 = x + 10;
@@ -728,7 +700,7 @@ const Canvas = () => {
         const element = generator.rectangle(x, y, width, height, {
             strokeWidth: 1,
             fillStyle: "solid",
-            fill: "rgb(49,38,15)",
+            fill: "rgba(173, 142, 100)",
             roughness: 0,
         });
         let x1 = x + 40;
@@ -847,10 +819,6 @@ const Canvas = () => {
         setShelfUdk({...shelfUdk, [name]: value});
     };
 
-    const getExistingShelfUdk = (selectedShelf: Array<string> | undefined) => {
-        return selectedShelf !== undefined ? selectedShelf.join(", ") : "";
-    };
-
     useEffect(() => {
         let obj: any = {};
         if (selectedElement && edit) {
@@ -906,11 +874,14 @@ const Canvas = () => {
         startingPointY: number
     ) => {
         let entrances: any = [];
-        doorElements.forEach(({x, y}: ElementType) => {
-            entrances.push({
-                x: Number(((x - startingPointX)).toFixed(2)),
-                z: Number(((y - startingPointY)).toFixed(2)),
-                y: 0,
+        doorElements.forEach(({x, y, rotation}: ElementType) => {
+            entrances.push(
+                { position: {
+                    x: Number(((x - startingPointX)).toFixed(2)),
+                    z: Number(((y - startingPointY)).toFixed(2)),
+                    y: 0
+                },
+                rotation: rotation,
             });
         });
         return entrances;
