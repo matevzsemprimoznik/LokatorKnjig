@@ -1,116 +1,135 @@
-import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
+import {OrbitControls, OrthographicCamera, PerspectiveCamera} from '@react-three/drei';
 import Ground from './Ground';
 import React, {FC, useCallback, useContext, useEffect, useRef} from 'react';
 import * as THREE from 'three';
-import { ModelType } from '../context/modelContext';
-import { MemoizedRoomModel } from './Model3D';
-import { OrthographicCameraProps, PerspectiveCameraProps, ThreeEvent } from 'react-three-fiber';
+import {ModelType} from '../context/modelContext';
+import {MemoizedRoomModel} from './Model3D';
+import {OrthographicCameraProps, PerspectiveCameraProps, ThreeEvent} from 'react-three-fiber';
 import FirstPersonCamera from './FirstPersonCamera';
 import EntranceText from './EntranceText';
 import data from '../data.json';
-import { Vector3 } from 'three';
+import {Vector3} from 'three';
 import {LibraryContext} from "../context/libraryContext";
 import {Room} from "../models/library";
 import bookshelfPiece from "./BookshelfPiece";
 import FloorModel from "./FloorModel";
 
 interface ModelProps {
-  selected: any;
-  modelType: ModelType;
-  setModelType: (modelType: ModelType) => void;
-  floorData: Array<Room>
+    selected: any;
+    modelType: ModelType;
+    setModelType: (modelType: ModelType) => void;
+    floorData: Array<Room>
 }
 
-const Model: FC<ModelProps> = ({ selected, modelType, setModelType, floorData }) => {
-  const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
-  const targetCameraPosition = useRef({ x: 1, y: 2, z: 1 });
-  const ortographicCameraRef = useRef<OrthographicCameraProps>(null);
-  const orbitControlsRef = useRef<any>(null);
+const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) => {
+    const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
+    const targetCameraPosition = useRef({x: 1, y: 2, z: 1});
+    const ortographicCameraRef = useRef<OrthographicCameraProps>(null);
+    const orbitControlsRef = useRef<any>(null);
 
 
-  const moveCameraToDoubleClickedPoint = useCallback((event: ThreeEvent<MouseEvent>) => {
-          targetCameraPosition.current = { ...event.point, y: 2 };
-          setModelType(ModelType.FIRST_PERSON);
-      }, []);
+    const moveCameraToDoubleClickedPoint = useCallback((event: ThreeEvent<MouseEvent>) => {
+        targetCameraPosition.current = {...event.point, y: 2};
+        setModelType(ModelType.FIRST_PERSON);
+    }, []);
 
-  const setInitialPositionOfFirstPersonCamera = () => {
-      const roomWithSelectedUdk = floorData.filter(room => {
-          const bookshelfWithSelectedUdk = room.bookshelves.filter(bookshelf => bookshelf.udks.includes(`${selected}`))
-          return bookshelfWithSelectedUdk.length !== 0
-      })
-      if(roomWithSelectedUdk.length !== 0)
-          targetCameraPosition.current = {...roomWithSelectedUdk[0].entrances[0].position, y: 2}
-  }
-
-  setInitialPositionOfFirstPersonCamera()
-
-  return (
-    <>
-      {modelType === ModelType.FIRST_PERSON ? (
-        <FirstPersonCamera position={targetCameraPosition.current} />
-      ) : (
-        <>
-          <OrthographicCamera
-            ref={ortographicCameraRef}
-            rotation={[0, 0, 0]}
-            makeDefault={modelType === ModelType._2D}
-            position={[0, 10, 0]}
-            zoom={26}
-            quaternion={[0, 0, 0, 0]}
-          />
-          <PerspectiveCamera
-            makeDefault={modelType === ModelType._3D}
-            position={[-10, 9, 15]}
-            far={300}
-            ref={perspectiveCameraRef}
-          />
-          <OrbitControls
-              minZoom={1}
-              maxDistance={70}
-            ref={orbitControlsRef}
-            maxAzimuthAngle={modelType === ModelType._3D ? Infinity : Math.PI}
-            minAzimuthAngle={modelType === ModelType._3D ? -Infinity : Math.PI}
-            maxPolarAngle={modelType === ModelType._3D ? Math.PI / 2 - 0.1 : 0}
-            minPolarAngle={modelType === ModelType._3D ? -Infinity : 0}
-            enableRotate={modelType === ModelType._3D}
-            mouseButtons={
-              modelType === ModelType._2D
-                ? {
-                    LEFT: THREE.MOUSE.RIGHT,
-                    MIDDLE: THREE.MOUSE.MIDDLE,
-                    RIGHT: THREE.MOUSE.LEFT,
-                  }
-                : {
-                    LEFT: THREE.MOUSE.LEFT,
-                    MIDDLE: THREE.MOUSE.MIDDLE,
-                    RIGHT: THREE.MOUSE.RIGHT,
-                  }
+    const setInitialPositionOfFirstPersonCamera = () => {
+        const roomWithSelectedUdk = floorData.filter(room => {
+            const bookshelfWithSelectedUdk = room.bookshelves.filter(bookshelf => bookshelf.udks.includes(`${selected}`))
+            return bookshelfWithSelectedUdk.length !== 0
+        })
+        console.log(roomWithSelectedUdk)
+        if (roomWithSelectedUdk.length !== 0) {
+            const position = {...roomWithSelectedUdk[0].entrances[0].position, y: 2}
+            targetCameraPosition.current = {
+                x: position.x + roomWithSelectedUdk[0].center.x,
+                y: position.y + roomWithSelectedUdk[0].center.y,
+                z: position.z + roomWithSelectedUdk[0].center.z,
             }
-          />
+        }
+
+    }
+
+    setInitialPositionOfFirstPersonCamera()
+
+    return (
+        <>
+            {modelType === ModelType.FIRST_PERSON ? (
+                <FirstPersonCamera position={targetCameraPosition.current}/>
+            ) : (
+                <>
+                    <OrthographicCamera
+                        ref={ortographicCameraRef}
+                        rotation={[0, 0, 0]}
+                        makeDefault={modelType === ModelType._2D}
+                        position={[0, 10, 0]}
+                        zoom={26}
+                        quaternion={[0, 0, 0, 0]}
+                    />
+                    <PerspectiveCamera
+                        makeDefault={modelType === ModelType._3D}
+                        position={[-10, 9, 15]}
+                        far={300}
+                        ref={perspectiveCameraRef}
+                    />
+                    <OrbitControls
+                        minZoom={1}
+                        maxDistance={70}
+                        ref={orbitControlsRef}
+                        maxAzimuthAngle={modelType === ModelType._3D ? Infinity : Math.PI}
+                        minAzimuthAngle={modelType === ModelType._3D ? -Infinity : Math.PI}
+                        maxPolarAngle={modelType === ModelType._3D ? Math.PI / 2 - 0.1 : 0}
+                        minPolarAngle={modelType === ModelType._3D ? -Infinity : 0}
+                        enableRotate={modelType === ModelType._3D}
+                        mouseButtons={
+                            modelType === ModelType._2D
+                                ? {
+                                    LEFT: THREE.MOUSE.RIGHT,
+                                    MIDDLE: THREE.MOUSE.MIDDLE,
+                                    RIGHT: THREE.MOUSE.LEFT,
+                                }
+                                : {
+                                    LEFT: THREE.MOUSE.LEFT,
+                                    MIDDLE: THREE.MOUSE.MIDDLE,
+                                    RIGHT: THREE.MOUSE.RIGHT,
+                                }
+                        }
+                        touches={
+                            modelType === ModelType._2D
+                                ? {
+                                    ONE: THREE.TOUCH.DOLLY_PAN,
+                                    TWO: THREE.TOUCH.ROTATE
+                                }
+                                : {
+                                    ONE: THREE.TOUCH.ROTATE,
+                                    TWO: THREE.TOUCH.DOLLY_PAN
+                                }}
+                    />
+                </>
+            )}
+
+            <ambientLight intensity={0.3}/>
+            <directionalLight
+                castShadow
+                position={[5, 10, 0]}
+                intensity={1}
+                shadow-mapSize-width={1024}
+                shadow-mapSize-height={1024}
+                shadow-camera-far={50}
+                shadow-camera-left={-10}
+                shadow-camera-right={10}
+                shadow-camera-top={10}
+                shadow-camera-bottom={-10}
+            />
+
+            <>
+                <pointLight position={[-10, 0, -20]} intensity={0.5}/>
+                <pointLight position={[0, -10, 0]} intensity={1.5}/>
+            </>
+            <FloorModel selected={selected} floorData={floorData}
+                        moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>
         </>
-      )}
-
-      <ambientLight intensity={0.3} />
-      <directionalLight
-        castShadow
-        position={[5, 10, 0]}
-        intensity={1}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-far={50}
-        shadow-camera-left={-10}
-        shadow-camera-right={10}
-        shadow-camera-top={10}
-        shadow-camera-bottom={-10}
-      />
-
-      <>
-        <pointLight position={[-10, 0, -20]} intensity={0.5} />
-        <pointLight position={[0, -10, 0]} intensity={1.5} />
-      </>
-        <FloorModel selected={selected} floorData={floorData} moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>
-    </>
-  );
+    );
 };
 
 export default Model;

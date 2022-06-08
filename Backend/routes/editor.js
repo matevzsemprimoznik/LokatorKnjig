@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 //get all floors and spaces of editor library
 router.get('/:abbreviation/floors-and-spaces', async (req, res) => {
     try {
-        const queryResult = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+        const queryResult = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file -_id').collation({locale: "sl", strength: 1});
         const file = queryResult.file;
         let allFloors = file.map(room => room.floor);
         const uniqueFloors = [...new Set(allFloors)];
@@ -38,7 +38,7 @@ router.get('/:abbreviation/floors-and-spaces', async (req, res) => {
 //get floor(spaces) of library with the given abbreviation
 router.get('/:abbreviation/:floor', async (req, res) => {
     try {
-        const queryResult = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file svg -_id');
+        const queryResult = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file svg -_id').collation({locale: "sl", strength: 1});
         const file = queryResult.file;
         const svg = queryResult.svg;
 
@@ -83,12 +83,13 @@ router.post('/',  async (req, res) => {
 
 router.post('/:abbreviation', async (req, res) => {
     try {
-        const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation});
+        const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file -_id').collation({locale: "sl", strength: 1});
 
         if(library == null) {
             const reqLibrary = req.body;
             const library = new LibraryEditor({ ...reqLibrary });
             const result = await library.save();
+
             return res.json(result);
         } else {
             let spaces = library.file;
@@ -124,7 +125,7 @@ router.post('/:abbreviation', async (req, res) => {
                     "svg": svgs,
                     "fileOrg": orgSpaces,
                 }
-            });
+            }).collation({locale: "sl", strength: 1});
 
             return res.json(result);
         }
@@ -136,7 +137,7 @@ router.post('/:abbreviation', async (req, res) => {
 //adds new attributes to selected spaces
 router.post('/:abbreviation/space/', async (req, res) => {
     try {
-        const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+        const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'file -_id').collation({locale: "sl", strength: 1});
 
         if(library != null) {
             let spaces = library.file;
@@ -156,7 +157,7 @@ router.post('/:abbreviation/space/', async (req, res) => {
 
             let result = await LibraryEditor.updateOne({abbreviation: req.params.abbreviation}, {
                 $set: {"file": spaces}
-            });
+            }).collation({locale: "sl", strength: 1});
 
             return res.json(result);
         }
@@ -168,12 +169,12 @@ router.post('/:abbreviation/space/', async (req, res) => {
 //add Library model to posted libraries on the website
 router.post('/newLibrary/:abbreviation', async (req, res) => {
     try {
-        const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'section abbreviation desc file -_id');
-        const uploadedLibrary = await Library.findOne({abbreviation: req.params.abbreviation});
+        const library = await LibraryEditor.findOne({abbreviation: req.params.abbreviation}, 'section abbreviation desc file -_id').collation({locale: "sl", strength: 1});
+        const uploadedLibrary = await Library.findOne({abbreviation: req.params.abbreviation}).collation({locale: "sl", strength: 1});
 
         if(library != null && uploadedLibrary === null) {
             //TODO turn json into correct format from editor format
-            const file = library.file;
+            const file = [];
 
             const newLibrary = new Library({
                 "section": library.section,
@@ -189,10 +190,9 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
             //TODO json format from editor format
             const file = [{"nekaj": "nekaj"}];
 
-
             const result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
                 "section": library.section, "desc": library.desc, "file": file
-            });
+            }).collation({locale: "sl", strength: 1});
 
             return res.json(result);
         }
