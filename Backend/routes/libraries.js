@@ -7,7 +7,7 @@ const router = express.Router();
 //get all libraries (returns section, abbreviation and description of each library)
 router.get('/', async (req, res) => {
   try {
-    const library = await Library.find({}, 'section abbreviation desc -_id');
+    const library = await Library.find({}, 'section abbreviation desc -_id').collation({locale: "sl", strength: 1});
     return res.json(library).status(200);
   } catch (err) {
     return res.status(500).json("The server could not provide data specified");
@@ -44,7 +44,7 @@ router.post('/',  async (req, res) => {
 //get all floors of library
 router.get('/:abbreviation/floors', async (req, res) => {
   try {
-    const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'section file -_id');
+    const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'section file -_id').collation({locale: "sl", strength: 1});
     const file = queryResult.file;
     let allFloors = file.map(room => room.floor);
     const uniqueFloors = [...new Set(allFloors)];
@@ -65,7 +65,7 @@ router.get('/:abbreviation/floors', async (req, res) => {
 //get all floors and spaces of library
 router.get('/:abbreviation/floors-and-spaces', async (req, res) => {
   try {
-    const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+    const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id').collation({locale: "sl", strength: 1});
     const file = queryResult.file;
     let allFloors = file.map(room => room.floor);
     const uniqueFloors = [...new Set(allFloors)];
@@ -86,7 +86,7 @@ router.get('/:abbreviation/floors-and-spaces', async (req, res) => {
 //get floor(spaces) of library with the given abbreviation
 router.get('/:abbreviation/:floor', async (req, res) => {
   try {
-    const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+    const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id').collation({locale: "sl", strength: 1});
     const file = queryResult.file;
 
     let floor = file.filter(room => (room.floor == req.params.floor));
@@ -100,7 +100,7 @@ router.get('/:abbreviation/:floor', async (req, res) => {
 //adds new space to file of existing library
 router.post('/:abbreviation', async (req, res) => {
   try {
-    const library = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+    const library = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id').collation({locale: "sl", strength: 1});
 
     if(library == null) {
       const reqLibrary = req.body;
@@ -123,7 +123,7 @@ router.post('/:abbreviation', async (req, res) => {
 
       let result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
         $set: {"file": spaces}
-      });
+      }).collation({locale: "sl", strength: 1});
 
       return res.json(result);
     }
@@ -135,7 +135,7 @@ router.post('/:abbreviation', async (req, res) => {
 //adds new attributes to selected space
 router.post('/:abbreviation/space/:spaceLabel', async (req, res) => {
   try {
-    const library = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+    const library = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id').collation({locale: "sl", strength: 1});
 
     if(library != null) {
       let spaces = library.file;
@@ -153,7 +153,7 @@ router.post('/:abbreviation/space/:spaceLabel', async (req, res) => {
 
       let result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
         $set: {"file": spaces}
-      });
+      }).collation({locale: "sl", strength: 1});
 
       return res.json(result);
     }
