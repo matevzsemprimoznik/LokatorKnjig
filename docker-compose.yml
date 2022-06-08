@@ -1,11 +1,14 @@
-version: "3.9"
+version: '3.9'
 services:
   webapp:
-    build: ./ReactApp
+    build:
+      context: ./ReactApp
+      args:
+        REACT_APP_BACKEND_URI: http://localhost:5000/
     container_name: reactapp
     image: lokatorknjig
     ports:
-      - "3000:5000"
+      - '3000:5000'
     env_file:
       - .env
 
@@ -14,6 +17,6 @@ services:
     container_name: backend
     image: lokatorknjigbackend
     ports:
-      - "5000:5000"
+      - '5000:5000'
     env_file:
       - .env
