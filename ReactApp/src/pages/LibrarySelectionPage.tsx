@@ -44,21 +44,17 @@ const LibrarySelectionPage = () => {
         }
     }
 
-    useEffect(() => {
-        if (!ref.current) {
-            getLibraryData(ServerRoute.EDITOR);
-        } else {
-            getAllFloors(ServerRoute.EDITOR, abbr!);
-            getFloorsAndSpaces(abbr!);
-        }
 
-    }, [abbr, floorIndex, libraryData]);
+    useEffect(() => {
+        getFloorsAndSpaces(abbr!);
+        getLibraryData(ServerRoute.EDITOR);
+    }, [])
 
     useEffect(() => {
         getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
+        getAllFloors(ServerRoute.EDITOR, abbr!);
 
-    }, [abbr, floorIndex]);
-
+    }, [floorIndex]);
 
 
     const changeFloorIndex = (index: number) => {

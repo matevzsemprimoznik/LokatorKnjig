@@ -28,7 +28,17 @@ const FloorPlanEditingPage = () => {
 
     useEffect(() => {
         setRooms(svgs.map(svg => {
-            return {...svg, rotation: 0, isRotationButtonHidden: true, isOnCanvas: false, position: {x: 0, y: 0}}
+            const svgString = window.atob(svg.svg).toString()
+            const widthPosition = svgString.indexOf('width') + 7
+            const width = svgString.substring(widthPosition, svgString.indexOf('"', widthPosition) - 2)
+            return {
+                ...svg,
+                rotation: 0,
+                isRotationButtonHidden: true,
+                isOnCanvas: false,
+                position: {x: 0, y: 0},
+                width: parseInt(width) / 5
+            }
         }));
     }, [svgs.length]);
 
@@ -68,9 +78,9 @@ const FloorPlanEditingPage = () => {
             return {
                 label: room.label,
                 center: {
-                    x: (room.position.x - center.x) / 22,
+                    x: (room.position.x - center.x) / 4,
                     y: 0,
-                    z: (room.position.y - center.y) / 22
+                    z: (room.position.y - center.y) / 4
                 }
             }
         })
@@ -113,7 +123,7 @@ const FloorPlanEditingPage = () => {
 
     return (
         <>
-            <Header />
+            <Header/>
             <Button onClick={onSubmit} position={{top: 8, right: 2}} text={'Save'}/>
             <TransformWrapper
                 initialScale={1}
@@ -126,24 +136,33 @@ const FloorPlanEditingPage = () => {
                 onZoom={(ref) => setScale(ref.state.scale)}
             >
                 <TransformComponent contentClass='main' wrapperStyle={{height: '100%', width: '100%'}}>
-                    {rooms.map((element: any, index: number) => element.isOnCanvas && (
-                            <Draggable
-                                key={index}
-                                defaultPosition={{x: window.screen.width / 2 - 150, y: 100}}
-                                scale={scale}
-                                onDrag={(e) => saveElementPosition(e, element.label)}
-                            >
-                                <div className='draggable'>
-                                    <img style={{transform: `rotate(${element.rotation}deg)`, width: '300px'}}
-                                         onClick={() => selectElement(element.label)}
-                                         src={`data:image/svg+xml;base64,${element.svg}`}/>
+                    {rooms.map((element: any, index: number) => {
+                            {
 
-                                    {!element.isRotationButtonHidden &&
-                                        <button onClick={() => rotateElement(element.label)}><img src={RotateIconUrl}/>
-                                        </button>}
-                                </div>
-                            </Draggable>
-                        )
+                            }
+                            return element.isOnCanvas && (
+                                <Draggable
+                                    key={index}
+                                    defaultPosition={{x: window.screen.width / 2 - 150, y: 100}}
+                                    scale={scale}
+                                    onDrag={(e) => saveElementPosition(e, element.label)}
+                                >
+                                    <div className='draggable'>
+
+                                        <img style={{
+                                            transform: `rotate(${element.rotation}deg)`,
+                                            width: element.width + 'px'
+                                        }}
+                                             onClick={() => selectElement(element.label)}
+                                             src={`data:image/svg+xml;base64,${element.svg}`}/>
+
+                                        {!element.isRotationButtonHidden &&
+                                            <button onClick={() => rotateElement(element.label)}><img src={RotateIconUrl}/>
+                                            </button>}
+                                    </div>
+                                </Draggable>
+                            )
+                        }
                     )}
                 </TransformComponent>
             </TransformWrapper>
