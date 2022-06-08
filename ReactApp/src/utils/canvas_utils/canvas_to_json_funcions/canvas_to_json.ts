@@ -4,8 +4,8 @@ import {ElementType} from "../../../models/canvas_models/canvas";
 import {libraryApi} from "../../../context/axios";
 
 export const getRoomCenter = (walls: any) => {
-    let sumX = walls.reduce((acc: number, el: any) => acc + el.x1, 0);
-    let sumY = walls.reduce((acc: number, el: any) => acc + el.y1, 0);
+    let sumX = walls.reduce((acc: number, el: any) => acc + el.x, 0);
+    let sumY = walls.reduce((acc: number, el: any) => acc + el.y, 0);
 
     return [sumX / walls.length - 1, sumY / walls.length - 1];
 };

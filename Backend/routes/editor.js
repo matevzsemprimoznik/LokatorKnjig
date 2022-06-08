@@ -173,7 +173,7 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
 
         if(library != null && uploadedLibrary === null) {
             //TODO turn json into correct format from editor format
-            const file = [];
+            const file = library.file;
 
             const newLibrary = new Library({
                 "section": library.section,
@@ -188,6 +188,7 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
         } else {
             //TODO json format from editor format
             const file = [{"nekaj": "nekaj"}];
+
 
             const result = await Library.updateOne({abbreviation: req.params.abbreviation}, {
                 "section": library.section, "desc": library.desc, "file": file

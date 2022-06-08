@@ -904,7 +904,7 @@ const Canvas = () => {
             let {x, y, ...rest}: any = calculateBookshelfCenterPoint(item);
             bookShelfCoords.push({
                 x: Number(((x - startingPointX) / 10).toFixed(2)) / 2,
-                z: Number(((y - startingPointY) / 10).toFixed(2)),
+                z: Number(((y - startingPointY) / 10).toFixed(2)) / 2,
                 ...rest,
             });
         });
@@ -918,8 +918,8 @@ const Canvas = () => {
         let ground: any = [];
         wallElements.forEach(({x1, y1}: WallType) => {
             ground.push({
-                x: Number(((x1 - startingPointX) / 10).toFixed(2)) / 2.5 ,
-                z: Number(((y1 - startingPointY) / 10).toFixed(2)) / 6,
+                x: Number(((x1 - startingPointX) / 10).toFixed(2)) / 2 ,
+                z: Number(((y1 - startingPointY) / 10).toFixed(2)) / 2,
                 y: 0,
             });
         });
@@ -933,8 +933,8 @@ const Canvas = () => {
         let entrances: any = [];
         doorElements.forEach(({x, y}: ElementType) => {
             entrances.push({
-                x: Number(((x - startingPointX) / 10).toFixed(2)) / 2.5,
-                z: Number(((y - startingPointY) / 10).toFixed(2)) / 6,
+                x: Number(((x - startingPointX) / 10).toFixed(2)) / 2,
+                z: Number(((y - startingPointY) / 10).toFixed(2)) / 2,
                 y: 0,
             });
         });
