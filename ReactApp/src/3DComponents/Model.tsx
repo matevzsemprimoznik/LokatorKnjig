@@ -1,6 +1,6 @@
 import {OrbitControls, OrthographicCamera, PerspectiveCamera} from '@react-three/drei';
 import Ground from './Ground';
-import React, {FC, useCallback, useContext, useEffect, useRef} from 'react';
+import React, {FC, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import * as THREE from 'three';
 import {ModelType} from '../context/modelContext';
 import {MemoizedRoomModel} from './Model3D';
@@ -21,12 +21,22 @@ interface ModelProps {
     floorData: Array<Room>
 }
 
-const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) => {
+const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData: floorDataFromProps}) => {
     const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
     const targetCameraPosition = useRef({x: 1, y: 2, z: 1});
     const ortographicCameraRef = useRef<OrthographicCameraProps>(null);
     const orbitControlsRef = useRef<any>(null);
+    const [floorData, setFloorData] = useState([...floorDataFromProps])
 
+    useEffect(() => {
+        setFloorData(floorDataFromProps)
+    }, [floorDataFromProps])
+
+    const selectRoom = (roomLabel: string) => {
+        setFloorData(floorData.filter(room => room.label === roomLabel).map(room => {
+            return {...room, center: {x: 0, y: 0, z: 0}}
+        }))
+    }
 
     const moveCameraToDoubleClickedPoint = useCallback((event: ThreeEvent<MouseEvent>) => {
         targetCameraPosition.current = {...event.point, y: 2};
@@ -126,7 +136,7 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) =
                 <pointLight position={[0, -10, 0]} intensity={1.5}/>
             </>
             <FloorModel selected={selected} floorData={floorData}
-                        moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>
+                        moveCameraToDoubleClickedPoint={selectRoom} modelType={modelType}/>
         </>
     );
 };

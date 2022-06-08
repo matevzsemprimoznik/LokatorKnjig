@@ -16,6 +16,7 @@ export type LibraryContextType = {
     floorsAndSpaces: any,
     svgs: Array<any>
     getSvgs: (library: string, floor: string) => void
+    setFloorData: any
 };
 
 export enum ServerRoute {
@@ -28,6 +29,8 @@ export const LibraryContext = createContext<LibraryContextType>({
     getSvgs: () => {
     },
     floorData: [],
+    setFloorData: () => {
+    },
     getFloorData: () => {
     },
     getAllFloors: () => {
@@ -109,6 +112,7 @@ const LibraryProvider = ({children}: any) => {
 
     return (
         <LibraryContext.Provider value={{
+            setFloorData,
             floors,
             getAllFloors,
             getSpecificFloorData,
