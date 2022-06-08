@@ -32,6 +32,10 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData: fl
         setFloorData(floorDataFromProps)
     }, [floorDataFromProps])
 
+    useEffect(() => {
+        setInitialPositionOfFirstPersonCamera()
+    }, [floorData])
+
     const selectRoom = (roomLabel: string) => {
         setFloorData(floorData.filter(room => room.label === roomLabel).map(room => {
             return {...room, center: {x: 0, y: 0, z: 0}}
@@ -48,8 +52,9 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData: fl
             const bookshelfWithSelectedUdk = room.bookshelves.filter(bookshelf => bookshelf.udks.includes(`${selected}`))
             return bookshelfWithSelectedUdk.length !== 0
         })
-        console.log(roomWithSelectedUdk)
-        if (roomWithSelectedUdk.length !== 0) {
+        if (roomWithSelectedUdk.length !== 0)
+            console.log(roomWithSelectedUdk[0].entrances.length !== 0)
+        if (roomWithSelectedUdk.length !== 0 && roomWithSelectedUdk[0].entrances.length !== 0) {
             const position = {...roomWithSelectedUdk[0].entrances[0].position, y: 2}
             targetCameraPosition.current = {
                 x: position.x + roomWithSelectedUdk[0].center.x,
