@@ -38,6 +38,7 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
             y: position.y + roomCenter.y,
             z: -position.x * Math.sin(angle) + position.z * Math.cos(angle) + roomCenter.z,
         };
+        console.log(newPosition);
 
         return newPosition;
     };
@@ -120,7 +121,6 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
                 onDoubleClick={moveCameraToDoubleClickedPoint}
                 edges={roomData.ground}
                 rotation={{x: 0, y: (roomData.rotation / 180) * Math.PI, z: 0}}
-                roomLabel={roomData.label}
             />
         </>
     );

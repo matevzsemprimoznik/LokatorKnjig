@@ -7,11 +7,10 @@ import {ModelType} from "../context/modelContext";
 interface FloorModelProps {
     floorData: Array<Room>
     selected: string
-    moveCameraToDoubleClickedPoint: any
-    modelType: ModelType
+    moveCameraToDoubleClickedPoint: (event: ThreeEvent<MouseEvent>) => void
 }
 
-const FloorModel: FC<FloorModelProps> = ({floorData, selected, moveCameraToDoubleClickedPoint, modelType}) => {
+const FloorModel: FC<FloorModelProps> = ({floorData, selected, moveCameraToDoubleClickedPoint}) => {
     return <>{floorData.map((room, index) => <MemoizedRoomModel key={index} roomData={room} selectedUDK={selected}
                                                                 moveCameraToDoubleClickedPoint={moveCameraToDoubleClickedPoint}/>)}</>
 

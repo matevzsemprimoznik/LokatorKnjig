@@ -20,6 +20,7 @@ const Drawer: FC<DrawerProps> = ({isOpen, onClose, section, bodyElements, onClic
     const onClick = (element: any) => {
         onClickBodyElement(element)
         prevClickedElement.current = element
+        toggleMenuOpen()
     }
     return (
         <div

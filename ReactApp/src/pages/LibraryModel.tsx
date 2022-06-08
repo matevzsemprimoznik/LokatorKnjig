@@ -24,7 +24,6 @@ const LibraryModel = () => {
     const {
         floorData,
         getFloorData,
-        setFloorData,
         getAllFloors,
         floors,
         getSpecificFloorData,

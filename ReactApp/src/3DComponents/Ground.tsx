@@ -16,15 +16,14 @@ interface GroundProps {
         y: number;
         z: number;
     };
-    onDoubleClick?: any;
+    onDoubleClick?: (event: ThreeEvent<MouseEvent>) => void;
     edges: Array<Position>;
-    roomLabel: string
 }
 
-const Ground: FC<GroundProps> = ({position, onDoubleClick, edges, rotation, roomLabel}) => {
+const Ground: FC<GroundProps> = ({position, onDoubleClick, edges, rotation}) => {
     return (
         <mesh
-            onDoubleClick={() => onDoubleClick(roomLabel)}
+            onDoubleClick={onDoubleClick}
             castShadow
             receiveShadow
             geometry={new ConvexGeometry(edges.map((edge) => new Vector3(edge.x / 20, edge.y / 20, edge.z / 20)))}
