@@ -1,15 +1,15 @@
-import React, {useContext, useEffect, Suspense} from 'react';
-import {useParams, useSearchParams} from 'react-router-dom';
-import {Canvas} from 'react-three-fiber';
+import React, { useContext, useEffect, Suspense } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { Canvas } from 'react-three-fiber';
 import Button from '../components/Button';
-import {ModelContext, ModelType} from '../context/modelContext';
+import { ModelContext, ModelType } from '../context/modelContext';
 import Model from '../3DComponents/Model';
-import {LibraryContext, ServerRoute} from "../context/libraryContext";
-import {MenuContext} from "../context/menuContext";
-import Drawer from "../components/Drawer";
+import { LibraryContext, ServerRoute } from '../context/libraryContext';
+import { MenuContext } from '../context/menuContext';
+import Drawer from '../components/Drawer';
 import SearchUDK from '../components/SearchUDK';
-import {Loading} from "../components/Loading";
-import Header from "../components/landing_page/Header";
+import { Loading } from '../components/Loading';
+import Header from '../components/landing_page/Header';
 
 const RotateIconUrl = '../../images/rotate.png';
 const FirstPersonViewIconUrl = '../../images/360-view.png';
@@ -19,26 +19,23 @@ const LibraryModel = () => {
   const { library } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const selected = searchParams.get("udk");
+  const selected = searchParams.get('udk');
   const { modelType, setModelType } = useContext(ModelContext);
-  const {floorData, getFloorData ,getAllFloors, floors, getSpecificFloorData, section} = useContext(LibraryContext)
-    const { toggleMenuOpen } = React.useContext(MenuContext);
+  const { floorData, getFloorData, getAllFloors, floors, getSpecificFloorData, section } = useContext(LibraryContext);
+  const { toggleMenuOpen } = React.useContext(MenuContext);
 
-    useEffect(() => {
-        if(library) {
-            if(selected)
-                getFloorData(library, selected)
-            else {
-                getFloorData(library, "");
-            }
-        }
+  useEffect(() => {
+    if (library) {
+      if (selected) getFloorData(library, selected);
+      else {
+        getFloorData(library, '');
+      }
+    }
+  }, [selected]);
 
-    }, [selected])
-
-    useEffect(() => {
-        if(library)
-        getAllFloors(ServerRoute.LIBRARIES, library)
-    }, [])
+  useEffect(() => {
+    if (library) getAllFloors(ServerRoute.LIBRARIES, library);
+  }, []);
 
   const onClick = () => {
     if (modelType !== ModelType._2D) setModelType(ModelType._2D);
@@ -51,22 +48,21 @@ const LibraryModel = () => {
   };
 
   const onClickDrawerBodyElement = (element: any) => {
-      if(library) getSpecificFloorData(ServerRoute.LIBRARIES, library, element.key)
-  }
+    if (library) getSpecificFloorData(ServerRoute.LIBRARIES, library, element.key);
+  };
 
-  if(floorData.length === 0)
-      return <Loading/>
+  if (floorData.length === 0 || floors.length === 0) return <Loading />;
 
   return (
     <>
-        <Header/>
-      <SearchUDK library={library}/>
-      <div style={{height: "90vh"}}>
-          <Suspense fallback={<Loading/>}>
-              <Canvas id='canvas-container'>
-                  <Model selected={selected} modelType={modelType} setModelType={setModelType} floorData={floorData} />
-              </Canvas>
-          </Suspense>
+      <Header />
+      <SearchUDK library={library} />
+      <div style={{ height: '90vh' }}>
+        <Suspense fallback={<Loading />}>
+          <Canvas id='canvas-container'>
+            <Model selected={selected} modelType={modelType} setModelType={setModelType} floorData={floorData} />
+          </Canvas>
+        </Suspense>
       </div>
       <Button
         position={{ top: 8, right: 2 }}
@@ -78,12 +74,16 @@ const LibraryModel = () => {
         onClick={switchFromFirstPersonTo360View}
         image={modelType === ModelType.FIRST_PERSON ? RotateIconUrl : FirstPersonViewIconUrl}
       />
-        <Button
-            position={{ top: 8, left: 2 }}
-            onClick={toggleMenuOpen}
-            image={MenuIconUrl}
-        />
-        <Drawer isOpen={true} section={section} defaultFloor={floorData.length !== 0 ? floorData[0].floor : 0} bodyElements={floors.map(floor => {return {text: 'Nadstropje ' + floor, key: floor}})} onClickBodyElement={onClickDrawerBodyElement}/>
+      <Button position={{ top: 8, left: 2 }} onClick={toggleMenuOpen} image={MenuIconUrl} />
+      <Drawer
+        isOpen={true}
+        section={section}
+        defaultFloor={floorData.length !== 0 ? floorData[0].floor : 0}
+        bodyElements={floors.map((floor) => {
+          return { text: 'Nadstropje ' + floor, key: floor };
+        })}
+        onClickBodyElement={onClickDrawerBodyElement}
+      />
     </>
   );
 };

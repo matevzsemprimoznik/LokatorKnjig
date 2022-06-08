@@ -1,9 +1,9 @@
-import {useGLTF} from "@react-three/drei";
-import React, {FC} from "react";
-import {ThreeEvent} from "react-three-fiber";
-import {MeshBasicMaterial, Vector3} from "three";
-import {ConvexGeometry} from "three/examples/jsm/geometries/ConvexGeometry";
-import {Position} from "../models/library";
+import {useGLTF} from '@react-three/drei';
+import React, {FC} from 'react';
+import {ThreeEvent} from 'react-three-fiber';
+import {MeshBasicMaterial, Vector3} from 'three';
+import {ConvexGeometry} from 'three/examples/jsm/geometries/ConvexGeometry';
+import {Position} from '../models/library';
 
 interface GroundProps {
     position: {
@@ -11,20 +11,25 @@ interface GroundProps {
         y: number;
         z: number;
     };
-    onDoubleClick?: (event: ThreeEvent<MouseEvent>) => void
-    edges: Array<Position>
+    rotation: {
+        x: number;
+        y: number;
+        z: number;
+    };
+    onDoubleClick?: (event: ThreeEvent<MouseEvent>) => void;
+    edges: Array<Position>;
 }
 
-const Ground: FC<GroundProps> = ({position, onDoubleClick, edges}) => {
-
+const Ground: FC<GroundProps> = ({position, onDoubleClick, edges, rotation}) => {
     return (
         <mesh
             onDoubleClick={onDoubleClick}
             castShadow
             receiveShadow
-            geometry={new ConvexGeometry(edges.map(edge => new Vector3(edge.x / 20, edge.y / 20, edge.z / 20)))}
+            geometry={new ConvexGeometry(edges.map((edge) => new Vector3(edge.x / 20, edge.y / 20, edge.z / 20)))}
             material={new MeshBasicMaterial({color: '#e9ecef'})}
             position={[position.x / 20, position.y, position.z / 20]}
+            rotation={[rotation.x, rotation.y, rotation.z]}
             scale={[1, 1, 1]}
         />
     );
