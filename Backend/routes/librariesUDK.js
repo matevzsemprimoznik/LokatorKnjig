@@ -6,7 +6,7 @@ const router = express.Router();
 //returns all spaces on the floor with the selected udk
 router.get('/:abbreviation/:udk', async (req, res) => {
     try {
-        const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id');
+        const queryResult = await Library.findOne({abbreviation: req.params.abbreviation}, 'file -_id').collation({locale: "sl", strength: 1});
 
         const file = await queryResult.file;
 
@@ -32,7 +32,7 @@ router.get('/:abbreviation/:udk', async (req, res) => {
 //returns all spaces on the first floor found
 router.get('/:abbreviation', async (req, res) => {
     try {
-        const queryResult = await Library.findOne({ abbreviation: req.params.abbreviation }, 'file -_id');
+        const queryResult = await Library.findOne({ abbreviation: req.params.abbreviation }, 'file -_id').collation({locale: "sl", strength: 1});
 
         const file = await queryResult.file;
 
