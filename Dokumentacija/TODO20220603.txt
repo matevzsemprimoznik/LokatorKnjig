@@ -1,0 +1,9 @@
+- knjižnice section izpis
+- editor design
+
+- editor - zlaganje prostorov v nadstropje
+
+- tla še vedno ne delajo
+- rotacija prostorov
+
+- backend case (in)sensitive

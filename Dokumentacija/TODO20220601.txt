@@ -1,0 +1,9 @@
+- podstran knjižnic (nova stran ki prikaže vse knjižnice v sistemu)
+- podstran model - stranski meni (za nadstropja)
+- prilagoditev css za mobile
+
+- editor - trenutni model se izriše v editor, prostore skup zložit
+- backend za editor
+
+- model - tla ne delajo
+- model - modeliranje nadstropja, več prostorov skupaj
