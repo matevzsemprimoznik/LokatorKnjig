@@ -63,7 +63,7 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
                     position={{
                         ...getNewBookshelfPositionsAccordingToAngle(
                             recalculateEntrancePosition(entrance.position, roomData.ground),
-                            roomData.rotation,
+                            -roomData.rotation,
                             roomData.center
                         )
                     }}
@@ -81,7 +81,7 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
                                     y: bookshelf.position.y,
                                     z: bookshelf.position.z,
                                 },
-                                roomData.rotation,
+                                -roomData.rotation,
                                 roomData.center
                             ),
                         }}
@@ -105,7 +105,7 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
                                     y: bookshelf.position.y,
                                     z: bookshelf.position.z,
                                 },
-                                roomData.rotation,
+                                -roomData.rotation,
                                 roomData.center
                             ),
                         }}
@@ -127,7 +127,7 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
                                     y: bookshelf.position.y,
                                     z: bookshelf.position.z,
                                 },
-                                roomData.rotation,
+                                -roomData.rotation,
                                 roomData.center
                             ),
                         }}
@@ -144,7 +144,7 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
                 position={{x: 0 + roomData.center.x, y: 0.05 + roomData.center.y, z: 0 + roomData.center.z}}
                 onDoubleClick={moveCameraToDoubleClickedPoint}
                 edges={roomData.ground}
-                rotation={{x: 0, y: (roomData.rotation / 180) * Math.PI, z: 0}}
+                rotation={{x: 0, y: (-roomData.rotation / 180) * Math.PI, z: 0}}
             />
         </>
     );
