@@ -25,16 +25,29 @@ const BookshelfPiece: FC<BookshelfPieceProps> = ({position, type, rotation = {x:
     if (udk == null || (Array.isArray(udk) && udk.length === 0))
         udk = ['']
 
+    position.y += position.y * 0.02
     return (
         <>
-            <mesh
-                castShadow
-                receiveShadow
+            {type.includes('closeBookshelf2') ? <>
+                <mesh
+                    geometry={nodes.Cube_1.geometry}
+                    material={materials['CubeMaterial']}
+                    position={[position.x / 20, position.y, position.z / 20]}
+                    rotation={[rotation.x, rotation.y, rotation.z]}
+                />
+                <mesh
+                    geometry={nodes.Cube_2.geometry}
+                    material={materials['CubeMaterial2']}
+                    position={[position.x / 20, position.y, position.z / 20]}
+                    rotation={[rotation.x, rotation.y, rotation.z]}
+                />
+            </> : <mesh
                 geometry={nodes.Cube.geometry}
                 material={materials['CubeMaterial']}
                 position={[position.x / 20, position.y, position.z / 20]}
                 rotation={[rotation.x, rotation.y, rotation.z]}
-            />
+            />}
+
             <Text text={`${udk[0]}`} position={{x: position.x / 20, y: position.y, z: position.z / 20}}
                   rotation={rotation}/>
         </>
