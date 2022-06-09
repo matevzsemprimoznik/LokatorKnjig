@@ -15,7 +15,7 @@ const SearchForm = () => {
         setSearchedUDK(e.currentTarget.value);
     }
     const handleLibraryChange = (item: Item) => {
-        setLibrary(item.value);
+        setLibrary(item.id);
     }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,7 +43,7 @@ const SearchForm = () => {
                         placeholder="Knjižnica"
                         label={null}
                         onSelect={handleLibraryChange}
-                        items={libraryData.map((library: any) => {return {id: library.abbreviation, value: library.abbreviation}})}
+                        items={libraryData.map((library: any) => {return {id: library.abbreviation, value: library.section}})}
                     />
                     <input type="submit" value="Išči" className='search-form-button'/>
                 </form>
