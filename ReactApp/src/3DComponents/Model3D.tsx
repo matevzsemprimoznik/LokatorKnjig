@@ -59,7 +59,7 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
             {roomData.entrances.map((entrance, index) => (
                 <Entrance
                     key={index}
-                    rotation={entrance.rotation}
+                    rotation={entrance.rotation + roomData.rotation}
                     position={{
                         ...getNewBookshelfPositionsAccordingToAngle(
                             recalculateEntrancePosition(entrance.position, roomData.ground),
