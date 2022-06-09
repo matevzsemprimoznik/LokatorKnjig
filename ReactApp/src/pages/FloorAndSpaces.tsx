@@ -30,11 +30,9 @@ const FloorAndSpaces = () => {
 
 
     useEffect(() => {
-        return () => {
-            if (abbr) {
-                getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
-                getFloorsAndSpaces(abbr!);
-            }
+        if (abbr) {
+            getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
+            getFloorsAndSpaces(abbr!);
         }
     }, []);
     useEffect(() => {
