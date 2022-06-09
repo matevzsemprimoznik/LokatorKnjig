@@ -1,4 +1,3 @@
-
 import {ElementType} from "../../../models/canvas_models/canvas";
 import {libraryApi} from "../../../context/axios";
 
@@ -54,10 +53,3 @@ export const makeBookshelvesData = (recalcArrOfBookShelves: any) => {
     return bookshelves;
 };
 
-export const addSpace = async (data: any, abbr: string) => {
-    try {
-        await libraryApi.post(`editor/${abbr}`, data);
-    } catch (err) {
-        console.log(err);
-    }
-};

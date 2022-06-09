@@ -1,8 +1,8 @@
-import React, {ChangeEvent, FC, FormEvent, ReactNode, useContext, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, FC, FormEvent, useContext, useEffect, useRef, useState} from 'react';
 import ReactDOM from "react-dom";
-import {useLocation, useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import "../styles/Modal/Modal.css";
-import {WallContext} from "../context/wallElementsContext";
+import {LibraryContext, LibraryContextType, ServerRoute} from "../context/libraryContext";
 
 type ModalPropsType = {
     open: boolean,
@@ -32,7 +32,11 @@ enum ModalType {
 }
 
 const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
-   const navigate = useNavigate();
+    const {
+        getFloorsAndSpaces,
+    } = useContext(LibraryContext) as LibraryContextType;
+
+    const navigate = useNavigate();
     const [saveElement, setSaveElement] = useState<StateType>({
         label: "string",
         floor: 0
@@ -40,6 +44,7 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
     const [modalType, setModalType] = useState<ModalType>();
     const location = useLocation();
     const urlPath = location.pathname;
+    const {abbr} = useParams();
 
     const ref = useRef<boolean>(false);
     ref.current = location?.pathname?.match(/\//g)!.length > 1;
@@ -70,10 +75,16 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
         if (saveToJson) {
             if ("label" in saveElement) {
                 saveToJson(saveElement?.label, saveElement!.floor, document.getElementById("canvas"));
-                navigate(-1)
+                getFloorsAndSpaces(abbr!)
             }
-        } if (addLibrary && "section" in saveElement) {
+        }
+        if (addLibrary && "section" in saveElement) {
             addLibrary(saveElement);
+            setSaveElement({
+                section: "",
+                abbreviation: "",
+                desc: "",
+            })
             onClose();
         }
     }
@@ -103,13 +114,13 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
                     {("label" in saveElement) && (
                         <>
                             <div className="modal_inputContainer">
-                                <label htmlFor='label'>Label: </label>
+                                <label htmlFor='label'>Oznaka prostora: </label>
                                 <input name="label" id="label" type="text" required
                                        value={saveElement.label}
                                        onChange={handleChange}/>
                             </div>
                             <div className="modal_inputContainer">
-                                <label htmlFor='label'>Floor: </label>
+                                <label htmlFor='label'>Nadstropje: </label>
                                 <input name="floor" id="floor" type="number" min="0"
                                        value={saveElement.floor}
                                        onChange={handleChange}/>
@@ -125,13 +136,13 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
                             <div className="modal_inputContainer">
                                 <label htmlFor='label'>Naziv: </label>
                                 <input name="section" id="label" type="text" required
-                                    value={saveElement?.section}
+                                       value={saveElement?.section}
                                        onChange={handleChange}/>
                             </div>
                             <div className="modal_inputContainer">
                                 <label htmlFor='label'>Okrajšava: </label>
                                 <input name="abbreviation" id="label" type="text" required
-                                    value={saveElement?.abbreviation}
+                                       value={saveElement?.abbreviation}
                                        onChange={handleChange}/>
                             </div>
                             <div className="modal_inputContainer">
