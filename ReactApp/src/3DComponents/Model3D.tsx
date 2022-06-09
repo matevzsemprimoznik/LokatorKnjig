@@ -13,11 +13,10 @@ interface BookShelfsProps {
   moveCameraToDoubleClickedPoint: (event: ThreeEvent<MouseEvent>) => void;
   roomData: Room;
 }
-
-const Model3D: FC<BookShelfsProps> = ({ selectedUDK, roomData, moveCameraToDoubleClickedPoint }) => {
+const Model3D: FC<BookShelfsProps> = ({ selectedUDK,roomData,moveCameraToDoubleClickedPoint }) => {
   const getSelectedUDKPositions = () => {
     const bookshelves = roomData.bookshelves.filter((bookshelf: Bookshelf, index: number) =>
-      bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK)
+        bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK)
     );
     const positions: any = [];
     bookshelves.forEach((bookshelf: Bookshelf, index: number) => {
@@ -63,9 +62,15 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK, roomData, moveCameraToDoubl
             type={selectedBookshelf}
             key={index}
             position={{
-              x: bookshelf.position.x + roomData.center.x,
-              y: bookshelf.position.y + roomData.center.y,
-              z: bookshelf.position.z + roomData.center.z,
+              ...getNewBookshelfPositionsAccordingToAngle(
+                  {
+                    x: bookshelf.position.x,
+                    y: bookshelf.position.y,
+                    z: bookshelf.position.z,
+                  },
+                  roomData.rotation,
+                  roomData.center
+              ),
             }}
             udk={bookshelf.udks}
             rotation={{
@@ -81,9 +86,15 @@ const Model3D: FC<BookShelfsProps> = ({ selectedUDK, roomData, moveCameraToDoubl
             type={closeBookshelf}
             key={index}
             position={{
-              x: bookshelf.position.x + roomData.center.x,
-              y: bookshelf.position.y + roomData.center.y,
-              z: bookshelf.position.z + roomData.center.z,
+              ...getNewBookshelfPositionsAccordingToAngle(
+                  {
+                    x: bookshelf.position.x,
+                    y: bookshelf.position.y,
+                    z: bookshelf.position.z,
+                  },
+                  roomData.rotation,
+                  roomData.center
+              ),
             }}
             rotation={{
               x: 0,
