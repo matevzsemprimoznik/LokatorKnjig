@@ -6,7 +6,7 @@ import "../styles/2d_canvas_page/Canvas.css";
 import Modal from "./Modal";
 import {CanvasSVG} from "../utils/canvas-getsvg";
 import {WallContext} from "../context/wallElementsContext";
-import {useParams} from "react-router-dom";
+import {Navigate, useLocation, useNavigate, useParams} from "react-router-dom";
 import {
     ActionTypes,
     DrawingElement,
@@ -24,7 +24,6 @@ import {
     resizedCoordinates,
 } from "../utils/canvas_utils/canvas_math_functions/canvas_math";
 import {
-    addSpace,
     calculateBookshelfCenterPoint,
     getRoomCenter,
     makeBookshelvesData,
@@ -36,6 +35,10 @@ import ShelfRotAgainst from '../assets/2d-modeling_page/Shelf_rot_against.png';
 import ShelfRotLeft from '../assets/2d-modeling_page/Shelf_rot_left.png';
 import ShelfRotRight from '../assets/2d-modeling_page/Shelf_rot_right.png';
 import SaveIcon from '../assets/2d-modeling_page/icons8-save-30.png';
+import Header from "./landing_page/Header";
+import {Loading} from "./Loading";
+import {AuthContext} from "../context/authContext";
+import {libraryApi} from "../context/axios";
 
 
 export const generator = rough.generator();
@@ -60,8 +63,11 @@ const Canvas = () => {
         bs_details,
         setBs_details
     } = useContext(WallContext);
+    const location = useLocation();
+    const navigate = useNavigate()
 
     const [overlayBookshelfElement, setOverlayBookshelfElement] = useState<any>(null);
+    const {isAuth} = useContext(AuthContext);
 
 
     const [currentDrawingBookshelf, setCurrentDrawingBookshelf] = useState<Array<ElementType>>([]);
@@ -94,6 +100,7 @@ const Canvas = () => {
 
     const {abbr} = useParams();
 
+
     useLayoutEffect(() => {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
         let ctx = canvas!.getContext("2d");
@@ -105,7 +112,6 @@ const Canvas = () => {
         const roughCanvas: RoughCanvas = rough.canvas(canvas);
 
         bookshelves.map((item: ElementType, index: number) => (item.id = index));
-
 
 
         [...doorElements].forEach(({rotation, x, y}) => {
@@ -835,7 +841,7 @@ const Canvas = () => {
     useEffect(() => {
         let obj: any = {};
         if (selectedElement && action === ActionTypes.EDITING) {
-            let {x, y , rotation} = selectedElement;
+            let {x, y, rotation} = selectedElement;
             setDrawingElement(DrawingElement.BOOKSHELF)
 
             Array(Number(selectedElement.nb_of_shelves))
@@ -984,6 +990,15 @@ const Canvas = () => {
         return original;
     };
 
+    const addSpace = async (data: any, abbr: string) => {
+        try {
+            await libraryApi.post(`editor/${abbr}`, data);
+            navigate(-1)
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     const saveToJson = (label: string, floor: number, canvas: any) => {
         const [startingPointX, startingPointY] = getRoomCenter(wallElements);
 
@@ -1054,7 +1069,6 @@ const Canvas = () => {
         setDrawingElement(DrawingElement.DOOR);
         setAction(ActionTypes.NONE);
     };
-
 
     return (
         <>
@@ -1229,7 +1243,8 @@ const Canvas = () => {
                                     return (
                                         <React.Fragment key={index}>
                                             <div className="inputContainer">
-                                                <label htmlFor="udk">{`${index === 0 ? 'Udk za najvišjo polico' : `Udk ${++shNumber}:`}  `} </label>
+                                                <label
+                                                    htmlFor="udk">{`${index === 0 ? 'Udk za najvišjo polico' : `Udk ${++shNumber}:`}  `} </label>
                                                 <input
                                                     name={index.toString()}
                                                     id="udk"

@@ -76,7 +76,6 @@ const Modal: FC<ModalPropsType> = ({onClose, open, saveToJson, addLibrary}) => {
             if ("label" in saveElement) {
                 saveToJson(saveElement?.label, saveElement!.floor, document.getElementById("canvas"));
                 getFloorsAndSpaces(abbr!)
-                navigate(-1)
             }
         }
         if (addLibrary && "section" in saveElement) {
