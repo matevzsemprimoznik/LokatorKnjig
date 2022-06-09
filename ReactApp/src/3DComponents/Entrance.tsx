@@ -11,9 +11,9 @@ interface EntranceProps {
 }
 
 const Entrance: FC<EntranceProps> = ({position, rotation}) => {
-    return <mesh geometry={new BoxGeometry(2.5, 0.4, 0)} material={new MeshBasicMaterial({color: '#0073d3'})}
+    return <mesh geometry={new BoxGeometry(2.5, 0.2, 0)} material={new MeshBasicMaterial({color: '#0073d3'})}
                  position={[position.x / 20, 0.02, position.z / 20]}
-                 rotation={[-Math.PI / 2, rotation / 180 * Math.PI, 0]}/>
+                 rotation={[Math.PI / 2, 0, rotation / 180 * Math.PI]}/>
 
 }
 export default Entrance

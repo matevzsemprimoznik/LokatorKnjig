@@ -42,7 +42,7 @@ const Ground: FC<GroundProps> = ({position, onDoubleClick, edges, rotation}) => 
                 receiveShadow
                 geometry={new ConvexGeometry(innerEdges)}
                 material={new MeshBasicMaterial({color: '#e9ecef'})}
-                position={[position.x / 20, position.y + 0.01, position.z / 20]}
+                position={[position.x / 20, 0.01, position.z / 20]}
                 rotation={[rotation.x, rotation.y, rotation.z]}
                 scale={[1, 1, 1]}
             />
@@ -52,7 +52,7 @@ const Ground: FC<GroundProps> = ({position, onDoubleClick, edges, rotation}) => 
                 receiveShadow
                 geometry={new ConvexGeometry(edges.map(edge => new Vector3(edge.x / 20, edge.y, edge.z / 20)))}
                 material={new MeshBasicMaterial({color: '#7f8487'})}
-                position={[position.x / 20, position.y, position.z / 20]}
+                position={[position.x / 20, 0, position.z / 20]}
                 rotation={[rotation.x, rotation.y, rotation.z]}
                 scale={[1, 1, 1]}
             />
