@@ -1,4 +1,3 @@
-/*SHRANJEVANJE KOORDINAT V JSON*/
 
 import {ElementType} from "../../../models/canvas_models/canvas";
 import {libraryApi} from "../../../context/axios";
@@ -26,25 +25,13 @@ export const calculateBookshelfCenterPoint = (item: ElementType | null) => {
     }
 };
 
-const initialPosition = {
-    z: -7.39,
-    y: 0.4,
-    x: -6,
-};
-const premik = 2.39;
-// x se vsakič poveča za 0.2
-// y se vsakič poveča za 0.64 (vertikalno)
-// če je z lihi je premik 0.5 (vztran od centra)
-
-
-
 export const makeEntrancesData = (entrances: any) => {
     let entranceArr: any = [];
 
     entrances.forEach((item: any) => {
         entranceArr.push({
-            position: {x: item.x, z: item.z, y: item.y},
-            rotation: 0,
+            position: {x: item.position.x, z: item.position.z, y: item.position.y},
+            rotation: item.rotation,
         });
     });
     return entranceArr;
@@ -74,5 +61,3 @@ export const addSpace = async (data: any, abbr: string) => {
         console.log(err);
     }
 };
-
-/*SHRANJEVANJE KOORDINAT V JSON*/

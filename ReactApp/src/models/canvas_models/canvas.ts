@@ -5,7 +5,8 @@ export enum ActionTypes {
     DRAWING = "DRAWING",
     MOVING = "MOVING",
     SELECTING = "SELECTING",
-    RESIZING = "RESIZING"
+    RESIZING = "RESIZING",
+    EDITING = "EDITING"
 }
 
 export enum DrawingElement {

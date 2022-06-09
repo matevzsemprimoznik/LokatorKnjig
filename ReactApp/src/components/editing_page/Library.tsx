@@ -4,6 +4,8 @@ import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import Modal from "../Modal";
 import {libraryApi} from "../../context/axios";
 import {ServerRoute} from "../../context/libraryContext"
+import OpenIcon from '../../assets/2d-modeling_page/icons8-open-64.png';
+import SaveIcon from '../../assets/2d-modeling_page/icons8-save-30.png';
 
 type LibraryPropsType = {
     section?: string,
@@ -40,7 +42,7 @@ const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, labe
                         <h2>Nadstropje {floor}</h2>
                         {(floor === floorIndex) && (
                             <Link to={`/add-floor-plan/${abbreviation}/floor-editing/${floor}`} className="libraryLink">
-                                <img src="../../icons8-open-64.png" alt="Preglej nadstropje"/>
+                                <img src={OpenIcon} alt="Preglej nadstropje"/>
                             </Link>
                         )}
                     </div>
@@ -67,7 +69,7 @@ const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, labe
                             </div>
                         </div>
                     </Link>
-                    <img src="../../icons8-save-30.png" alt="Preglej nadstropje" onClick={() => saveToAllLibraries()}
+                    <img src={SaveIcon} alt="Preglej nadstropje" onClick={() => saveToAllLibraries()}
                          style={{marginLeft: "auto", cursor: "pointer"}}/>
                 </div>
 

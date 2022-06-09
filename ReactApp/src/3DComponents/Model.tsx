@@ -1,6 +1,6 @@
 import {OrbitControls, OrthographicCamera, PerspectiveCamera} from '@react-three/drei';
 import Ground from './Ground';
-import React, {FC, useCallback, useContext, useEffect, useRef} from 'react';
+import React, {FC, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import * as THREE from 'three';
 import {ModelType} from '../context/modelContext';
 import {MemoizedRoomModel} from './Model3D';
@@ -28,6 +28,11 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) =
     const orbitControlsRef = useRef<any>(null);
 
 
+    useEffect(() => {
+        setInitialPositionOfFirstPersonCamera()
+    }, [floorData])
+
+
     const moveCameraToDoubleClickedPoint = useCallback((event: ThreeEvent<MouseEvent>) => {
         targetCameraPosition.current = {...event.point, y: 2};
         setModelType(ModelType.FIRST_PERSON);
@@ -38,8 +43,9 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) =
             const bookshelfWithSelectedUdk = room.bookshelves.filter(bookshelf => bookshelf.udks.includes(`${selected}`))
             return bookshelfWithSelectedUdk.length !== 0
         })
-        console.log(roomWithSelectedUdk)
-        if (roomWithSelectedUdk.length !== 0) {
+        if (roomWithSelectedUdk.length !== 0)
+            console.log(roomWithSelectedUdk[0].entrances.length !== 0)
+        if (roomWithSelectedUdk.length !== 0 && roomWithSelectedUdk[0].entrances.length !== 0) {
             const position = {...roomWithSelectedUdk[0].entrances[0].position, y: 2}
             targetCameraPosition.current = {
                 x: position.x + roomWithSelectedUdk[0].center.x,

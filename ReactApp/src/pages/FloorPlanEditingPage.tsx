@@ -1,18 +1,16 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import Draggable, { DraggableEvent } from 'react-draggable';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import Draggable, {DraggableEvent} from 'react-draggable';
 import '../styles/floorEditingPage/FlooPlanEditingPage.css';
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
+import {TransformComponent, TransformWrapper} from 'react-zoom-pan-pinch';
 import Button from '../components/Button';
 import Drawer from '../components/Drawer';
-import { LibraryContext, ServerRoute } from '../context/libraryContext';
-import { useNavigate, useParams } from 'react-router-dom';
-import { MenuContext } from '../context/menuContext';
-import { libraryApi } from '../context/axios';
-import Header from '../components/landing_page/Header';
-import { relative } from 'path';
-
-const MenuIconUrl = '../../menu-button.svg';
-const RotateIconUrl = '../../rotate.png';
+import {LibraryContext, ServerRoute} from '../context/libraryContext';
+import {useNavigate, useParams} from 'react-router-dom';
+import {MenuContext} from '../context/menuContext';
+import {libraryApi} from '../context/axios';
+import Header from "../components/landing_page/Header";
+import MenuIconUrl from '../assets/menu-button.svg';
+import RotateIcon from '../assets/rotate.png';
 
 const FloorPlanEditingPage = () => {
   const navigate = useNavigate();
@@ -190,7 +188,7 @@ const FloorPlanEditingPage = () => {
 
                       {!element.isRotationButtonHidden && (
                         <button onClick={() => rotateElement(element.label)}>
-                          <img src={RotateIconUrl} />
+                          <img src={RotateIcon} alt="Rotate"/>
                         </button>
                       )}
                     </div>
