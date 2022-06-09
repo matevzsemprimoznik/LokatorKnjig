@@ -12,8 +12,6 @@ import Header from "../components/landing_page/Header";
 import MenuIconUrl from '../assets/menu-button.svg';
 import RotateIcon from '../assets/rotate.png';
 
-const RotateIconUrl = '../../rotate.png';
-
 const FloorPlanEditingPage = () => {
   const navigate = useNavigate();
   const { toggleMenuOpen } = React.useContext(MenuContext);

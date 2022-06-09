@@ -30,6 +30,12 @@ import {
     makeBookshelvesData,
     makeEntrancesData,
 } from "../utils/canvas_utils/canvas_to_json_funcions/canvas_to_json";
+import DoorIcon from '../assets/2d-modeling_page/icons8-open-door-50.png';
+import ShelfRotTo from '../assets/2d-modeling_page/Shelf_rot_to.png';
+import ShelfRotAgainst from '../assets/2d-modeling_page/Shelf_rot_against.png';
+import ShelfRotLeft from '../assets/2d-modeling_page/Shelf_rot_left.png';
+import ShelfRotRight from '../assets/2d-modeling_page/Shelf_rot_right.png';
+import SaveIcon from '../assets/2d-modeling_page/icons8-save-30.png';
 
 
 export const generator = rough.generator();
@@ -55,6 +61,8 @@ const Canvas = () => {
         setBs_details
     } = useContext(WallContext);
 
+    const [overlayBookshelfElement, setOverlayBookshelfElement] = useState<any>(null);
+
 
     const [currentDrawingBookshelf, setCurrentDrawingBookshelf] = useState<Array<ElementType>>([]);
     const [selectedElement, setSelectedElement] = useState<ElementType | null>(
@@ -70,18 +78,19 @@ const Canvas = () => {
 
     const [selectedRoomBoundary, setSelectedRoomBoundary] = useState<any>(null);
 
-
-    // const [drawingDoor, setDrawingDoor] = useState(false);
-    const [selectedWall, setSelectedWall] = useState<any>();
-
-
     const [leftDivOpen, setLeftDivOpen] = useState<boolean>(false);
     const [drawingBlock, setDrawingBlock] = useState<boolean>(false);
 
-    const [sh_image, setSh_image] = useState<string>("../../Shelf_rot_to.png");
+    const [sh_image, setSh_image] = useState<any>(ShelfRotTo);
     const [currentDrawingBlock, setCurrentDrawingBlock] = useState<Array<ElementType>>([]);
 
     const [blockSplitOnPieces, setBlockSplitOnPieces] = useState<Array<ElementType>>([]);
+
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const onClose = () => setIsOpen(false);
+
+    const [shelfUdk, setShelfUdk] = useState<udkEdit>({});
+    const [radio, setRadio] = useState<number | null>(null);
 
     const {abbr} = useParams();
 
@@ -96,6 +105,8 @@ const Canvas = () => {
         const roughCanvas: RoughCanvas = rough.canvas(canvas);
 
         bookshelves.map((item: ElementType, index: number) => (item.id = index));
+
+
 
         [...doorElements].forEach(({rotation, x, y}) => {
             if (rotation === 90) {
@@ -129,6 +140,11 @@ const Canvas = () => {
             roughCanvas.draw(element)
         );
 
+        // OVERLAY ELEMENT
+        if (overlayBookshelfElement) {
+            roughCanvas.draw(overlayBookshelfElement.element);
+        }
+
         window.addEventListener("keyup", handleKeyPress, false);
         // @ts-ignore
         canvasSVGContext.wrapCanvas(canvas);
@@ -139,8 +155,11 @@ const Canvas = () => {
         currentDrawingBookshelf,
         currentDrawingBlock,
         doorElements,
-        roomBoundaries
+        roomBoundaries,
+        overlayBookshelfElement,
+        selectedElement
     ]);
+
 
     useEffect(() => {
         getImagePath(bs_details.sh_rotation);
@@ -149,16 +168,16 @@ const Canvas = () => {
     const getImagePath = (rotation: number) => {
         switch (Number(rotation)) {
             case 0:
-                setSh_image("../../Shelf_rot_left.png");
+                setSh_image(ShelfRotLeft);
                 break;
             case 1:
-                setSh_image("../../Shelf_rot_to.png");
+                setSh_image(ShelfRotTo);
                 break;
             case 2:
-                setSh_image("../../Shelf_rot_right.png");
+                setSh_image(ShelfRotRight);
                 break;
             case 3:
-                setSh_image("../../Shelf_rot_against.png");
+                setSh_image(ShelfRotAgainst);
                 break;
         }
     };
@@ -189,7 +208,7 @@ const Canvas = () => {
         style?: ElementStyleType,
         rotation?: number
     ) => {
-        if (drawingElement === DrawingElement.BOOKSHELF) {
+        if (drawingElement === DrawingElement.BOOKSHELF || type === DrawingElement.BOOKSHELF) {
             if (drawingBlock) {
                 let [blockSplit, block] = makeBlockPiece(x, y);
                 setCurrentDrawingBlock(block);
@@ -376,8 +395,6 @@ const Canvas = () => {
 
         }
 
-
-        /*drawing walls*/
         if (drawingElement === DrawingElement.WALL && action === ActionTypes.NONE) {
             const element = createElement(0, clientX, clientY, clientX, clientY, DrawingElement.WALL);
             if (roomBoundaries.length < 1) {
@@ -399,7 +416,6 @@ const Canvas = () => {
                 setCurrentDrawingBlock([]);
             }
         }
-        // select bookshelf at cursor position
         if (action === ActionTypes.SELECTING) {
             let wallAtPos = getWallAtPosition(clientX,
                 clientY,
@@ -577,11 +593,10 @@ const Canvas = () => {
             const {x, y, x1, y1} = adjustElementCoordinates(roomBoundaries[0]);
             updateElement(id, x, y, x1, y1, DrawingElement.WALL);
             setAction(ActionTypes.NONE);
-            setSelectedWall(null);
         }
 
         if (selectedElement && action === ActionTypes.MOVING) {
-            setAction(ActionTypes.NONE);
+            setAction(ActionTypes.SELECTING);
             const {nb_of_shelves, rotation, udk} = selectedElement;
             setSelectedElement(null);
             updateElement(
@@ -599,11 +614,11 @@ const Canvas = () => {
             event.target.style.cursor = "default";
         }
         if (selectedRoomBoundary && action === ActionTypes.MOVING) {
-            setAction(ActionTypes.NONE);
+            setAction(ActionTypes.SELECTING);
             setSelectedRoomBoundary(null);
         }
         if (action === ActionTypes.RESIZING) {
-            setAction(ActionTypes.NONE);
+            setAction(ActionTypes.SELECTING);
             setDrawingElement(DrawingElement.NONE);
             setSelectedRoomBoundary(null);
         }
@@ -726,7 +741,6 @@ const Canvas = () => {
         setLeftDivOpen(false);
     };
 
-    // select action and element we are editing
     const handleDrawingSelection = (drawingElement: DrawingElement) => {
         if (drawingElement === DrawingElement.WALL) {
             setAction(ActionTypes.NONE);
@@ -736,8 +750,8 @@ const Canvas = () => {
             setAction(ActionTypes.DRAWING);
             setDrawingElement(drawingElement);
             setLeftDivOpen(true);
-            setEdit(false);
         }
+        setSelectedElement(null)
     };
 
     const handleDoubleClick = (event: any) => {
@@ -749,7 +763,7 @@ const Canvas = () => {
             bookshelves,
             DrawingElement.BOOKSHELF
         );
-        if (selectedElement && edit) {
+        if (selectedElement) {
             setSelectedElement(selectedElement);
             setLeftDivOpen(true);
         } else {
@@ -759,14 +773,16 @@ const Canvas = () => {
 
     // deleting bookshelves
     const handleElementDelete = () => {
-        if (selectedElement && !edit) {
+        if (selectedElement) {
             const newState = bookshelves.filter(
                 (element: ElementType) => element.id !== selectedElement.id
             );
             setBookshelves(newState);
             setSelectedElement(null);
+            setOverlayBookshelfElement(null);
         }
     };
+
     const handleSubmit = (e: any) => {
         e.preventDefault();
         setDrawingBlock(true);
@@ -781,17 +797,13 @@ const Canvas = () => {
         setBs_details({...bs_details, [name]: value});
     };
 
-    const [edit, setEdit] = useState<boolean>(false);
-    const [shelfUdk, setShelfUdk] = useState<udkEdit>({});
-    const [radio, setRadio] = useState<number | null>(null);
-
 
     const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
         setRadio(Number(e.target.value));
     };
 
     const handleEditMode = () => {
-        setEdit(true);
+        setAction(ActionTypes.EDITING)
         setDrawingElement(DrawingElement.NONE);
     };
 
@@ -808,6 +820,7 @@ const Canvas = () => {
         });
         selectedElement!.udk = udkArray;
         setShelfUdk({});
+        setUdkSaved(true);
     };
 
     const handleChangeEdit = (e: ChangeEvent<HTMLInputElement>) => {
@@ -816,9 +829,15 @@ const Canvas = () => {
         setShelfUdk({...shelfUdk, [name]: value});
     };
 
+    const [udkSaved, setUdkSaved] = useState<boolean>(false);
+
+
     useEffect(() => {
         let obj: any = {};
-        if (selectedElement && edit) {
+        if (selectedElement && action === ActionTypes.EDITING) {
+            let {x, y , rotation} = selectedElement;
+            setDrawingElement(DrawingElement.BOOKSHELF)
+
             Array(Number(selectedElement.nb_of_shelves))
                 .fill(null)
                 .forEach((item: null, index: number) => {
@@ -827,10 +846,27 @@ const Canvas = () => {
                     Object.assign(obj, {[index]: udkOnShelf || ""});
                 });
             setShelfUdk(obj);
-            // setDrawingElement(DrawingElement.BOOKSHELF)
-            // const {id, x, y, rotation, nb_of_shelves, udk } = selectedElement;
-            // updateElement(id, x, y, 0,0, DrawingElement.BOOKSHELF, nb_of_shelves, udk, ElementStyleType.SelectedBookshelf, rotation);
+            setUdkSaved(false);
+            const element = createElement(
+                0,
+                x,
+                y,
+                0,
+                0,
+                DrawingElement.BOOKSHELF,
+                0,
+                [],
+                ElementStyleType.SelectedBookshelf,
+                rotation
+            );
+            if (element) {
+                setOverlayBookshelfElement(element)
+            }
+
+        } else if (action !== ActionTypes.EDITING) {
+            setOverlayBookshelfElement(null);
         }
+
     }, [selectedElement]);
 
     const recalculateBookshelfCoordinates = (
@@ -872,15 +908,16 @@ const Canvas = () => {
     ) => {
         let entrances: any = [];
         doorElements.forEach(({x, y, rotation}: ElementType) => {
-            console.log("rekalkuliramo vhode" , x,y,rotation)
+            console.log("rekalkuliramo vhode", x, y, rotation)
             entrances.push(
-                { position: {
-                    x: Number(((x - startingPointX)).toFixed(2)),
-                    z: Number(((y - startingPointY)).toFixed(2)),
-                    y: 0
-                },
-                rotation: rotation,
-            });
+                {
+                    position: {
+                        x: Number(((x - startingPointX)).toFixed(2)),
+                        z: Number(((y - startingPointY)).toFixed(2)),
+                        y: 0
+                    },
+                    rotation: rotation,
+                });
         });
         return entrances;
     };
@@ -1015,11 +1052,8 @@ const Canvas = () => {
 
     const addDoors = () => {
         setDrawingElement(DrawingElement.DOOR);
+        setAction(ActionTypes.NONE);
     };
-
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-
-    const onClose = () => setIsOpen(false);
 
 
     return (
@@ -1148,18 +1182,19 @@ const Canvas = () => {
                         value="5"
                     />
                     <label htmlFor="radio-door">
-                        <img src="../../icons8-open-door-50.png" style={{height: "1em", objectFit: "contain"}}
-                             alt="nekaj"/>
+                        <img src={DoorIcon} style={{height: "1em", objectFit: "contain"}}
+                             alt="Vrata"/>
                     </label>
                 </div>
-                <div className={`topDiv-element`} onClick={handleElementDelete}>
+                <div className={selectedElement ? ("topDiv-element--deletable") : ("topDiv-element")}
+                     onClick={handleElementDelete}>
                     <input
                         id="radio-delete"
                         type="radio"
                         name="action-selection"
                         className="topDiv-elementRadio"
                         onChange={handleRadioChange}
-                        value="3"
+                        value="4"
                     />
                     <label htmlFor="radio-delete">
                         <svg
@@ -1178,22 +1213,23 @@ const Canvas = () => {
                 </div>
                 <div className={`topDiv-element`} style={{position: "absolute", top: "2px", left: "300px"}}
                      onClick={() => setIsOpen(true)}>
-                    <img src="../../icons8-save-30.png" style={{height: "1em", objectFit: "contain"}} alt="nekaj"/>
+                    <img src={SaveIcon} style={{height: "1em", objectFit: "contain"}} alt="Vrata"/>
                 </div>
             </div>
             {/*EDITING AND DRAWING SHELVES*/}
             {leftDivOpen && (
                 <div className="leftDiv">
-                    {edit && selectedElement !== null ? (
+                    {action === ActionTypes.EDITING && selectedElement !== null ? (
                         <form onSubmit={handleEditSubmit} className="form">
                             <h2>Določanje udk</h2>
                             {Array(Number(selectedElement.nb_of_shelves))
                                 .fill(null)
                                 .map((item: null, index: number) => {
+                                    let shNumber = index;
                                     return (
                                         <React.Fragment key={index}>
                                             <div className="inputContainer">
-                                                <label htmlFor="udk">Udk {index}: </label>
+                                                <label htmlFor="udk">{`${index === 0 ? 'Udk za najvišjo polico' : `Udk ${++shNumber}:`}  `} </label>
                                                 <input
                                                     name={index.toString()}
                                                     id="udk"
@@ -1205,6 +1241,7 @@ const Canvas = () => {
                                         </React.Fragment>
                                     );
                                 })}
+                            {udkSaved && (<div className="udkSaved">Udk shranjen</div>)}
                             <button type="submit">Shrani udk</button>
                         </form>
                     ) : (
