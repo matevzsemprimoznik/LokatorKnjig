@@ -5,6 +5,8 @@ import Modal from "../components/Modal";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {LibraryContext, LibraryContextType, ServerRoute} from "../context/libraryContext";
 import {libraryApi} from "../context/axios";
+import BackButton from '../assets/2d-modeling_page/icons8-back-50.png'
+import Button from "../components/Button";
 
 export type LibraryDataType = {
     section: string,
@@ -43,12 +45,13 @@ const LibrarySelectionPage = () => {
             console.log(err);
         }
     }
-
-
     useEffect(() => {
-        if (abbr)
+        if (abbr) {
             getFloorsAndSpaces(abbr!);
-        getLibraryData(ServerRoute.EDITOR);
+        } else {
+            getLibraryData(ServerRoute.EDITOR);
+        }
+
     }, [])
 
     useEffect(() => {
@@ -56,9 +59,13 @@ const LibrarySelectionPage = () => {
         if (abbr) {
             getSpecificFloorData(ServerRoute.EDITOR, abbr!, floorIndex);
             getAllFloors(ServerRoute.EDITOR, abbr!);
+        } else {
+            getLibraryData(ServerRoute.EDITOR);
         }
 
-    }, [floorIndex]);
+    }, [floorIndex, libraryData]);
+
+    console.log(floors, floorIndex, floorData, floorsAndSpaces)
 
 
     const changeFloorIndex = (index: number) => {
@@ -73,6 +80,8 @@ const LibrarySelectionPage = () => {
                 <div className="libSelPage">
                     <div className="libSelPage_body">
                         <div className="libSelPage_body_container">
+                            <div className="backButton" onClick={() => navigate("/")}><img src={BackButton} alt="back"/>
+                            </div>
                             <h2>Vse knjižnice</h2>
                             <hr className="libSelPage_body_divider"/>
                             <div className="libSelPage_body_libraryCollection">
@@ -96,7 +105,10 @@ const LibrarySelectionPage = () => {
                         <div className="libSelPage_body_container">
                             <div className="libSelPage_body_section">
                                 <div className="libSelPage_body_element">
-                                    <h2>Nadstropja</h2>
+                                    <div className="backButton" onClick={() => navigate('/add-floor-plan')}><img
+                                        src={BackButton}
+                                        alt="back"/></div>
+                                    <h2 style={{marginTop: "-27px"}}>Nadstropja</h2>
                                     <div className="libSelPage_body_libraryCollection">
                                         {floorsAndSpaces.floors?.map((floor: number, index: number) => (
                                             <Library floor={floor} key={index} abbreviation={abbr}
