@@ -13,7 +13,6 @@ import {LibraryContext} from "../context/libraryContext";
 import {Room} from "../models/library";
 import bookshelfPiece from "./BookshelfPiece";
 import FloorModel from "./FloorModel";
-import lazyWithPreload from "../utils/lazyWithPreload";
 
 interface ModelProps {
     selected: any;
