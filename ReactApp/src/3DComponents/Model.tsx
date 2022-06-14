@@ -32,6 +32,10 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) =
         setInitialPositionOfFirstPersonCamera()
     }, [floorData])
 
+    useEffect(() => {
+        setInitialPositionOfFirstPersonCamera()
+    }, [])
+
 
     const moveCameraToDoubleClickedPoint = useCallback((event: ThreeEvent<MouseEvent>) => {
         targetCameraPosition.current = {...event.point, y: 2};
@@ -55,7 +59,6 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) =
 
     }
 
-    setInitialPositionOfFirstPersonCamera()
 
     return (
         <>
