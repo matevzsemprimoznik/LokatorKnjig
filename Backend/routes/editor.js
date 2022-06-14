@@ -2,6 +2,9 @@ import express from 'express';
 import Library from '../models/librarySchema.js';
 import LibraryEditor from "../models/libraryEditorSchema.js";
 
+import fs from 'fs';
+import readline from 'readline';
+
 const router = express.Router();
 
 //get all libraries (returns section, abbreviation and description of each library)
@@ -191,8 +194,60 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
             strength: 1
         });
 
-        console.log(library, uploadedLibrary)
+        //console.log(library, uploadedLibrary)
 
+        const arr = []
+        await library.file[1].bookshelves.sort(
+            function (a, b) {
+                if (a.position.z === b.position.z) {
+                    // Price is only important when cities are the same
+                    if (a.position.x === b.position.x) {
+                        // Price is only important when cities are the same
+                        return b.position.y - a.position.y;
+                    }
+                    return a.position.x > b.position.x ? 1 : -1;
+                }
+                return a.position.z > b.position.z ? 1 : -1;
+            });
+
+
+        async function processLineByLine() {
+            const fileStream = fs.createReadStream('./test.txt');
+
+            const rl = readline.createInterface({
+                input: fileStream,
+                crlfDelay: Infinity
+            });
+            // Note: we use the crlfDelay option to recognize all instances of CR LF
+            // ('\r\n') in input.txt as a single line break.
+
+            for await (const line of rl) {
+
+                if (line !== '') {
+                    arr.push([...line.split(',')])
+                }
+
+            }
+        }
+
+        await processLineByLine()
+
+
+        library.file[1].bookshelves = library.file[1].bookshelves.map((b, index) => {
+            console.log(arr[index])
+            return {...b, udks: [...arr[index]]}
+        })
+        setTimeout(() => {
+            console.log(library.file[1].bookshelves[0].udks)
+            const newLibrary = new Library({
+                "section": library.section,
+                "abbreviation": library.abbreviation,
+                "desc": library.desc,
+                "file": library.file
+            });
+
+            newLibrary.save();
+        }, 6000)
         if (library != null && uploadedLibrary === null) {
 
             const newLibrary = new Library({
@@ -202,7 +257,7 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
                 "file": library.file
             });
 
-            newLibrary.save();
+            //newLibrary.save();
 
             return res.status(200).json("The library has been posted.");
         } else {

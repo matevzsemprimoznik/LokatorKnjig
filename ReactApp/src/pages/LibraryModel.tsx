@@ -36,8 +36,10 @@ const LibraryModel = () => {
 
     useEffect(() => {
         if (library) {
-            if (selected) getFloorData(library, selected);
-            else {
+            if (selected) {
+                getFloorData(library, selected);
+                getAllFloors(ServerRoute.LIBRARIES, library)
+            } else {
                 getFloorData(library, '');
             }
         }
@@ -68,7 +70,6 @@ const LibraryModel = () => {
 
         }
     };
-
     return (
         <>
             <Header/>
