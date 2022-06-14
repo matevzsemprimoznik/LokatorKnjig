@@ -3,13 +3,14 @@ import {useParams, useSearchParams} from 'react-router-dom';
 import {Canvas} from 'react-three-fiber';
 import Button from '../components/Button';
 import {ModelContext, ModelType} from '../context/modelContext';
-import Model from '../3DComponents/Model';
 import {LibraryContext, ServerRoute} from '../context/libraryContext';
 import {MenuContext} from '../context/menuContext';
 import Drawer from '../components/Drawer';
 import SearchUDK from '../components/SearchUDK';
 import {Loading} from '../components/Loading';
 import Header from '../components/landing_page/Header';
+import Loader from "../utils/Loader";
+import Model from "../3DComponents/Model";
 
 const RotateIconUrl = '../../images/rotate.png';
 const FirstPersonViewIconUrl = '../../images/360-view.png';
@@ -27,7 +28,9 @@ const LibraryModel = () => {
         getAllFloors,
         floors,
         getSpecificFloorData,
-        section
+        section,
+        setIsModelLoaded,
+        isModelLoaded
     } = useContext(LibraryContext);
     const {toggleMenuOpen} = React.useContext(MenuContext);
 
@@ -39,6 +42,7 @@ const LibraryModel = () => {
             }
         }
     }, [selected]);
+
 
     useEffect(() => {
         if (library) getAllFloors(ServerRoute.LIBRARIES, library);
@@ -65,19 +69,18 @@ const LibraryModel = () => {
         }
     };
 
-    if (floorData.length === 0 || floors.length === 0) return <Loading/>;
-
     return (
         <>
             <Header/>
             <SearchUDK library={library}/>
             <div style={{height: '90vh'}}>
-                <Suspense fallback={<Loading/>}>
+                <Loader isModelLoaded={isModelLoaded}
+                        conditionForSuccess={floorData.length !== 0 && floors.length !== 0}>
                     <Canvas id='canvas-container'>
                         <Model selected={selected} modelType={modelType}
-                               setModelType={setModelType} floorData={floorData}/>
+                               setModelType={setModelType} floorData={floorData} setIsModelLoaded={setIsModelLoaded}/>
                     </Canvas>
-                </Suspense>
+                </Loader>
             </div>
             <Button
                 position={{top: 8, right: 2}}

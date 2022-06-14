@@ -13,23 +13,26 @@ import {LibraryContext} from "../context/libraryContext";
 import {Room} from "../models/library";
 import bookshelfPiece from "./BookshelfPiece";
 import FloorModel from "./FloorModel";
+import lazyWithPreload from "../utils/lazyWithPreload";
 
 interface ModelProps {
     selected: any;
     modelType: ModelType;
     setModelType: (modelType: ModelType) => void;
-    floorData: Array<Room>
+    floorData: Array<Room>,
+    setIsModelLoaded: (isModelLoaded: boolean) => void
 }
 
-const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) => {
+const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData, setIsModelLoaded}) => {
     const perspectiveCameraRef = useRef<PerspectiveCameraProps>(null);
     const targetCameraPosition = useRef({x: 1, y: 2, z: 1});
     const ortographicCameraRef = useRef<OrthographicCameraProps>(null);
     const orbitControlsRef = useRef<any>(null);
 
-
     useEffect(() => {
         setInitialPositionOfFirstPersonCamera()
+        if (floorData.length !== 0)
+            setIsModelLoaded(true)
     }, [floorData])
 
 

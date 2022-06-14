@@ -15,7 +15,9 @@ export type LibraryContextType = {
     getFloorsAndSpaces: (abbr: string) => void,
     floorsAndSpaces: any,
     svgs: Array<any>
-    getSvgs: (library: string, floor: string) => void
+    getSvgs: (library: string, floor: string) => void,
+    isModelLoaded: boolean,
+    setIsModelLoaded: any
 };
 
 export enum ServerRoute {
@@ -42,9 +44,13 @@ export const LibraryContext = createContext<LibraryContextType>({
     },
     section: "",
     floorsAndSpaces: [],
+    isModelLoaded: false,
+    setIsModelLoaded: () => {
+    },
 });
 
 const LibraryProvider = ({children}: any) => {
+    const [isModelLoaded, setIsModelLoaded] = useState(false);
     const [libraryData, setLibraryData] = useState([]);
     const [floorData, setFloorData] = useState<Array<Room>>([])
     const [floors, setFloor] = useState<Array<number>>([])
@@ -63,6 +69,8 @@ const LibraryProvider = ({children}: any) => {
 
     const getFloorData = async (library: string, udk: string) => {
         try {
+            setFloor([])
+            setIsModelLoaded(false)
             const response = await libraryApi.get(`udk/${library}/${udk}`);
             setFloorData(response.data)
         } catch (err) {
@@ -109,6 +117,8 @@ const LibraryProvider = ({children}: any) => {
 
     return (
         <LibraryContext.Provider value={{
+            isModelLoaded,
+            setIsModelLoaded,
             floors,
             getAllFloors,
             getSpecificFloorData,
