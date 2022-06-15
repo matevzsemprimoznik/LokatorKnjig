@@ -20,6 +20,7 @@ import FloorPlanEditingPage from "./pages/FloorPlanEditingPage";
 import WallProvider from "./context/wallElementsContext";
 import {TransformComponent, TransformWrapper} from 'react-zoom-pan-pinch';
 import FloorAndSpaces from "./pages/FloorAndSpaces";
+import Footer from "./components/landing_page/Footer";
 
 function App() {
     return (
@@ -45,6 +46,7 @@ function App() {
                                             <Header/>
                                             <FloorAndSpaces/>
                                             <Outlet/>
+                                            <Footer/>
                                         </>}/>
                                         <Route path='floor-editing' element={<FloorPlanEditingPage/>}>
                                             <Route path=':floor' element={<FloorPlanEditingPage/>}/>

@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {CSSProperties, FC} from 'react';
 import '../styles/Button.css';
 
 type ButtonProps = {
@@ -7,11 +7,12 @@ type ButtonProps = {
     alt?: string,
     text?: string,
     position?: { top?: number; left?: number; bottom?: number; right?: number }
+    style?: CSSProperties
 }
 
-const Button: FC<ButtonProps> = ({image, position, onClick, alt, text}) => {
+const Button: FC<ButtonProps> = ({image, position, onClick, alt, text, style}) => {
 
-    const style: Record<string, string> = {
+    const stylePosition: Record<string, string> = {
         top: `${position?.top}em` ?? "",
         left: `${position?.left}em` ?? "",
         right: `${position?.right}em` ?? "",
@@ -19,11 +20,11 @@ const Button: FC<ButtonProps> = ({image, position, onClick, alt, text}) => {
     }
 
     return (
-        <button className="custom-button" style={style} onClick={onClick}>
+        <button className="custom-button" style={{...stylePosition, ...style}} onClick={onClick}>
             {image ? (
-            <img src={image}
-                 alt={alt} aria-hidden="true"/>
-            ) : ( <p style={{margin: 0, padding: 0}}>{text}</p>
+                <img src={image}
+                     alt={alt} aria-hidden="true"/>
+            ) : (<p style={{margin: 0, padding: 0}}>{text}</p>
             )}
         </button>
     );

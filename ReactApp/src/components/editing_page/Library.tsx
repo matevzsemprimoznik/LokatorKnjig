@@ -6,6 +6,8 @@ import {libraryApi} from "../../context/axios";
 import {ServerRoute} from "../../context/libraryContext"
 import OpenIcon from '../../assets/2d-modeling_page/icons8-open-64.png';
 import SaveIcon from '../../assets/2d-modeling_page/icons8-save-30.png';
+import SquareButton from "../SquareButton";
+import floorAndSpaces from "../../pages/FloorAndSpaces";
 
 type LibraryPropsType = {
     section?: string,
@@ -32,33 +34,35 @@ const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, labe
         }
     }
 
+
     return (
         <>
             <Modal open={open} onClose={() => setOpen(false)}/>
             {(floor !== undefined && abbreviation) ? (
-                <div className={(floor === floorIndex) ? "library-active" : "library"}
+                <div className={(floor == floorIndex) ? "library-active" : "floors-spaces"}
                 >
                     <div className="library__info" onClick={() => changeFloor!(floor)}>
                         <h2>Nadstropje {floor}</h2>
-                        {(floor === floorIndex) && (
-                            <Link to={`/add-floor-plan/${abbreviation}/floor-editing/${floor}`} className="libraryLink">
-                                <img src={OpenIcon} alt="Preglej nadstropje"/>
-                            </Link>
+                        {(floor == floorIndex) && (
+                            <SquareButton text={'Uredi'}
+                                          style={{fontSize: '14px', padding: '6px 10px', marginRight: '0px'}}
+                                          onClick={() => navigate(`/add-floor-plan/${abbreviation}/floor-editing/${floor}`)}/>
                         )}
                     </div>
                 </div>
             ) : (label !== undefined && abbreviation) ? (
                 <Link to={`/add-floor-plan/${abbreviation}/room-editing/${label}`} className="libraryLink">
-                    <div className="library">
+                    <div className="floors-spaces">
                         <div className="library__info">
                             <h2>{label}</h2>
                         </div>
                     </div>
                 </Link>
             ) : (
-                <div style={{display: "flex", alignItems: "center", marginLeft: "2em"}}>
-                    <Link to={`/add-floor-plan/${abbreviation}`}
-                          className="libraryLink" style={{width: "95%"}}>
+
+                <Link to={`/add-floor-plan/${abbreviation}`}
+                      className="libraryLink">
+                    <div className='library-container'>
                         <div className="library">
                             <div className="library__info1">
                                 <div className="library__info-left">
@@ -68,10 +72,10 @@ const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, labe
 
                             </div>
                         </div>
-                    </Link>
-                    <img src={SaveIcon} alt="Preglej nadstropje" onClick={() => saveToAllLibraries()}
-                         style={{marginLeft: "auto", cursor: "pointer"}}/>
-                </div>
+                        <SquareButton disabled={true} text='Objavi knjižnico' onClick={() => saveToAllLibraries()}/>
+                    </div>
+                </Link>
+
 
             )}
         </>

@@ -7,6 +7,9 @@ import {LibraryContext, LibraryContextType, ServerRoute} from "../context/librar
 import {libraryApi} from "../context/axios";
 import BackButton from '../assets/2d-modeling_page/icons8-back-50.png'
 import Button from "../components/Button";
+import LeftArrowImage from '../assets/left-arrow.png'
+import PlusImage from '../assets/plus.png'
+import '../styles/landing_page/Header.css'
 
 export type LibraryDataType = {
     section: string,
@@ -16,12 +19,7 @@ export type LibraryDataType = {
 
 const LibrarySelectionPage = () => {
     const [open, setOpen] = useState<boolean>(false);
-    const ref = useRef<boolean>(false);
-    const location = useLocation();
     const navigate = useNavigate();
-
-
-    ref.current = location?.pathname?.match(/\//g)!.length > 1;
 
     const {
         getLibraryData,
@@ -46,30 +44,19 @@ const LibrarySelectionPage = () => {
         <>
             <Modal open={open} onClose={() => setOpen(!open)} addLibrary={saveLibraryInfo}/>
 
-            <div className="libSelPage">
+            <div className="libSelPage header">
+                <div className='libSelPage_header'>
+                    <Button onClick={() => navigate("/")} image={LeftArrowImage} style={{position: 'relative'}}/>
+                    <h2>Vse knjižnice</h2>
+                    <Button onClick={() => setOpen(true)} image={PlusImage} style={{position: 'relative'}}/>
+                </div>
                 <div className="libSelPage_body">
-                    <div className="libSelPage_body_container">
-                        <div className="backButton" onClick={() => navigate("/")}><img src={BackButton} alt="back"/>
-                        </div>
-                        <h2>Vse knjižnice</h2>
-                        <hr className="libSelPage_body_divider"/>
-                        <div className="libSelPage_body_libraryCollection">
-                            {libraryData?.map((library: LibraryDataType, index: number) => (
-                                <Library key={index} {...library}/>
-                            ))}
-                        </div>
-                        <div className="libSelPageAdd" onClick={() => setOpen(true)}>
-                            <svg aria-hidden="true" focusable="false" role="img" viewBox="0 0 448 512"
-                                 className="libSelPageAddButton">
-                                <path fill="currentColor"
-                                      d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
-                            </svg>
-                        </div>
-                    </div>
+                    {libraryData?.map((library: LibraryDataType, index: number) => (
+                        <Library key={index} {...library}/>
+                    ))}
                 </div>
             </div>
-
-
+            
         </>
     );
 };

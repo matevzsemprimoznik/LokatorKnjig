@@ -4,6 +4,7 @@ import {AuthContext} from '../context/authContext';
 import LibrarySelectionPage from "./LibrarySelectionPage";
 import {Loading} from "../components/Loading";
 import Header from "../components/landing_page/Header";
+import Footer from "../components/landing_page/Footer";
 
 const AddFloorPlan = () => {
     const location = useLocation();
@@ -13,7 +14,7 @@ const AddFloorPlan = () => {
 
     if (isAuth == null) return <><Header/><Loading/></>
     if (!isAuth) return <Navigate to='/login' replace state={{from: location}}/>;
-    return <><Header/><LibrarySelectionPage/></>;
+    return <><Header/><LibrarySelectionPage/><Footer/></>;
 };
 
 export default AddFloorPlan;
