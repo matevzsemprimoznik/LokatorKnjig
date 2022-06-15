@@ -15,14 +15,14 @@ import useSWR from 'swr'
 export type LibraryDataType = {
     section: string,
     abbreviation: string,
-    hasNewData: boolean
+    updated: boolean
 }
 
 const LibrarySelectionPage = () => {
     const [open, setOpen] = useState<boolean>(false);
     const navigate = useNavigate();
     const [libraryData, setLibraryData] = useState<any>([])
-    const {data} = useSWR(`/editor/`, fetcher)
+    const {data} = useSWR(`/editor/allLibraries`, fetcher)
 
 
     useEffect(() => {
@@ -43,10 +43,11 @@ const LibrarySelectionPage = () => {
             return {
                 section: library.section,
                 abbreviation: library.abbreviation,
-                hasNewData: library.nekaj
+                updated: library.updated
             }
         })
     }
+
 
     return (
         <>
@@ -54,9 +55,11 @@ const LibrarySelectionPage = () => {
 
             <div className="libSelPage header">
                 <div className='libSelPage_header'>
-                    <Button onClick={() => navigate("/")} image={LeftArrowImage} style={{position: 'relative'}}/>
+                    <Button onClick={() => navigate("/")} image={LeftArrowImage}
+                            style={{position: 'relative', width: '3.5rem', height: '3.5rem'}}/>
                     <h2>Vse knjižnice</h2>
-                    <Button onClick={() => setOpen(true)} image={PlusImage} style={{position: 'relative'}}/>
+                    <Button onClick={() => setOpen(true)} image={PlusImage}
+                            style={{position: 'relative', width: '3.5rem', height: '3.5rem'}}/>
                 </div>
                 <div className="libSelPage_body">
                     {libraryData?.map((library: LibraryDataType, index: number) => (
