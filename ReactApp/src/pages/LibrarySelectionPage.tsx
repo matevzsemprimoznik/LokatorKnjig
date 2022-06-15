@@ -4,41 +4,49 @@ import Library from "../components/editing_page/Library";
 import Modal from "../components/Modal";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {LibraryContext, LibraryContextType, ServerRoute} from "../context/libraryContext";
-import {libraryApi} from "../context/axios";
+import {fetcher, libraryApi} from "../context/axios";
 import BackButton from '../assets/2d-modeling_page/icons8-back-50.png'
 import Button from "../components/Button";
 import LeftArrowImage from '../assets/left-arrow.png'
 import PlusImage from '../assets/plus.png'
 import '../styles/landing_page/Header.css'
+import useSWR from 'swr'
 
 export type LibraryDataType = {
     section: string,
     abbreviation: string,
-    desc: string
+    hasNewData: boolean
 }
 
 const LibrarySelectionPage = () => {
     const [open, setOpen] = useState<boolean>(false);
     const navigate = useNavigate();
+    const [libraryData, setLibraryData] = useState<any>([])
+    const {data} = useSWR(`/editor/`, fetcher)
 
-    const {
-        getLibraryData,
-        libraryData,
-    } = useContext(LibraryContext) as LibraryContextType;
 
+    useEffect(() => {
+        if (data)
+            setLibraryData(parseLibraryData(data))
+    }, [data])
 
     const saveLibraryInfo = async (library: LibraryDataType) => {
         try {
             await libraryApi.post(`editor/`, library);
-            getLibraryData(ServerRoute.EDITOR);
         } catch (err) {
             console.log(err);
         }
     }
 
-    useEffect(() => {
-        getLibraryData(ServerRoute.EDITOR);
-    }, [])
+    const parseLibraryData = (libraryData: []) => {
+        return libraryData?.map((library: any) => {
+            return {
+                section: library.section,
+                abbreviation: library.abbreviation,
+                hasNewData: library.nekaj
+            }
+        })
+    }
 
     return (
         <>
@@ -56,7 +64,7 @@ const LibrarySelectionPage = () => {
                     ))}
                 </div>
             </div>
-            
+
         </>
     );
 };

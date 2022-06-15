@@ -48,6 +48,15 @@ const FloorAndSpaces = () => {
         setFloorIndex(index);
     }
 
+    const getFloorData = (libraryData: [], abbr: string) => {
+        const library = libraryData?.filter((library: any) => library.abbreviation === abbr)[0] as any
+        return library.floors
+    }
+    const getSpaceData = (floors: any, floorIndex: number) => {
+        const floor = floors.filter((floor: any) => floor.label === floorIndex)[0] as any
+        return floor.rooms
+    }
+
     if (isAuth == null) return <><Header/><Loading/></>
     if (!isAuth) return <Navigate to='/login' replace state={{from: location}}/>;
 

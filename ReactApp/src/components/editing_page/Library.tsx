@@ -12,7 +12,7 @@ import floorAndSpaces from "../../pages/FloorAndSpaces";
 type LibraryPropsType = {
     section?: string,
     abbreviation?: string,
-    desc?: string,
+    hasNewData?: boolean,
     floor?: number,
     label?: string,
     abbr?: string,
@@ -20,7 +20,7 @@ type LibraryPropsType = {
     floorIndex?: number,
 }
 
-const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, label, changeFloor, floorIndex}) => {
+const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, hasNewData, label, changeFloor, floorIndex}) => {
     const [open, setOpen] = useState<boolean>(false);
     const navigate = useNavigate();
 
@@ -72,7 +72,8 @@ const Library: FC<LibraryPropsType> = ({floor, section, abbreviation, desc, labe
 
                             </div>
                         </div>
-                        <SquareButton disabled={true} text='Objavi knjižnico' onClick={() => saveToAllLibraries()}/>
+                        <SquareButton disabled={hasNewData} text='Objavi knjižnico'
+                                      onClick={() => saveToAllLibraries()}/>
                     </div>
                 </Link>
 
