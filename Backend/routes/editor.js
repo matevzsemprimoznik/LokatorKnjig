@@ -197,7 +197,7 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
         //console.log(library, uploadedLibrary)
 
         const arr = []
-        await library.file[1].bookshelves.sort(
+        await library.file[2].bookshelves.sort(
             function (a, b) {
                 if (a.position.z === b.position.z) {
                     // Price is only important when cities are the same
@@ -233,12 +233,12 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
         await processLineByLine()
 
 
-        library.file[1].bookshelves = library.file[1].bookshelves.map((b, index) => {
+        library.file[2].bookshelves = library.file[2].bookshelves.map((b, index) => {
             console.log(arr[index])
             return {...b, udks: [...arr[index]]}
         })
         setTimeout(() => {
-            console.log(library.file[1].bookshelves[0].udks)
+            console.log(library.file[2].bookshelves[0].udks)
             const newLibrary = new Library({
                 "section": library.section,
                 "abbreviation": library.abbreviation,
