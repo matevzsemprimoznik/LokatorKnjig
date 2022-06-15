@@ -14,6 +14,71 @@ router.get('/', async (req, res) => {
     }
 });
 
+//get all floors and spaces according to library, get all libraries
+router.get('/allLibraries', async (req, res) => {
+    try {
+        const librariesEditor = await LibraryEditor.find({}, 'section abbreviation file -_id');
+        const publishedLibraries = await Library.find({}, 'abbreviation file -_id');
+
+        let result = [];
+
+        if(librariesEditor) {
+
+            //go through each library, for each library we want to have one json object in the final array
+            for (let library of librariesEditor) {
+                let allFloors = library.file.map(room => room.floor);
+
+                //get unique floors of current library
+                const uniqueFloors = [...new Set(allFloors)];
+                uniqueFloors.sort();
+
+                let floorsWithSpaces = [];
+
+                //go through all floors of library to get spaces of that floor
+                for (const floor of uniqueFloors) {
+                    let spaces = library.file.filter(room => (room.floor == floor)).map(room => room.label);
+
+                    let currentFloor = {
+                        "label": floor,
+                        "rooms": spaces
+                    }
+
+                    floorsWithSpaces.push(currentFloor);
+                }
+                let updated;
+
+                let currentPublishedIndex = publishedLibraries.findIndex(publishedLibrary => (publishedLibrary.abbreviation == library.abbreviation));
+
+                if(currentPublishedIndex != -1) {
+                    if(publishedLibraries[currentPublishedIndex].file.length == library.file.length) {
+                        updated = false;
+                    } else {
+                        updated = true;
+                    }
+                } else {
+                    updated = true;
+                }
+
+                let currentResult = {
+                    "section": library.section,
+                    "abbreviation": library.abbreviation,
+                    "floors": floorsWithSpaces,
+                    "updated": updated
+                }
+
+                result.push(currentResult);
+            }
+
+            return res.status(200).json(result);
+        } else {
+            return res.json("There are no libraries to display");
+        }
+
+    } catch (err) {
+        return res.status(500).json("The server could not provide data specified.");
+    }
+})
+
 //get all floors and spaces of editor library
 router.get('/:abbreviation/floors-and-spaces', async (req, res) => {
     try {
@@ -139,7 +204,6 @@ router.post('/:abbreviation', async (req, res) => {
             return res.json(result);
         }
     } catch (err) {
-        console.log(err)
         res.status(500).json("The server could not add data specified");
     }
 });
@@ -190,8 +254,6 @@ router.post('/newLibrary/:abbreviation', async (req, res) => {
             locale: "sl",
             strength: 1
         });
-
-        console.log(library, uploadedLibrary)
 
         if (library != null && uploadedLibrary === null) {
 

@@ -21,7 +21,10 @@ router.get('/:abbreviation/:udk', async (req, res) => {
             let result = file.filter(room => (room.floor === space[0].floor));
             return res.json(result);
         } else {
-            let result = file.filter(room => (room.floor === 0));
+            let allFloors = file.map(room => room.floor);
+            allFloors.sort();
+
+            let result = file.filter(room => (room.floor === allFloors[0]));
             return res.json(result);
         }
     } catch (err) {
@@ -36,8 +39,10 @@ router.get('/:abbreviation', async (req, res) => {
 
         const file = await queryResult.file;
 
-        let floor = file[0].floor;
-        let result = file.filter(room => (room.floor === floor));
+        let allFloors = file.map(room => room.floor);
+        allFloors.sort();
+        let result = file.filter(room => (room.floor === allFloors[0]));
+
         return res.json(result);
     } catch (err) {
         return res.status(500).json("The server could not provide data specified");
