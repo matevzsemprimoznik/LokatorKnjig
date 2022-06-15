@@ -1,0 +1,26 @@
+Lokator
+
+Lokator knjig je projekt/rešitev, s katero lahko oseba v knjižnici lažje najde svojo želeno knjigo.
+
+Leto izdelave: 2022
+
+Davorin Drozg
+Matevž Semprimožnik
+Zala Lahovnik
+
+Domača stran: https://lokator-knjig.herokuapp.com/
+
+Koda: https://github.com/matevzsemprimoznik/LokatorKnjig
+
+Kategorizacija: spletna aplikacija
+
+Oznake: ReactJS, MongoDB, NodeJS, AgilenRazvoj, GitHub, Express, Docker, Nginx, REST.
+
+Opis projekta:
+Lokator knjig je projekt/rešitev, s katero lahko oseba v knjižnici lažje najde svojo želeno knjigo. 
+Knjigo najdete s pomočjo njenega UDK (Univerzalna Decimalna Klasifikacija). 
+Uporabniku se nato prikaže grafični prikaz izbrane knjižnice, kjer je označena približna lokacija knjige.
+Naša rešitev omogoča tudi iskanje posameznega udk-ja, hkrati je povezana s cobissom, preko katerega lahko pridemo do grafičnega prikaza
+posamezne knjižnice.
+Naša spletna stran omogoča tudi preprosto brskanje skozi posamezne knjižnice, ki so že zmodelirane.
+Knjižničarjem omogoča tudi enostavno modeliranje prostorov knjižnice in njihovo postavitev v nadstropja.

@@ -8,7 +8,8 @@
     margin-left: 10px;
     color: white;
 }
-.drawer-button img{
+
+.drawer-button img {
     width: 27px;
 }
 
@@ -29,6 +30,7 @@
     display: flex;
     align-items: start;
 }
+
 .drawer-info-header div {
     flex: 1;
     display: flex;
@@ -40,16 +42,26 @@
     width: 100%;
 }
 
-.drawer-info-body{
+.drawer-info-body {
     padding: 20px;
 }
 
-.drawer-body-element{
+.drawer-body-element {
     background-color: #2a2d35;
     border-radius: 7px;
     padding: 10px 15px;
+    margin-bottom: 6px;
 }
-.drawer-body-element:hover{
+
+.drawer-body-element-active {
+    border: 1px solid #8787e1;
+    background-color: #2a2d35;
+    border-radius: 7px;
+    padding: 10px 15px;
+    margin-bottom: 6px;
+}
+
+.drawer-body-element:hover, .drawer-body-element-active:hover {
     background-color: #2a2d35;
     border-radius: 7px;
     padding: 10px 15px;
@@ -81,11 +93,11 @@
     z-index: 10;
 }
 
-.drawer-close{
+.drawer-close {
     transform: translateX(-110%);
 }
 
-.drawer-open{
+.drawer-open {
     transform: translateX(0%);
 }
 
@@ -101,9 +113,8 @@
 /*    z-index: 999;*/
 /*}*/
 
-@media screen and (max-width: 1200px){
+@media screen and (max-width: 1200px) {
     .drawer {
-        background: #fff;
         width: 100%;
         height: 100%;
         overflow: hidden;

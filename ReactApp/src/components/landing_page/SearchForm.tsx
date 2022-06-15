@@ -1,19 +1,33 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
 import '../../styles/landing_page/SearchForm.css';
+import {LibraryContext} from "../../context/libraryContext";
+import DatalistInput, {Item} from "react-datalist-input";
+
 
 const SearchForm = () => {
+    const {libraryData} = useContext(LibraryContext);
     const [searchedUDK, setSearchedUDK] = React.useState("");
+    const [library, setLibrary] = React.useState("");
     let navigate = useNavigate();
 
     const handleUDKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchedUDK(e.currentTarget.value);
     }
+    const handleLibraryChange = (item: Item) => {
+        setLibrary(item.id);
+    }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        let link = "/library-model/" + searchedUDK;
+        let link = "/library-model/" + library + "?udk=" + searchedUDK;
         navigate(link);
     }
+
+    useEffect(() => {
+        if (libraryData.length != 0) {
+            setLibrary(libraryData[0].abbreviation);
+        }
+    }, [libraryData])
 
     return (
         <div className="search-form">
@@ -24,7 +38,14 @@ const SearchForm = () => {
                         placeholder="Išči po UDK..."
                         onChange={handleUDKChange}
                     />
-                    <input type="submit" value="Išči"/>
+
+                    <DatalistInput
+                        placeholder="Knjižnica"
+                        label={null}
+                        onSelect={handleLibraryChange}
+                        items={libraryData.map((library: any) => {return {id: library.abbreviation, value: library.section}})}
+                    />
+                    <input type="submit" value="Išči" className='search-form-button'/>
                 </form>
             </div>
         </div>

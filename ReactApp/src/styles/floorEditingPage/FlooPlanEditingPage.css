@@ -1,0 +1,21 @@
+.draggable{
+    position: relative;
+}
+.draggable button{
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+}
+.draggable button:active{
+    opacity: 0.6;
+}
+.draggable button img{
+    width: 30px;
+    height: 30px;
+}
