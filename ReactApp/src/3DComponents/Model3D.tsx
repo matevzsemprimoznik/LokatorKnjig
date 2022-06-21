@@ -18,8 +18,7 @@ import * as THREE from "three";
 import {FontLoader} from "three/examples/jsm/loaders/FontLoader";
 import Roboto from "../assets/Roboto_Bold.json";
 import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry";
-import {getTextGeoClone, numberOfDifferentSigns, textMaterial, textSize} from "../utils/textGeometry";
-import {geo0, geo1, materialForText} from "../utils/textBuilder";
+import {generateGeometriesForNumbers, size, textMaterial} from "../utils/textBuilder";
 
 
 interface BookshelvesProps {
@@ -76,8 +75,6 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
         const bookshelfGeometry = bookshelfNodes.Cube.geometry
         const closeBookshelfGeometry = bookshelfNodes.Cube.geometry
         const selectedBookshelfGeometry = bookshelfNodes.Cube.geometry
-        const font = new FontLoader().parse(Roboto);
-
 
         const bookshelfGeometryIndex = 0
         const closeBookshelfGeometryIndex = 1
@@ -98,12 +95,11 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
             {
                 geometries: [] as BufferGeometry[],
                 materials: selectedBookshelfMaterials
-            }, ...[...Array(numberOfDifferentSigns)].map(() => {
-                return {
-                    geometries: [] as BufferGeometry[],
-                    materials: textMaterial
-                }
-            })
+            },
+            {
+                geometries: [] as BufferGeometry[],
+                materials: textMaterial
+            },
         ]
         console.log(initialReduceData)
         const bookshelves = roomData.bookshelves.reduce((array, bookshelf, index) => {
@@ -135,16 +131,20 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
             geometry.type.applyMatrix4(translationMatrix);
 
             array[geometry.index].geometries = [geometry.type, ...array[geometry.index].geometries];
-            /*            if (bookshelf.udks && bookshelf.udks.length !== 0) {
-                            const splittedFirstUdk = bookshelf.udks[0].toString().split('')
-                            splittedFirstUdk.map((sign, index) => {
-                                const offset = index * textSize - splittedFirstUdk.length / 2 * 0.1
-                                const textGeometry = getTextGeoClone(sign)
-                                textGeometry.geometry.applyMatrix4(rotationMatrix)
-                                textGeometry.geometry.applyMatrix4(new Matrix4().makeTranslation(position.x / 20 + offset, position.y, position.z / 20));
-                                array[textGeometry.index + 3].geometries = [textGeometry.geometry, ...array[textGeometry.index + 3].geometries]
-                            })
-                        }*/
+            if (bookshelf.udks && bookshelf.udks.length !== 0) {
+                const splittedFirstUdk = bookshelf.udks[0].toString().split('')
+                const udkGeometries = splittedFirstUdk.map((sign, index) => {
+                    const offset = index * (size.height * 1.4) - splittedFirstUdk.length / 2 * (size.height * 1.4)
+                    const textGeometry = generateGeometriesForNumbers(sign)
+                    textGeometry.applyMatrix4(new Matrix4().makeTranslation(offset, 0, 0));
+                    return textGeometry.clone()
+                })
+                const mergedUdkGeometry = mergeBufferGeometries(udkGeometries)
+                mergedUdkGeometry.applyMatrix4(rotationMatrix)
+                mergedUdkGeometry.applyMatrix4(translationMatrix)
+                array[textIndex].geometries = [mergedUdkGeometry, ...array[textIndex].geometries]
+
+            }
 
             return array;
         }, initialReduceData);
@@ -183,11 +183,6 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
                 geometry={bookshelfGeometry.geometry}
                 material={bookshelfGeometry.material}></mesh>
             )}
-            {/*<mesh
-
-                geometry={mergeBufferGeometries([geo1.applyMatrix4(new Matrix4().makeTranslation(0.1, 0, 0)), geo0])}
-                material={materialForText}
-                position={[0, 2, 0]}></mesh>*/}
 
 
             <Ground
