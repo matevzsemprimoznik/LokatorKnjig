@@ -1,22 +1,39 @@
-import React, {FC, memo, useEffect, useRef} from 'react';
+import React, {FC, memo, useEffect, useRef, useState} from 'react';
 import BookshelfPiece from './BookshelfPiece';
 import bookshelfGLB from '../assets/bookshelf.glb';
-import closeBookshelf from '../assets/closeBookshelf.glb';
-import selectedBookshelf from '../assets/selectedBookshelf.glb';
+import closeBookshelfGLB from '../assets/closeBookshelf.glb';
+import selectedBookshelfGLB from '../assets/selectedBookshelf.glb';
 import Ground from './Ground';
 import {ThreeEvent} from 'react-three-fiber';
 import {Bookshelf, Position, Room} from '../models/library';
 import EntranceText from './EntranceText';
 import Entrance from "./Entrance";
 import ground from "./Ground";
+import {useGLTF} from "@react-three/drei";
+import {BufferGeometry, Matrix4} from "three";
 
-interface BookShelfsProps {
+import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils';
+import {Geometry} from "three/examples/jsm/deprecated/Geometry";
+import * as THREE from "three";
+import {FontLoader} from "three/examples/jsm/loaders/FontLoader";
+import Roboto from "../assets/Roboto_Bold.json";
+import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry";
+import {getTextGeoClone, numberOfDifferentSigns, textMaterial, textSize} from "../utils/textGeometry";
+import {geo0, geo1, materialForText} from "../utils/textBuilder";
+
+
+interface BookshelvesProps {
     selectedUDK: string;
     moveCameraToDoubleClickedPoint: (event: ThreeEvent<MouseEvent>) => void;
     roomData: Room;
 }
 
-const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDoubleClickedPoint}) => {
+const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubleClickedPoint}) => {
+    const {nodes: bookshelfNodes, materials: bookshelfMaterials}: any = useGLTF(bookshelfGLB);
+    const {nodes: selectedBookshelfNodes, materials: selectedBookshelfMaterials}: any = useGLTF(selectedBookshelfGLB);
+    const {nodes: closeBookshelfNodes, materials: closeBookshelfMaterials}: any = useGLTF(closeBookshelfGLB);
+    const [bookshelvesGeometries, setBookshelvesGeometries] = useState<Array<{ geometry: BufferGeometry, material: any }>>([])
+
     const getSelectedUDKPositions = () => {
         const bookshelves = roomData.bookshelves.filter((bookshelf: Bookshelf, index: number) =>
             bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK)
@@ -54,6 +71,98 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
     }
 
     const selectedUDKPositions = getSelectedUDKPositions();
+
+    useEffect(() => {
+        const bookshelfGeometry = bookshelfNodes.Cube.geometry
+        const closeBookshelfGeometry = bookshelfNodes.Cube.geometry
+        const selectedBookshelfGeometry = bookshelfNodes.Cube.geometry
+        const font = new FontLoader().parse(Roboto);
+
+
+        const bookshelfGeometryIndex = 0
+        const closeBookshelfGeometryIndex = 1
+        const selectedBookshelfGeometryIndex = 2
+        const textIndex = 3
+
+        const initialReduceData = [
+            {
+                geometries: [] as BufferGeometry[],
+                materials: bookshelfMaterials
+            }
+            ,
+            {
+                geometries: [] as BufferGeometry[],
+                materials: closeBookshelfMaterials
+            }
+            ,
+            {
+                geometries: [] as BufferGeometry[],
+                materials: selectedBookshelfMaterials
+            }, ...[...Array(numberOfDifferentSigns)].map(() => {
+                return {
+                    geometries: [] as BufferGeometry[],
+                    materials: textMaterial
+                }
+            })
+        ]
+        console.log(initialReduceData)
+        const bookshelves = roomData.bookshelves.reduce((array, bookshelf, index) => {
+            let geometry = {
+                type: bookshelfGeometry.clone(),
+                index: bookshelfGeometryIndex
+            }
+            if (bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK)) {
+                geometry = {type: selectedBookshelfGeometry.clone(), index: selectedBookshelfGeometryIndex}
+            } else if (selectedUDKPositions.some((position: any) => position.x === bookshelf.position.x && position.z === bookshelf.position.z)) {
+                geometry = {type: closeBookshelfGeometry.clone(), index: closeBookshelfGeometryIndex}
+            }
+
+
+            const position = {
+                ...getNewBookshelfPositionsAccordingToAngle(
+                    {
+                        x: bookshelf.position.x,
+                        y: bookshelf.position.y,
+                        z: bookshelf.position.z,
+                    },
+                    -roomData.rotation,
+                    roomData.center
+                ),
+            }
+            const translationMatrix = new Matrix4().makeTranslation(position.x / 20, position.y, position.z / 20)
+            const rotationMatrix = new Matrix4().makeRotationY(((bookshelf.rotation + roomData.rotation) / 180) * Math.PI)
+            geometry.type.applyMatrix4(rotationMatrix);
+            geometry.type.applyMatrix4(translationMatrix);
+
+            array[geometry.index].geometries = [geometry.type, ...array[geometry.index].geometries];
+            /*            if (bookshelf.udks && bookshelf.udks.length !== 0) {
+                            const splittedFirstUdk = bookshelf.udks[0].toString().split('')
+                            splittedFirstUdk.map((sign, index) => {
+                                const offset = index * textSize - splittedFirstUdk.length / 2 * 0.1
+                                const textGeometry = getTextGeoClone(sign)
+                                textGeometry.geometry.applyMatrix4(rotationMatrix)
+                                textGeometry.geometry.applyMatrix4(new Matrix4().makeTranslation(position.x / 20 + offset, position.y, position.z / 20));
+                                array[textGeometry.index + 3].geometries = [textGeometry.geometry, ...array[textGeometry.index + 3].geometries]
+                            })
+                        }*/
+
+            return array;
+        }, initialReduceData);
+
+        const mergedBookshelves = bookshelves.flatMap(bookshelf => {
+            if (bookshelf.geometries.length === 0)
+                return []
+            return [{
+                geometry: mergeBufferGeometries(bookshelf.geometries, true),
+                material: bookshelf.materials['CubeMaterial'] || textMaterial
+            }]
+        })
+        console.log(mergedBookshelves)
+
+        setBookshelvesGeometries(mergedBookshelves)
+    }, [roomData])
+
+
     return (
         <>
             {roomData.entrances.map((entrance, index) => (
@@ -69,77 +178,18 @@ const Model3D: FC<BookShelfsProps> = ({selectedUDK, roomData, moveCameraToDouble
                     }}
                 />
             ))}
-            {roomData.bookshelves.map((bookshelf: Bookshelf, index: number) =>
-                bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK) ? (
-                    <BookshelfPiece
-                        type={selectedBookshelf}
-                        key={index}
-                        position={{
-                            ...getNewBookshelfPositionsAccordingToAngle(
-                                {
-                                    x: bookshelf.position.x,
-                                    y: bookshelf.position.y,
-                                    z: bookshelf.position.z,
-                                },
-                                -roomData.rotation,
-                                roomData.center
-                            ),
-                        }}
-                        udk={bookshelf.udks}
-                        rotation={{
-                            x: 0,
-                            y: ((bookshelf.rotation + roomData.rotation) / 180) * Math.PI,
-                            z: 0,
-                        }}
-                    />
-                ) : selectedUDKPositions.some(
-                    (position: any) => position.x === bookshelf.position.x && position.z === bookshelf.position.z
-                ) ? (
-                    <BookshelfPiece
-                        type={closeBookshelf}
-                        key={index}
-                        position={{
-                            ...getNewBookshelfPositionsAccordingToAngle(
-                                {
-                                    x: bookshelf.position.x,
-                                    y: bookshelf.position.y,
-                                    z: bookshelf.position.z,
-                                },
-                                -roomData.rotation,
-                                roomData.center
-                            ),
-                        }}
-                        rotation={{
-                            x: 0,
-                            y: ((bookshelf.rotation + roomData.rotation) / 180) * Math.PI,
-                            z: 0,
-                        }}
-                        udk={bookshelf.udks}
-                    />
-                ) : (
-                    <BookshelfPiece
-                        type={bookshelfGLB}
-                        key={index}
-                        position={{
-                            ...getNewBookshelfPositionsAccordingToAngle(
-                                {
-                                    x: bookshelf.position.x,
-                                    y: bookshelf.position.y,
-                                    z: bookshelf.position.z,
-                                },
-                                -roomData.rotation,
-                                roomData.center
-                            ),
-                        }}
-                        rotation={{
-                            x: 0,
-                            y: ((bookshelf.rotation + roomData.rotation) / 180) * Math.PI,
-                            z: 0,
-                        }}
-                        udk={bookshelf.udks}
-                    />
-                )
+            {bookshelvesGeometries && bookshelvesGeometries.map((bookshelfGeometry, index) => <mesh
+                key={index}
+                geometry={bookshelfGeometry.geometry}
+                material={bookshelfGeometry.material}></mesh>
             )}
+            {/*<mesh
+
+                geometry={mergeBufferGeometries([geo1.applyMatrix4(new Matrix4().makeTranslation(0.1, 0, 0)), geo0])}
+                material={materialForText}
+                position={[0, 2, 0]}></mesh>*/}
+
+
             <Ground
                 position={{x: 0 + roomData.center.x, y: 0.05 + roomData.center.y, z: 0 + roomData.center.z}}
                 onDoubleClick={moveCameraToDoubleClickedPoint}
