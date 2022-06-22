@@ -1,24 +1,15 @@
 import React, {FC, memo, useEffect, useRef, useState} from 'react';
-import BookshelfPiece from './BookshelfPiece';
 import bookshelfGLB from '../assets/bookshelf.glb';
 import closeBookshelfGLB from '../assets/closeBookshelf.glb';
 import selectedBookshelfGLB from '../assets/selectedBookshelf.glb';
 import Ground from './Ground';
 import {ThreeEvent} from 'react-three-fiber';
 import {Bookshelf, Position, Room} from '../models/library';
-import EntranceText from './EntranceText';
 import Entrance from "./Entrance";
-import ground from "./Ground";
 import {useGLTF} from "@react-three/drei";
-import {BufferGeometry, Matrix4} from "three";
-
+import {BufferGeometry, BufferGeometryLoader, Matrix4} from "three";
 import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils';
-import {Geometry} from "three/examples/jsm/deprecated/Geometry";
-import * as THREE from "three";
-import {FontLoader} from "three/examples/jsm/loaders/FontLoader";
-import Roboto from "../assets/Roboto_Bold.json";
-import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry";
-import {generateGeometriesForNumbers, size, textMaterial} from "../utils/textBuilder";
+import {generateTextGeometry, size, textMaterial} from "../utils/textBuilder";
 
 
 interface BookshelvesProps {
@@ -31,7 +22,7 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
     const {nodes: bookshelfNodes, materials: bookshelfMaterials}: any = useGLTF(bookshelfGLB);
     const {nodes: selectedBookshelfNodes, materials: selectedBookshelfMaterials}: any = useGLTF(selectedBookshelfGLB);
     const {nodes: closeBookshelfNodes, materials: closeBookshelfMaterials}: any = useGLTF(closeBookshelfGLB);
-    const [bookshelvesGeometries, setBookshelvesGeometries] = useState<Array<{ geometry: BufferGeometry, material: any }>>([])
+    const [bookshelvesGeometries, setBookshelvesGeometries] = useState<Array<{ geometry: any, material: any }>>([])
 
     const getSelectedUDKPositions = () => {
         const bookshelves = roomData.bookshelves.filter((bookshelf: Bookshelf, index: number) =>
@@ -56,7 +47,6 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
             y: position.y + roomCenter.y,
             z: -position.x * Math.sin(angle) + position.z * Math.cos(angle) + roomCenter.z,
         };
-
         return newPosition;
     };
 
@@ -101,7 +91,7 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
                 materials: textMaterial
             },
         ]
-        console.log(initialReduceData)
+
         const bookshelves = roomData.bookshelves.reduce((array, bookshelf, index) => {
             let geometry = {
                 type: bookshelfGeometry.clone(),
@@ -125,30 +115,25 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
                     roomData.center
                 ),
             }
+
             const translationMatrix = new Matrix4().makeTranslation(position.x / 20, position.y, position.z / 20)
             const rotationMatrix = new Matrix4().makeRotationY(((bookshelf.rotation + roomData.rotation) / 180) * Math.PI)
+
             geometry.type.applyMatrix4(rotationMatrix);
             geometry.type.applyMatrix4(translationMatrix);
 
             array[geometry.index].geometries = [geometry.type, ...array[geometry.index].geometries];
+
             if (bookshelf.udks && bookshelf.udks.length !== 0) {
-                const splittedFirstUdk = bookshelf.udks[0].toString().split('')
-                const udkGeometries = splittedFirstUdk.map((sign, index) => {
-                    const offset = index * (size.height * 1.4) - splittedFirstUdk.length / 2 * (size.height * 1.4)
-                    const textGeometry = generateGeometriesForNumbers(sign)
-                    textGeometry.applyMatrix4(new Matrix4().makeTranslation(offset, 0, 0));
-                    return textGeometry.clone()
-                })
-                const mergedUdkGeometry = mergeBufferGeometries(udkGeometries)
-                mergedUdkGeometry.applyMatrix4(rotationMatrix)
-                mergedUdkGeometry.applyMatrix4(translationMatrix)
-                array[textIndex].geometries = [mergedUdkGeometry, ...array[textIndex].geometries]
+                const textGeometry = generateTextGeometry(bookshelf.udks[0].toString())
+                textGeometry.applyMatrix4(rotationMatrix)
+                textGeometry.applyMatrix4(translationMatrix)
+
+                array[textIndex].geometries = [textGeometry, ...array[textIndex].geometries]
 
             }
-
             return array;
         }, initialReduceData);
-
         const mergedBookshelves = bookshelves.flatMap(bookshelf => {
             if (bookshelf.geometries.length === 0)
                 return []
@@ -157,9 +142,8 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
                 material: bookshelf.materials['CubeMaterial'] || textMaterial
             }]
         })
-        console.log(mergedBookshelves)
-
         setBookshelvesGeometries(mergedBookshelves)
+
     }, [roomData])
 
 
