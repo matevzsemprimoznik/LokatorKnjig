@@ -8,3 +8,5 @@ export const libraryApi = Axios.create({
         Accept: 'application/json',
     },
 });
+
+export const fetcher = (url: string) => libraryApi.get(url).then(res => res.data)

@@ -1,17 +1,44 @@
+.library-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px 5px rgb(131 131 131 / 4%);
+    padding: 20px 10px;
+    border-radius: 10px;
+    align-items: center;
+
+}
+
+.library-container:hover {
+    box-shadow: 0 0 8px 5px rgb(131 131 131 / 15%);
+}
+
 .library {
     display: flex;
     padding: 5px;
     cursor: pointer;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
     flex-direction: column;
 }
+
+.floors-spaces {
+    display: flex;
+    padding: 5px;
+    cursor: pointer;
+    flex-direction: column;
+    border-radius: 10px;
+    margin: 10px;
+    box-shadow: 0 0 5px 3px rgb(131 131 131 / 4%);
+}
+
 .library-active {
     display: flex;
     padding: 5px;
     cursor: pointer;
-    background-color: #f8f6f6;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
     flex-direction: column;
+    border-radius: 10px;
+    margin: 10px;
+    box-shadow: 0 0 5px 3px rgb(131 131 131 / 4%);
+    background-color: rgba(230, 230, 230, 0.69);
 }
 
 .libraryLink {
@@ -19,9 +46,6 @@
     color: inherit;
 }
 
-.library:hover {
-    background-color: #f8f6f6;
-}
 
 .library__info > h2 {
     font-size: 1.2em;
@@ -36,11 +60,12 @@
 }
 
 
-.library__info > a >img {
+.library__info > a > img {
     color: black;
     object-fit: contain;
     height: 1.2em;
 }
+
 .library__info1 {
     margin: 0 25px;
     display: flex;
@@ -49,8 +74,26 @@
 }
 
 
-.library__info1  > img {
+.library__info1 > img {
     color: black;
     object-fit: contain;
     height: 2em;
+}
+
+.library-button {
+    border-radius: 8px;
+    padding: 10px 13px;
+    font-size: 15px;
+    font-family: "Poppins", sans-serif;
+    border: transparent 2px solid;
+    cursor: pointer;
+    color: #fff;
+    background-color: #00a6fb;
+    margin-right: 20px;
+}
+
+.library-button:disabled {
+    background-color: #a7a7a7;
+    opacity: 0.6;
+    cursor: not-allowed;
 }

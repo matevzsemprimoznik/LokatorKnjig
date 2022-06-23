@@ -49,7 +49,6 @@ const Model: FC<ModelProps> = ({selected, modelType, setModelType, floorData}) =
         })
         if (roomWithSelectedUdk.length !== 0 && roomWithSelectedUdk[0].entrances.length !== 0) {
             const position = {...roomWithSelectedUdk[0].entrances[0].position, y: 2}
-            console.log(position)
             targetCameraPosition.current = {
                 x: (position.x + roomWithSelectedUdk[0].center.x) / 20,
                 y: position.y + roomWithSelectedUdk[0].center.y,

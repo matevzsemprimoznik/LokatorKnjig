@@ -1,18 +1,18 @@
 .search-form {
-    background-color: #f0f1f6;
+    background-color: white;
+    box-shadow: 0 8px 10px -8px #00a6fb;
 }
 
 .search-form form {
     padding: 50px;
     border-radius: 15px;
-    background-color: #8787e1;
-    background-image: url(../../../public/images/bg-wave1.svg);
     background-size: cover;
     background-position: center;
     display: grid;
     grid-template-columns: 1fr 1fr 180px;
     gap: 20px;
     transform: translateY(-75px);
+    border: 3px solid #232027
 }
 
 .search-form form input {
@@ -22,12 +22,13 @@
     font-family: "Poppins", sans-serif;
     width: 100%;
     border: transparent 2px solid;
+    background-color: rgba(234, 234, 234, 0.9);
 }
 
-.search-form-button{
+.search-form-button {
     cursor: pointer;
     color: #fff;
-    background-color: #2acfcf;
+    background-color: #00a6fb !important;
 }
 
 
@@ -45,11 +46,12 @@
     font-family: "Poppins", sans-serif;
 }
 
-.react-datalist-input__container{
+.react-datalist-input__container {
     position: relative;
 
 }
-.react-datalist-input__listbox{
+
+.react-datalist-input__listbox {
     position: absolute;
     left: 0;
     right: 0;
@@ -59,14 +61,16 @@
     border-radius: 5px;
     padding: 0;
 }
-.react-datalist-input__listbox-option{
-    padding: 11px 20px ;
+
+.react-datalist-input__listbox-option {
+    padding: 11px 20px;
 }
-.react-datalist-input__listbox-option:hover{
+
+.react-datalist-input__listbox-option:hover {
     background-color: rgba(0, 0, 0, 0.02);
 }
 
-.react-datalist-input__listbox-option mark{
+.react-datalist-input__listbox-option mark {
     background-color: inherit;
 }
 
