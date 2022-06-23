@@ -28,10 +28,12 @@ const FloorAndSpaces = () => {
     useEffect(() => {
         if (data && abbr) {
             const floors = parseFloorData(data, abbr)
-            const spaces = parseSpaceData(floors, floors[0].label)
             setFloors(floors)
-            setSpaces(spaces)
-            setFloorIndex(floors[0].label)
+            if (floors.length !== 0) {
+                const spaces = parseSpaceData(floors, floors[0].label)
+                setSpaces(spaces)
+                setFloorIndex(floors[0].label)
+            }
         }
     }, [data])
     useEffect(() => {
@@ -66,17 +68,17 @@ const FloorAndSpaces = () => {
                 <div></div>
             </div>
             <div className="libSelPage_body libSelPage_body_grid">
-                <div className="libSelPage_body_libraryCollection">
+                {spaces.length !== 0 ? <div className="libSelPage_body_libraryCollection">
                     {floors.map((floor: any, index: number) => (
                         <Library floor={floor.label} key={index} abbreviation={abbr}
                                  changeFloor={changeFloorIndex} floorIndex={floorIndex}/>
                     ))}
-                </div>
-                <div className="libSelPage_body_libraryCollection">
-                    {spaces?.map((space: any, index: number) => (
+                </div> : <p style={{textAlign: "center"}}>Ta knjižnica nima nadstropij</p>}
+                {spaces.length !== 0 ? <div className="libSelPage_body_libraryCollection">
+                    {spaces.map((space: any, index: number) => (
                         <Library label={space} key={index} abbreviation={abbr}/>
                     ))}
-                </div>
+                </div> : <p style={{textAlign: "center"}}>Ta knjižnica nima prostorov</p>}
 
             </div>
             <div style={{display: 'flex', justifyContent: 'end'}}>

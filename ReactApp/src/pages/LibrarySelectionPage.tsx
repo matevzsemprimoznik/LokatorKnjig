@@ -22,10 +22,11 @@ const LibrarySelectionPage = () => {
     const [open, setOpen] = useState<boolean>(false);
     const navigate = useNavigate();
     const [libraryData, setLibraryData] = useState<any>([])
-    const {data} = useSWR(`/editor/allLibraries`, fetcher)
+    const {data, mutate} = useSWR(`/editor/allLibraries`, fetcher)
 
 
     useEffect(() => {
+        console.log(data)
         if (data)
             setLibraryData(parseLibraryData(data))
     }, [data])
@@ -33,6 +34,7 @@ const LibrarySelectionPage = () => {
     const saveLibraryInfo = async (library: LibraryDataType) => {
         try {
             await libraryApi.post(`editor/`, library);
+            await mutate()
         } catch (err) {
             console.log(err);
         }
