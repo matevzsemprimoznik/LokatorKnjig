@@ -5,7 +5,7 @@ import selectedBookshelfGLB from '../assets/selectedBookshelf.glb';
 import Ground from './Ground';
 import {ThreeEvent} from 'react-three-fiber';
 import {Bookshelf, Position, Room} from '../models/library';
-import Entrance from "./Entrance";
+import Entrances from "./Entrances";
 import {useGLTF} from "@react-three/drei";
 
 import {
@@ -131,13 +131,10 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
             {/* @ts-ignore*/}
             {textMesh && <instancedMesh {...textMesh} />}
 
-            {roomData.entrances.map((entrance, index) => (
-                <Entrance
-                    key={index}
-                    rotation={entrance.rotation + roomData.rotation}
-                    position={entrance.position}
-                />
-            ))}
+            <Entrances
+                entrances={roomData.entrances}
+                position={{x: roomData.center.x / 20, y: roomData.center.y / 20, z: roomData.center.z / 20,}}
+            />
 
 
             {<Ground
