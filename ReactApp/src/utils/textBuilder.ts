@@ -4,123 +4,49 @@ import {mergeBufferGeometries} from "three/examples/jsm/utils/BufferGeometryUtil
 export const textMaterial = new MeshBasicMaterial({color: 'white'});
 export const size = {width: 0.02, height: 0.08, depth: 0.001}
 export const textGeometry = new BoxGeometry(size.width, size.height, size.depth);
-const thinnerSigns = ['.']
 
-export const generateTextGeometry = (text: string) => {
-    const splittedText = text.split('')
-    let offset = -(splittedText.length / 2 * (size.height * 1.4))
+let time = 0
+setTimeout(() => {
+    console.log(time)
+}, 3000)
 
-    const signGeometries = splittedText.map((sign, index) => {
-        const signGeometry = generateSignGeometry(sign)
-        signGeometry.applyMatrix4(new Matrix4().makeTranslation(offset, 0, 0));
+export const generateMatrixForSignGeometry = (sign: string) => {
+    const t0 = performance.now()
 
-        if (thinnerSigns.includes(sign))
-            offset += size.height / 1.5
-        else
-            offset += size.height * 1.4
-
-        return signGeometry.clone()
-    })
-
-    return mergeBufferGeometries(signGeometries)
-}
-
-
-const generateSignGeometry = (sign: string) => {
     const textBuilder = TextBuilderSingleton.getInstance()
-    let geometries = textBuilder.getGeometriesForNumbers()
+    let matrix = textBuilder.getSignMatrix(sign)
 
-    switch (sign) {
-        case '0': {
-            geometries = geometries.filter((element, index) => index !== 6)
-            break
-        }
-        case '1': {
-            geometries = geometries.filter((element, index) => index === 1 || index === 2)
-            break
-        }
-        case '2': {
-            geometries = geometries.filter((element, index) => index !== 2 && index !== 5)
-            break
-        }
-        case '3': {
-            geometries = geometries.filter((element, index) => index !== 4 && index !== 5)
-            break
-        }
-        case '4': {
-            geometries = geometries.filter((element, index) => index !== 0 && index !== 3 && index !== 4)
-            break
-        }
-        case '5': {
-            geometries = geometries.filter((element, index) => index !== 1 && index !== 4)
-            break
-        }
-        case '6': {
-            geometries = geometries.filter((element, index) => index !== 1)
-            break
-        }
-        case '7': {
-            geometries = geometries.filter((element, index) => index === 0 || index === 1 || index === 2)
-            break
-        }
-        case '8': {
-            break
-        }
-        case '9': {
-            geometries = geometries.filter((element, index) => index !== 4)
-            break
-        }
-        case '.': {
-            geometries = textBuilder.getDotGeometries()
-            break
-        }
-        case '(': {
-            geometries = textBuilder.getLeftBracketGeometries()
-            break
-        }
-        case ')': {
-            geometries = textBuilder.getRightBracketGeometries()
-            break
-        }
-        case '=': {
-            geometries = textBuilder.getEqualSignGeometries()
-            break
-        }
-        case ':': {
-            geometries = textBuilder.getColonGeometries()
-            break
-        }
-        case '/': {
-            geometries = textBuilder.getSlashGeometries()
-            break
-        }
-        default: {
-            geometries = geometries.filter((element, index) => index === 6)
-            break
-        }
-    }
+    const t1 = performance.now()
+    time += t1 - t0
 
-    return mergeBufferGeometries(geometries)
+    return matrix
 }
 
 class TextBuilderSingleton {
     private static instance: TextBuilderSingleton | null = null
-    private geometriesForNumbers: BufferGeometry[] = []
-    private geometriesForLeftBracket: BufferGeometry[] = []
-    private geometriesForRightBracket: BufferGeometry[] = []
-    private geometriesForDot: BufferGeometry[] = []
-    private geometriesForEqualSign: BufferGeometry[] = []
-    private geometriesForColon: BufferGeometry[] = []
-    private geometriesForSlash: BufferGeometry[] = []
+    private signsMatrix: any
 
     private constructor() {
-        this.geometriesForNumbers = this.generateNumbersGeometries()
-        this.geometriesForLeftBracket = this.generateLeftBracketGeometry()
-        this.geometriesForRightBracket = this.generateRightBracketGeometry()
-        this.geometriesForDot = this.generateDotGeometry()
-        this.geometriesForEqualSign = this.generateEqualSignGeometry()
-        this.geometriesForColon = this.generateColonGeometry()
-        this.geometriesForSlash = this.generateSlashGeometry()
+        const numbersMatrix = this.generateNumbersGeometries()
+        this.signsMatrix = {
+            '0': numbersMatrix.filter((element, index) => index !== 6),
+            '1': numbersMatrix.filter((element, index) => index === 1 || index === 2),
+            '2': numbersMatrix.filter((element, index) => index !== 2 && index !== 5),
+            '3': numbersMatrix.filter((element, index) => index !== 4 && index !== 5),
+            '4': numbersMatrix.filter((element, index) => index !== 0 && index !== 3 && index !== 4),
+            '5': numbersMatrix.filter((element, index) => index !== 1 && index !== 4),
+            '6': numbersMatrix.filter((element, index) => index !== 1),
+            '7': numbersMatrix.filter((element, index) => index === 0 || index === 1 || index === 2),
+            '8': numbersMatrix,
+            '9': numbersMatrix.filter((element, index) => index !== 4),
+            '.': this.generateDotGeometry(),
+            '(': this.generateLeftBracketMatrix(),
+            ')': this.generateRightBracketMatrix(),
+            '=': this.generateEqualSignGeometry(),
+            '/': this.generateSlashGeometry(),
+            ':': this.generateColonGeometry(),
+            '-': numbersMatrix.filter((element, index) => index === 6)
+        }
     }
 
     public static getInstance = () => {
@@ -128,159 +54,102 @@ class TextBuilderSingleton {
             TextBuilderSingleton.instance = new TextBuilderSingleton()
         return TextBuilderSingleton.instance
     }
-
-    public getGeometriesForNumbers = () => {
-        return this.geometriesForNumbers
-    }
-    public getLeftBracketGeometries = () => {
-        return this.geometriesForLeftBracket
-    }
-    public getRightBracketGeometries = () => {
-        return this.geometriesForRightBracket
-    }
-    public getDotGeometries = () => {
-        return this.geometriesForDot
+    public getSignMatrix = (sign: string) => {
+        const matrix = this.signsMatrix[sign]
+        if (matrix == null)
+            return this.signsMatrix['-']
+        return matrix
     }
 
-    public getEqualSignGeometries = () => {
-        return this.geometriesForEqualSign;
-    }
-
-    public getColonGeometries = () => {
-        return this.geometriesForColon
-    }
-    public getSlashGeometries = () => {
-        return this.geometriesForSlash
-    }
 
     private generateNumbersGeometries = () => {
-        const rightBottomPiece = textGeometry.clone()
-        const rightPieceMatrix = new Matrix4().makeTranslation(size.height / 2, -size.height / 2, 0)
-        rightBottomPiece.applyMatrix4(rightPieceMatrix)
+        const rightBottomPieceMatrix = new Matrix4().makeTranslation(size.height / 2, -size.height / 2, 0)
 
-        const leftBottomPiece = textGeometry.clone()
-        const leftPieceMatrix = new Matrix4().makeTranslation(-size.height / 2, -size.height / 2, 0)
-        leftBottomPiece.applyMatrix4(leftPieceMatrix)
+        const leftBottomPieceMatrix = new Matrix4().makeTranslation(-size.height / 2, -size.height / 2, 0)
 
-        const rightTopPiece = textGeometry.clone()
         const rightTopPieceMatrix = new Matrix4().makeTranslation(size.height / 2, size.height / 2, 0)
-        rightTopPiece.applyMatrix4(rightTopPieceMatrix)
 
-        const leftTopPiece = textGeometry.clone()
         const leftTopPieceMatrix = new Matrix4().makeTranslation(-size.height / 2, size.height / 2, 0)
-        leftTopPiece.applyMatrix4(leftTopPieceMatrix)
 
-        const upperPiece = textGeometry.clone()
         const upperPieceMatrix = new Matrix4().makeTranslation(0, size.height, 0)
         const upperPieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        upperPiece.applyMatrix4(upperPieceRotationMatrix)
-        upperPiece.applyMatrix4(upperPieceMatrix)
+        upperPieceMatrix.multiply(upperPieceRotationMatrix)
 
-        const bottomPiece = textGeometry.clone()
         const bottomPieceMatrix = new Matrix4().makeTranslation(0, -size.height, 0)
         const bottomPieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        bottomPiece.applyMatrix4(bottomPieceRotationMatrix)
-        bottomPiece.applyMatrix4(bottomPieceMatrix)
+        bottomPieceMatrix.multiply(bottomPieceRotationMatrix)
 
-        const middlePiece = textGeometry.clone()
-        const middlePieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        middlePiece.applyMatrix4(middlePieceRotationMatrix)
+        const middlePieceMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
 
-        return [upperPiece, rightTopPiece, rightBottomPiece, bottomPiece, leftBottomPiece, leftTopPiece, middlePiece]
+        return [upperPieceMatrix, rightTopPieceMatrix, rightBottomPieceMatrix, bottomPieceMatrix, leftBottomPieceMatrix, leftTopPieceMatrix, middlePieceMatrix]
 
     }
 
-    private generateLeftBracketGeometry = () => {
+    private generateLeftBracketMatrix = () => {
         const scale = 3
-        const piece = textGeometry.clone()
-        const pieceScaleMatrix = new Matrix4().makeScale(1, scale, 1)
-        piece.applyMatrix4(pieceScaleMatrix)
+        const pieceMatrix = new Matrix4().makeScale(1, scale, 1)
 
-        const upperPiece = textGeometry.clone()
-        const upperPieceMatrix = new Matrix4().makeTranslation(size.height / 2, -size.height * (scale / 2), 0)
+        const upperPieceMatrix = new Matrix4().makeTranslation(size.height / 2, size.height * (scale / 2), 0)
         const upperPieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        upperPiece.applyMatrix4(upperPieceRotationMatrix)
-        upperPiece.applyMatrix4(upperPieceMatrix)
+        upperPieceMatrix.multiply(upperPieceRotationMatrix)
 
-        const bottomPiece = textGeometry.clone()
-        const bottomPieceMatrix = new Matrix4().makeTranslation(size.height / 2, size.height * (scale / 2), 0)
+        const bottomPieceMatrix = new Matrix4().makeTranslation(size.height / 2, -size.height * (scale / 2), 0)
         const bottomPieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        bottomPiece.applyMatrix4(bottomPieceRotationMatrix)
-        bottomPiece.applyMatrix4(bottomPieceMatrix)
+        bottomPieceMatrix.multiply(bottomPieceRotationMatrix)
 
-        return [piece, bottomPiece, upperPiece]
+        return [pieceMatrix, upperPieceMatrix, bottomPieceMatrix]
     }
-    private generateRightBracketGeometry = () => {
+    private generateRightBracketMatrix = () => {
         const scale = 3
-        const piece = textGeometry.clone()
         const pieceScaleMatrix = new Matrix4().makeScale(1, scale, 1)
-        piece.applyMatrix4(pieceScaleMatrix)
 
-        const upperPiece = textGeometry.clone()
-        const upperPieceMatrix = new Matrix4().makeTranslation(-size.height / 2, -size.height * (scale / 2), 0)
+        const upperPieceMatrix = new Matrix4().makeTranslation(-size.height / 2, size.height * (scale / 2), 0)
         const upperPieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        upperPiece.applyMatrix4(upperPieceRotationMatrix)
-        upperPiece.applyMatrix4(upperPieceMatrix)
+        upperPieceMatrix.multiply(upperPieceRotationMatrix)
 
-        const bottomPiece = textGeometry.clone()
-        const bottomPieceMatrix = new Matrix4().makeTranslation(-size.height / 2, size.height * (scale / 2), 0)
+        const bottomPieceMatrix = new Matrix4().makeTranslation(-size.height / 2, -size.height * (scale / 2), 0)
         const bottomPieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        bottomPiece.applyMatrix4(bottomPieceRotationMatrix)
-        bottomPiece.applyMatrix4(bottomPieceMatrix)
+        bottomPieceMatrix.multiply(bottomPieceRotationMatrix)
 
-        return [piece, bottomPiece, upperPiece]
+        return [pieceScaleMatrix, upperPieceMatrix, bottomPieceMatrix]
     }
     private generateDotGeometry = () => {
-        const piece = textGeometry.clone()
-        const pieceMatrix = new Matrix4().makeTranslation(-size.height, -size.height, 0)
+        const pieceTranslationMatrix = new Matrix4().makeTranslation(-size.height, -size.height, 0)
         const pieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
         const pieceScaleMatrix = new Matrix4().makeScale(0.2, 1, 1)
-        piece.applyMatrix4(pieceRotationMatrix)
-        piece.applyMatrix4(pieceMatrix)
-        piece.applyMatrix4(pieceScaleMatrix)
-        return [piece]
+        const pieceMatrix = new Matrix4().multiply(pieceScaleMatrix).multiply(pieceTranslationMatrix).multiply(pieceRotationMatrix)
+        return [pieceMatrix]
     }
 
     private generateEqualSignGeometry = () => {
-        const upperPiece = textGeometry.clone()
         const upperPieceMatrix = new Matrix4().makeTranslation(0, size.height / 2, 0)
         const upperPieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        upperPiece.applyMatrix4(upperPieceRotationMatrix)
-        upperPiece.applyMatrix4(upperPieceMatrix)
+        upperPieceMatrix.multiply(upperPieceRotationMatrix)
 
-        const bottomPiece = textGeometry.clone()
         const bottomPieceMatrix = new Matrix4().makeTranslation(0, -size.height / 2, 0)
         const bottomPieceRotationMatrix = new Matrix4().makeRotationZ(Math.PI / 2)
-        bottomPiece.applyMatrix4(bottomPieceRotationMatrix)
-        bottomPiece.applyMatrix4(bottomPieceMatrix)
+        bottomPieceMatrix.multiply(bottomPieceRotationMatrix)
 
-        return [upperPiece, bottomPiece]
+        return [upperPieceMatrix, bottomPieceMatrix]
     }
     private generateColonGeometry = () => {
-        const topPiece = textGeometry.clone()
         const topPieceMatrix = new Matrix4().makeTranslation(0, size.height / 2, 0)
         const topPieceScaleMatrix = new Matrix4().makeScale(1, 0.2, 1)
-        topPiece.applyMatrix4(topPieceScaleMatrix)
-        topPiece.applyMatrix4(topPieceMatrix)
+        topPieceMatrix.multiply(topPieceScaleMatrix)
 
-        const bottomPiece = textGeometry.clone()
         const bottomPieceMatrix = new Matrix4().makeTranslation(0, -size.height / 2, 0)
         const bottomPieceScaleMatrix = new Matrix4().makeScale(1, 0.2, 1)
-        bottomPiece.applyMatrix4(bottomPieceScaleMatrix)
-        bottomPiece.applyMatrix4(bottomPieceMatrix)
+        bottomPieceMatrix.multiply(bottomPieceScaleMatrix)
 
-        return [topPiece, bottomPiece]
+        return [topPieceMatrix, bottomPieceMatrix]
     }
 
-    public generateSlashGeometry = () => {
-        const piece = textGeometry.clone()
+    private generateSlashGeometry = () => {
         const pieceScaleMatrix = new Matrix4().makeScale(1, 3, 1)
         const pieceRotationMatrix = new Matrix4().makeRotationZ(-Math.PI / 12)
-        piece.applyMatrix4(pieceScaleMatrix)
-        piece.applyMatrix4(pieceRotationMatrix)
+        const pieceMatrix = new Matrix4().multiply(pieceRotationMatrix).multiply(pieceScaleMatrix)
 
-        return [piece]
+        return [pieceMatrix]
     }
-
 
 }

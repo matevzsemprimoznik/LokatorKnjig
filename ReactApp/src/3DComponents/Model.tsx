@@ -3,15 +3,9 @@ import Ground from './Ground';
 import React, {FC, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import * as THREE from 'three';
 import {ModelType} from '../context/modelContext';
-import {MemoizedRoomModel} from './Model3D';
 import {OrthographicCameraProps, PerspectiveCameraProps, ThreeEvent} from 'react-three-fiber';
 import FirstPersonCamera from './FirstPersonCamera';
-import EntranceText from './EntranceText';
-import data from '../data.json';
-import {Vector3} from 'three';
-import {LibraryContext} from "../context/libraryContext";
 import {Room} from "../models/library";
-import bookshelfPiece from "./BookshelfPiece";
 import FloorModel from "./FloorModel";
 
 interface ModelProps {

@@ -7,10 +7,13 @@ import {ThreeEvent} from 'react-three-fiber';
 import {Bookshelf, Position, Room} from '../models/library';
 import Entrance from "./Entrance";
 import {useGLTF} from "@react-three/drei";
-import {BufferGeometry, BufferGeometryLoader, Matrix4} from "three";
-import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils';
-import {generateTextGeometry, size, textMaterial} from "../utils/textBuilder";
 
+import {
+    BufferGeometry,
+    InstancedMesh,
+    Matrix4,
+} from "three";
+import {generateMatrixForSignGeometry, size, textGeometry, textMaterial} from "../utils/textBuilder";
 
 interface BookshelvesProps {
     selectedUDK: string;
@@ -18,11 +21,11 @@ interface BookshelvesProps {
     roomData: Room;
 }
 
+
 const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubleClickedPoint}) => {
     const {nodes: bookshelfNodes, materials: bookshelfMaterials}: any = useGLTF(bookshelfGLB);
     const {nodes: selectedBookshelfNodes, materials: selectedBookshelfMaterials}: any = useGLTF(selectedBookshelfGLB);
     const {nodes: closeBookshelfNodes, materials: closeBookshelfMaterials}: any = useGLTF(closeBookshelfGLB);
-    const [bookshelvesGeometries, setBookshelvesGeometries] = useState<Array<{ geometry: any, material: any }>>([])
 
     const getSelectedUDKPositions = () => {
         const bookshelves = roomData.bookshelves.filter((bookshelf: Bookshelf, index: number) =>
@@ -40,12 +43,12 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
         });
         return positions;
     };
-    const getNewBookshelfPositionsAccordingToAngle = (position: any, angle: number, roomCenter: Position) => {
-        angle = (angle / 180) * Math.PI;
+    const getNewPositionAccordingToRotation = (position: Position, rotationAngle: number) => {
+        rotationAngle = (rotationAngle / 180) * Math.PI;
         const newPosition = {
-            x: position.x * Math.cos(angle) + position.z * Math.sin(angle) + roomCenter.x,
-            y: position.y + roomCenter.y,
-            z: -position.x * Math.sin(angle) + position.z * Math.cos(angle) + roomCenter.z,
+            x: position.x * Math.cos(rotationAngle) + position.z * Math.sin(rotationAngle),
+            y: position.y,
+            z: -position.x * Math.sin(rotationAngle) + position.z * Math.cos(rotationAngle),
         };
         return newPosition;
     };
@@ -61,122 +64,90 @@ const Model3D: FC<BookshelvesProps> = ({selectedUDK, roomData, moveCameraToDoubl
 
     const selectedUDKPositions = getSelectedUDKPositions();
 
+    const [bookshelfMesh, setBookshelfMesh] = useState<InstancedMesh>()
+    const [textMesh, setTextMesh] = useState<InstancedMesh>()
+
     useEffect(() => {
-        const bookshelfGeometry = bookshelfNodes.Cube.geometry
-        const closeBookshelfGeometry = bookshelfNodes.Cube.geometry
-        const selectedBookshelfGeometry = bookshelfNodes.Cube.geometry
+        const t0 = performance.now()
 
-        const bookshelfGeometryIndex = 0
-        const closeBookshelfGeometryIndex = 1
-        const selectedBookshelfGeometryIndex = 2
-        const textIndex = 3
-
-        const initialReduceData = [
-            {
-                geometries: [] as BufferGeometry[],
-                materials: bookshelfMaterials
+        let count = 0
+        roomData.bookshelves.map((bookshelf, index) => {
+            if (bookshelf.udks && bookshelf.udks.length !== 0) {
+                const splittedText = bookshelf.udks[0].toString().split('')
+                splittedText.map((sign, index2) => count += 7)
             }
-            ,
-            {
-                geometries: [] as BufferGeometry[],
-                materials: closeBookshelfMaterials
-            }
-            ,
-            {
-                geometries: [] as BufferGeometry[],
-                materials: selectedBookshelfMaterials
-            },
-            {
-                geometries: [] as BufferGeometry[],
-                materials: textMaterial
-            },
-        ]
-
-        const bookshelves = roomData.bookshelves.reduce((array, bookshelf, index) => {
-            let geometry = {
-                type: bookshelfGeometry.clone(),
-                index: bookshelfGeometryIndex
-            }
-            if (bookshelf.udks.some((udk: any) => udk.toString() === selectedUDK)) {
-                geometry = {type: selectedBookshelfGeometry.clone(), index: selectedBookshelfGeometryIndex}
-            } else if (selectedUDKPositions.some((position: any) => position.x === bookshelf.position.x && position.z === bookshelf.position.z)) {
-                geometry = {type: closeBookshelfGeometry.clone(), index: closeBookshelfGeometryIndex}
-            }
+        })
+        const bookshelfInstanceMesh = new InstancedMesh(bookshelfNodes.Cube.geometry, bookshelfMaterials['CubeMaterial'], roomData.bookshelves.length)
+        const textInstanceMesh = new InstancedMesh(textGeometry, textMaterial, count)
 
 
+        let matrixPosition = 0
+        roomData.bookshelves.map((bookshelf, index) => {
             const position = {
-                ...getNewBookshelfPositionsAccordingToAngle(
-                    {
-                        x: bookshelf.position.x,
-                        y: bookshelf.position.y,
-                        z: bookshelf.position.z,
-                    },
-                    -roomData.rotation,
-                    roomData.center
-                ),
+                x: (bookshelf.position.x + roomData.center.x) / 20,
+                y: bookshelf.position.y,
+                z: (bookshelf.position.z + roomData.center.z) / 20,
             }
+            const bookshelfTranslationMatrix = new Matrix4().makeTranslation(position.x, position.y, position.z)
+            const bookshelfRotationMatrix = new Matrix4().makeRotationY(bookshelf.rotation / 180 * Math.PI)
+            const bookshelfMatrix = new Matrix4().multiplyMatrices(bookshelfTranslationMatrix, bookshelfRotationMatrix)
 
-            const translationMatrix = new Matrix4().makeTranslation(position.x / 20, position.y, position.z / 20)
-            const rotationMatrix = new Matrix4().makeRotationY(((bookshelf.rotation + roomData.rotation) / 180) * Math.PI)
+            bookshelfInstanceMesh.setMatrixAt(index, bookshelfMatrix)
 
-            geometry.type.applyMatrix4(rotationMatrix);
-            geometry.type.applyMatrix4(translationMatrix);
-
-            array[geometry.index].geometries = [geometry.type, ...array[geometry.index].geometries];
+            const translationMatrix = new Matrix4().makeTranslation(position.x, position.y, position.z)
 
             if (bookshelf.udks && bookshelf.udks.length !== 0) {
-                const textGeometry = generateTextGeometry(bookshelf.udks[0].toString())
-                textGeometry.applyMatrix4(rotationMatrix)
-                textGeometry.applyMatrix4(translationMatrix)
+                const splittedText = bookshelf.udks[0].toString().split('')
+                let offset = -(splittedText.length / 2 * (size.height * 1.4))
 
-                array[textIndex].geometries = [textGeometry, ...array[textIndex].geometries]
+                splittedText.map((sign, index2) => {
+                    const offsetMatrix = new Matrix4().makeTranslation(offset, 0, 0)
+
+                    const matrix = generateMatrixForSignGeometry(sign)
+
+                    matrix.map((textPieceMatrix: Matrix4, index3: number) => {
+                        const multipliedOffsetAndTextPieceMatrix = offsetMatrix.clone().multiply(textPieceMatrix)
+                        const rotatedMatrix = new Matrix4().makeRotationY(bookshelf.rotation / 180 * Math.PI).multiply(multipliedOffsetAndTextPieceMatrix)
+                        const finalMatrix = translationMatrix.clone().multiply(rotatedMatrix)
+                        textInstanceMesh.setMatrixAt(matrixPosition, finalMatrix)
+                        matrixPosition++
+
+                    })
+                    offset += size.height * 1.4
+                })
 
             }
-            return array;
-        }, initialReduceData);
-        const mergedBookshelves = bookshelves.flatMap(bookshelf => {
-            if (bookshelf.geometries.length === 0)
-                return []
-            return [{
-                geometry: mergeBufferGeometries(bookshelf.geometries, true),
-                material: bookshelf.materials['CubeMaterial'] || textMaterial
-            }]
         })
-        setBookshelvesGeometries(mergedBookshelves)
 
+        setBookshelfMesh(bookshelfInstanceMesh)
+        setTextMesh(textInstanceMesh)
     }, [roomData])
 
 
     return (
         <>
+            {/* @ts-ignore*/}
+            {bookshelfMesh && <instancedMesh {...bookshelfMesh} />}
+            {/* @ts-ignore*/}
+            {textMesh && <instancedMesh {...textMesh} />}
+
             {roomData.entrances.map((entrance, index) => (
                 <Entrance
                     key={index}
                     rotation={entrance.rotation + roomData.rotation}
-                    position={{
-                        ...getNewBookshelfPositionsAccordingToAngle(
-                            recalculateEntrancePosition(entrance.position, roomData.ground),
-                            -roomData.rotation,
-                            roomData.center
-                        )
-                    }}
+                    position={entrance.position}
                 />
             ))}
-            {bookshelvesGeometries && bookshelvesGeometries.map((bookshelfGeometry, index) => <mesh
-                key={index}
-                geometry={bookshelfGeometry.geometry}
-                material={bookshelfGeometry.material}></mesh>
-            )}
 
 
-            <Ground
+            {<Ground
                 position={{x: 0 + roomData.center.x, y: 0.05 + roomData.center.y, z: 0 + roomData.center.z}}
                 onDoubleClick={moveCameraToDoubleClickedPoint}
                 edges={roomData.ground}
                 rotation={{x: 0, y: (-roomData.rotation / 180) * Math.PI, z: 0}}
-            />
+            />}
         </>
     );
 };
 
-export const MemoizedRoomModel = memo(Model3D);
+export default Model3D
