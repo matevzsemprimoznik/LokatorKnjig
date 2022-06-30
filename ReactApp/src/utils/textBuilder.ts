@@ -24,7 +24,7 @@ export const generateMatrixForSignGeometry = (sign: string) => {
 
 class TextBuilderSingleton {
     private static instance: TextBuilderSingleton | null = null
-    private signsMatrix: any
+    private signsMatrix: signsMatrixInterface
 
     private constructor() {
         const numbersMatrix = this.generateNumbersGeometries()
@@ -55,7 +55,7 @@ class TextBuilderSingleton {
         return TextBuilderSingleton.instance
     }
     public getSignMatrix = (sign: string) => {
-        const matrix = this.signsMatrix[sign]
+        const matrix = this.signsMatrix[sign as keyof signsMatrixInterface]
         if (matrix == null)
             return this.signsMatrix['-']
         return matrix
@@ -152,4 +152,24 @@ class TextBuilderSingleton {
         return [pieceMatrix]
     }
 
+}
+
+interface signsMatrixInterface {
+    '0': Matrix4[],
+    '1': Matrix4[],
+    '2': Matrix4[],
+    '3': Matrix4[],
+    '4': Matrix4[],
+    '5': Matrix4[],
+    '6': Matrix4[],
+    '7': Matrix4[],
+    '8': Matrix4[],
+    '9': Matrix4[],
+    '.': Matrix4[],
+    '(': Matrix4[],
+    ')': Matrix4[],
+    '=': Matrix4[],
+    '/': Matrix4[],
+    ':': Matrix4[],
+    '-': Matrix4[]
 }
